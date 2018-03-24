@@ -1,0 +1,66 @@
+# base
+awk -F: '                '     /etc/passwd     #nothing
+awk -F: '{print         }'     /etc/passwd     #all
+awk -F: '{print $0      }'     /etc/passwd     #all
+awk -F: '{print $NF     }'     /etc/passwd     #last field
+awk -F: '{print $1,$NF  }'     /etc/passwd     #first and last fields
+awk -F: '{print $1" "$NF}'     /etc/passwd     #first and last fields
+ 
+# /pattern/: match a patten
+awk -F: '/^root/                        '  /etc/passwd
+awk -F: '/^root/                 {print}'  /etc/passwd
+awk -F: '/^root|^bin/            {print}'  /etc/passwd #or
+awk -F: '/^root/{print};   /^bin/{print}'  /etc/passwd #or
+awk -F: '$1~"root|bin"           {print}'  /etc/passwd #or
+awk -F: '/^root/,/^bin/          {print}'  /etc/passwd #range
+awk -F: '    $1=="root"          {print}'  /etc/passwd
+awk -F: '   ($1=="root")         {print}'  /etc/passwd
+awk -F: '{if($1=="root")         {print}}' /etc/passwd
+ 
+awk -F: '$1~"oo"                 {print}'  /etc/passwd #match
+awk -F: '    index($1, "oo")!=0  {print}'  /etc/passwd
+awk -F: '   (index($1, "oo")!=0) {print}'  /etc/passwd
+awk -F: '{if(index($1, "oo")!=0) {print}}' /etc/passwd
+ 
+awk -F: 'length($1)==4          ' /etc/passwd          #id length is 4
+ 
+# ++: count the number of line that pattern matched
+awk -F: '/bash/   {num++};           END{print "num:"num}'           /etc/passwd #num:3
+awk -F: '$7~"bash"{num++};           END{print "num:"num}'           /etc/passwd
+awk -F: '$7~"bash"{num++;id=id" "$1};END{print "num:"num",id:"id}'   /etc/passwd #num:3,id: root sys7i24 neutrino0717
+awk -F: '{num[$7]+=1}END{for(i in num){printf "%s\t%d\n",i,num[i]}}' /etc/passwd #use dict to count
+awk -F: '{print $7}' /etc/passwd | sort |uniq -c                                 #use uniq to count
+ 
+ 
+#enviromnet variables
+awk              '{print                 $0}' /etc/passwd
+awk              '{print ENVIRON["USER"],$0}' /etc/passwd
+awk -v usr=$USER '{print usr,            $0}' /etc/passwd
+ 
+#exit
+awk -F: '/^bin/{print}              '  /etc/passwd
+awk -F: '/^bin/{exit};       {print}'  /etc/passwd  #print all lines before a match
+awk -F: '/^bin/{print;exit}; {print}'  /etc/passwd  #print all lines before and include a match
+ 
+awk -F: '{if(NR%3==0){print $1}                     }'  /etc/passwd  #print every three lines
+awk -F: '{if(NR%3==0){print $1}else{printf $1" "   }}'  /etc/passwd  #print three accounts a line
+awk -F: '{if(NR%3==0){print $1}else{printf "%s ",$1}}'  /etc/passwd  #print three accounts a line
+
+#NR:   Number of Record
+#FNR:  File Number of Record
+#FILENAME: Current File Name
+#ARGC, ARGV
+awk -F: '{print NR,FILENAME":"FNR, $0}'                 /etc/passwd /etc/group
+awk 'BEGIN{print ARGC}'                                 /etc/passwd /etc/group  #3
+awk 'BEGIN{for(i=0;i<ARGC;i++){printf "%s ", ARGV[i]}}' /etc/passwd /etc/group  #awk /etc/passwd /etc/group 
+awk 'BEGIN{for(i in ARGV)     {printf "%s ", ARGV[i]}}' /etc/passwd /etc/group  #awk /etc/passwd /etc/group 
+ 
+#FS:  Field seperator
+#RS:  Record seperator
+#OFS: Output field seperator
+#ORS: Output record sepeartor
+awk -F: '              /^bin/{print NR, $1, $NF}'          /etc/passwd               #3 bin /usr/sbin/nologin
+awk     'BEGIN{ FS=":"}/^bin/{print NR, $1, $NF}'          /etc/passwd               #3 bin /usr/sbin/nologin
+awk -F: 'BEGIN{OFS="|"}/^bin/{print NR, $1, $NF}'          /etc/passwd               #3|bin|/usr/sbin/nologin
+awk -F: 'BEGIN{ RS="|"}/^bin/{print NR, $1, $NF}' <<<"`cat /etc/passwd|tr '\n' '|'`" #3 bin /usr/sbin/nologin
+awk -F: 'BEGIN{ORS="\n---\n"}{print NR, $1, $NF}'          /etc/passwd 
