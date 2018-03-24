@@ -1,0 +1,41 @@
+bash <<<'             echo ${v1:-default}'        #default
+bash <<<'v1="rabbit"; echo ${v1:-default}'        #rabbit
+bash <<<'             echo ${v1:=default}'        #default
+bash <<<'v1="rabbit"; echo ${v1:=default}'        #rabbit
+bash <<<'             echo ${v1:+defined}'        #
+bash <<<'v1="rabbit"; echo ${v1:+defined}'        #defined
+bash <<<'             echo ${v1:?undefined}'      #bash: line 1: v1: undefined (stderr)
+bash <<<'v1="rabbit"; echo ${v1:?undefined}'      #rabbit
+ 
+bash <<<'v1="rabbit"; echo ${v1:4:2}  '          #it
+bash <<<'v1="rabbit"; echo ${v1:4}    '          #it
+bash <<<'v1="rabbit"; echo ${v1: -2}  '          #it
+bash <<<'v1="rabbit"; echo ${v1#*b}   '          #bit
+bash <<<'v1="rabbit"; echo ${v1##*b}  '          #it
+bash <<<'v1="rabbit"; echo ${v1%b*}   '          #rab
+bash <<<'v1="rabbit"; echo ${v1%%b*}  '          #ra
+bash <<<'v1="rabbit"; echo ${v1/b/p}  '          #rapbit
+bash <<<'v1="rabbit"; echo ${v1//b/p} '          #rappit
+bash <<<'v1="rabbit"; echo ${v1/bit/} '          #rab
+bash <<<'v1="09bbit"; echo ${v1/[0-9][0-9]/ra}'  #rabbit
+bash <<<'v1="rabbit"; echo ${v1/#r/R}   '        #Rabbit
+bash <<<'v1="rabbit"; echo ${v1/%it/its}'        #rabbits
+bash <<<'v1="rabbit"; echo ${#v1}       '        #6
+ 
+x="01234567"; echo "${x:3:2}"        #34
+x="01234567"; echo "${x:(3):(2)}"    #34
+x="01234567"; echo "${x:(-2)}"       #67
+x="01234567"; echo "${x: -2}"        #67
+x="01234567"; echo "${x:(3):(-2)}"   #345
+x="01234567"; echo "${x:(3):(3)}"    #345
+x="01234567"; echo "${x: -2: -1}"    #6
+x="01234567"; echo "${x:(-2):(-1)}"  #6
+
+ 
+---------------------------------------------------
+ 
+a=("aaa" "bbb" "ccc"); 
+echo "${a[@]}"       #aaa bbb ccc
+echo "${a[@]:1}"     #bbb ccc
+echo "${a[*]:0:1}"   #aaa
+echo "${a[*]: -2}"   #bbb ccc
