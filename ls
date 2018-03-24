@@ -1,0 +1,9 @@
+ls  -l    ~/*    #with contents in directories
+ls  -ld   ~/*    #list dir entries, no contents, no symlinks dereference 
+ls  -l           #the same as above, diff <(ls -l) <(ls -ld *)
+
+ls -lrSd  ~/*    #sort by file size
+ls -lrtd  ~/*    #sort by modification time
+ls -lrtcd ~/*    #show ctime and sort by ctime  
+ls -lrcd  ~/*    #show ctime and sort by name
+             
