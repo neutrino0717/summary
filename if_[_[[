@@ -1,0 +1,10 @@
+#a=b; c=d
+a=b; c=e
+if    [ "$a" = b   -a      "$c" = d ] ; then echo "+"; else echo "-"; fi #-
+if    [ "$a" = b ] &&    [ "$c" = d ] ; then echo "+"; else echo "-"; fi #-
+if    [ "$a" == b ] &&    [ "$c" == d ] ; then echo "+"; else echo "-"; fi #-
+if test "$a" = b   && test "$c" = d   ; then echo "+"; else echo "-"; fi #-
+if   [[ "$a" = b   &&      "$c" = d ]]; then echo "+"; else echo "-"; fi #-
+if   [[ "$a" == b  &&     "$c" == d ]]; then echo "+"; else echo "-"; fi #-
+      [ "$a" = b ] &&    [ "$c" = d ]   &&   echo "+"  ||   echo "-"
+     [[ "$a" = b   &&      "$c" = d ]]  &&   echo "+"  ||   echo "-"
