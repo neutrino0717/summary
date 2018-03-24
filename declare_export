@@ -1,0 +1,74 @@
+##print all
+declare -p   #all	
+declare -p |awk '{print $1" "$2}' | sort | uniq -c
+     23 declare --
+      8 declare -a
+      3 declare -A
+      1 declare -ar
+      5 declare -i
+      4 declare -ir
+      3 declare -r
+     27 declare -x
+
+##print all the type of @#%#$
+declare -f   #all functions
+declare -F   #all functions
+declare -x   #all exported variables
+declare -i   #all integer
+declare -r   #all read only
+declare -a   #all indexed arrays
+declare -A   #all associative arrays
+
+##print
+declare -f   #display function names and definitions
+declare -F   #display to function names only
+declare -p   #display the attributes and value of each NAME
+declare -x   #display exported enviromnent variables
+declare -i   #display integer variables
+declare -r   #display read only variables
+declare -a   #display indexed arrays
+declare -A   #display associative arrays 
+ 
+##-x export
+aaa=hibaby; declare -p aaa    #declare -- aaa="hibaby"
+export aaa; declare -p aaa    #declare -x aaa="hibaby" //-x make NAMEs export
+diff <(export) <(declare -x)  #same, exported
+diff <(set)    <(declare)     #same, all
+ 
+##-a and -A
+set1=();                             declare -p set1; unset set1  #declare -a set1='()'                    
+set1=(/etc/*.conf);                  declare -p set1; unset set1
+set1=(a b c);                        declare -p set1; unset set1  #declare -a set1='([0]="a" [1]="b" [2]="c")'
+declare -A set1=([a]=x [b]=y [c]=z); declare -p set1; unset set1  #declare -A set1='([a]="x" [b]="y" [c]="z" )'
+ 
+ 
+##-f function
+func(){ echo hi; }; declare -f func
+bash -c         "$(declare -f func); func"
+ssh remote_host "$(declare -f func); func"
+
+##-i 
+              a=99-1; echo $a; unset a                #99-1
+declare -i a; a=99-1; echo $a; unset a                #98
+              a=12 b=5 c=a*b; echo $c; unset a b c    #a*b
+declare -i    a=12 b=5 c=a*b; echo $c; unset a b c    #60
+ 
+##-r readonly
+declare -r name="Evan Liu"; name="Even"               #name: readonly variable
+ 
+ 
+##-r        to make NAMEs readonly
+ 
+     Options which set attributes:
+      -i        to make NAMEs have the `integer' attribute
+      -l        to convert NAMEs to lower case on assignment
+      -n        make NAME a reference to the variable named by its value
+      -r        to make NAMEs readonly
+      -t        to make NAMEs have the `trace' attribute
+      -u        to convert NAMEs to upper case on assignment
+
+fff(){ echo hello; }; declare -f fff; bash -c "                  fff"; unset fff  #fff command not found #not exported
+fff(){ echo hello; }; declare -f fff; bash -c "`declare -f fff`; fff"; unset fff  #hello                 #not exported
+fff(){ echo hello; }; declare -f fff; bash <<<"`declare -f fff`; fff"; unset fff  #hello                 #not exported
+fff(){ echo hello; }; export  -f fff; bash -c "                  fff"; unset fff  #hello                 #exported
+fff(){ echo hello; }; export  -f fff; bash <<<"                  fff"; unset fff  #hello                 #exported
