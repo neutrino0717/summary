@@ -1,0 +1,19 @@
+#grep : basic regex
+#egrep: extended regex
+#perl : slightly different
+
+#[[:space:]]  match any whitle space and tabs
+#[[:digit:]]  = [0-9]    = \d 
+#[[:alpha:]]  = [a-zA-Z] 
+#[[:upper:]]  = [A-Z]
+#[[::]]
+
+#\d           = [0-9]
+#\w           = [a-zA-Z0-9]
+#\s           = [ \t\n\r\f]
+#\D           = [^0-9]
+#\W           = [^a-zA-Z0-9]
+#\S           = [^ \t\n\r\f]
+#\b           match word boundary
+#\B,\<,\>     not at word boundary
+
