@@ -1,0 +1,32 @@
+man mmap 2
+man open 2
+man sendto 2
+ 
+strace               true 
+strace -v            true   #verbose, such as complete environment
+strace -s128         true   #shows 128 bytes of each call, by default 32 bytes
+strace -r            true   #Print relative timestamp 
+strace -t            true   #print absolute time
+strace -T            true   #time being spent in the kernel call in the <> 
+strace -tt           true   #print absolute time9
+strace -ttt          true   #print absolute time
+strace -ttT          true   #print absolute time, and <> as time spent in kernel call
+strace -c            true   #count time, calls, and errors 
+strace -C            true   #count time, calls, and errors after tracing 
+strace -e open       true   #display specified syscalls only 
+strace -e trace=open true   #the same as above 
+strace -e open,close true   #display specified syscalls only 
+strace -e file       true   #display syscalls which take a file name as an argument
+strace -e network    ping -c 1 baidu.com  #display network related syscalls
+
+#-f, -ff  trace child(forked) processes as well
+#compare below, always use -f in case missing anything
+strace -f -e execve bash -c "/bin/true ; /bin/false"  
+strace    -e execve bash -c "/bin/true ; /bin/false"
+ 
+strace -p `pidof apache2 `                   #trace a running process with pid number
+strace -p `pgrep apache2 `                   #trace a running process with pid number
+strace    `pgrep apache2|sed 's/^/-p/'`      #trace multiple instances of process
+strace    `pidof apache2|sed 's/\</ -p/g'`   #strace -p11485 -p11484 -p11483 -p1134
+strace -p `pidof apache2|sed 's/ /,/g'`      #strace -p 11485,11484,11483,1134
+strace -o /tmp/true.log true                 #log file
