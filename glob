@@ -1,0 +1,58 @@
+Glob
+is a set of Bash features that match or expand specific types of patterns. 
+Some synonyms for globbing  are pattern matching, pattern expansion, filename expansion
+A glob may look like *.txt and, when used to match filenames, is sometimes called a "wildcard".
+shell globs use a very simple syntax, which is less expressive than a RegularExpression. 
+Most characters in a glob are treated literally
+ 
+1. 
+*             matches 0 or more characters, 
+?             matches precisely one character, 
+[...]         matches any single character in a specified set 
+*.[ch]        Matches any string ending with .c or .h
+
+2. 
+Bash expands globs which appear unquoted in commands	 
+# This is safe even if a filename contains whitespace:
+for f in *.tar; do tar tvf "$f" done
+	 
+ls /etc/*.conf
+ls /etc/[nm]*.conf     ##/etc/mke2fs.conf  /etc/nsswitch.conf
+ls /etc/??.conf        ##/etc/ts.conf
+	 
+find ~/graduation -name "*.[hc]"
+find ~/graduation -name "*.h" -o -name "*.c"
+ 
+3. 
+globs in Case command
+case "$input" in
+    [Yy]|'') confirm=1;;
+    [Nn]*)   confirm=0;;
+    *)       echo "I don't understand.  Please try again.";;
+esac	 
+input=Yes; case "$input" in [Yy]|'') echo "ok";; [Nn]*) echo "no";; *) echo "try again";; esac  #try again
+input=y;   case "$input" in [Yy]|'') echo "ok";; [Nn]*) echo "no";; *) echo "try again";; esac  #ok
+input=;    case "$input" in [Yy]|'') echo "ok";; [Nn]*) echo "no";; *) echo "try again";; esac  #ok
+input=Not  case "$input" in [Yy]|'') echo "ok";; [Nn]*) echo "no";; *) echo "try again";; esac  #no
+
+4. 
+Bash also allows globs to appear on the right-hand side of a comparison inside a [[ command:
+if [[ $output = *[Ee]rror* ]]; then ...
+	 
+5. 
+parameter expansion, substitution. 
+filename=${path##*/}    # strip leading pattern that matches */ (be greedy)
+dirname=${path%/*}      # strip trailing pattern matching /* (non-greedy)
+	 
+printf '%s\n' "${arr[@]}"          # dump an array, one element per line
+printf '%s\n' "${arr[@]/error*/}"  # dump array, removing error* if matched
+
+Ranges
+	[abcd]
+	[a-d]
+	[!aeAE]   #Matches any character except a, e, A, E
+ 
+[[:alnum:]]  #Matches any alphanumeric character (letter or number)
+[[:space:]]  #Matches any whitespace character
+[![:space:]] #Matches any character that is not whitespace
+[[:digit:]_.]  #Matches any digit, or _ or .
