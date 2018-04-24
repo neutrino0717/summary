@@ -11,11 +11,12 @@ ls nofile isfile 2>&-                           #isfile
 ls nofile isfile 2>&1 |  grep -v file           #-
 ls nofile isfile      |& grep -v file           #-
 
-exec &>     >( tee -i logfile)exec 2>&1 > >( tee -i logfile)
+exec &>     >( tee -i logfile)
+exec 2>&1 > >( tee -i logfile)
 
-echo -n '123'     | tee -i logfile; sleep 1; cat logfile       #123123echo -n '123' 2>&1 > >( tee -i logfile); sleep 1; cat logfile  #123123
-echo -n '123' 2>&1 | tee -i logfile; sleep 1;    cat logfile  #123123
-echo -n '123'     &> >( tee -i logfile); sleep 1; cat logfile  #123123
+{ ls nofile isfile 2>&1 |   tee -i logfile; sleep 1; cat logfile; } |wc -l  #4
+{ ls nofile isfile 2>&1 > >( tee -i logfile); sleep 1; cat logfile; } |wc -l  #3      why?
+{ ls nofile isfile &>     >(tee -i logfile); sleep 1; cat logfile; }|wc -l       #4
  
 #note:
 &>/dev/null           STDERR and STDOUT to /dev/null.
