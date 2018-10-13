@@ -1,8 +1,9 @@
-
-seq   Sequence
--f, --format=FORMAT        use printf style floating-point FORMAT (default: %g)
--s, --separator=STRING     use STRING to separate numbers (default: \n)
--w, --equal-width          equalize width by padding with leading zeroes
+vim - <<"EON"
+#!/bin/bash
+seq                       # Sequence
+-f, --format=FORMAT       # use printf style floating-point FORMAT (default: %g)
+-s, --separator=STRING    # use STRING to separate numbers (default: \n)
+-w, --equal-width         # equalize width by padding with leading zeroes
 
 seq                      11 | tr '\n' ' '              #1 2 3 4 5 6 7 8 9 10 11 
 seq                  1   11 | tr '\n' ' '              #1 2 3 4 5 6 7 8 9 10 11 
@@ -22,9 +23,9 @@ echo p{001..011}                                       #p001 p002 p003 p004 p005
 printf 'p%03d ' {1..11}                                #p001 p002 p003 p004 p005 p006 p007 p008 p009 p010 p011
 ------------------------------------------------------------------------------------------
 printf
-0: 前面补0
-5: 5个字符位
-d: integer
+0      #: add 0 in the front
+5      #: 5 bits space
+d      #: integer
  
 printf   "%d\n"            123             #123
 printf  "%5d\n"            123             #  123
@@ -36,3 +37,4 @@ printf   "%s %s\n"          Hello world    #Hello world
 printf   "%s\n"             Hello world    ##Hello world in two lines
 printf "\e[1;34m%s\e[0m\n" "Hello world"   #Hello world
 arr=(/etc/*.conf); printf '%s\n' "${arr[@]}"          # dump an array, one element per line
+EON

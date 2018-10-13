@@ -1,3 +1,4 @@
+pygmentize -g <<"EON"
 # base
 awk -F: '                '     /etc/passwd     #nothing
 awk -F: '{print         }'     /etc/passwd     #all
@@ -64,3 +65,4 @@ awk     'BEGIN{ FS=":"}/^bin/{print NR, $1, $NF}'          /etc/passwd          
 awk -F: 'BEGIN{OFS="|"}/^bin/{print NR, $1, $NF}'          /etc/passwd               #3|bin|/usr/sbin/nologin
 awk -F: 'BEGIN{ RS="|"}/^bin/{print NR, $1, $NF}' <<<"`cat /etc/passwd|tr '\n' '|'`" #3 bin /usr/sbin/nologin
 awk -F: 'BEGIN{ORS="\n---\n"}{print NR, $1, $NF}'          /etc/passwd 
+EON

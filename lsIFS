@@ -1,6 +1,8 @@
+vim - <<"EON"
+#!/bin/bash
 IFS    
-   The  Internal Field Separator that is used for word splitting after expansion and to split lines into words 
-   with the read builtin command.  The default value is ``<space><tab><newline>''.
+#   The  Internal Field Separator that is used for word splitting after expansion and to split lines into words 
+#   with the read builtin command.  The default value is ``<space><tab><newline>''.
  
 ###set IFS temparorily###
 IFS=$'.'  read i1 i2 i3 i4 <<<"10.11.22.33"; echo "$IFS"               #
@@ -25,8 +27,8 @@ bash<<<'a="u,v:w,x:y,z"; IFS=$',';  echo $a'      #u v:w x:y z
 bash<<<'a="u-v:w-x:y-z"; IFS=':';   echo $a'      #u-v w-x y-z
  
 ###"$*" "${a[*]}"###
-Note that  $* use the first character held in $IFS to as word boundary
-e.g. for IFS=":-;",  $* will use ":"
+#Note that  $* use the first character held in $IFS to as word boundary
+#e.g. for IFS=":-;",  $* will use ":"
 myview: $* will add the IFS for output
 bash<<<'set w x y z; IFS=":-;";  echo "$@"'       #w x y z
 bash<<<'set w x y z; IFS=":-;";  echo "$*"'       #w:x:y:z
@@ -48,8 +50,8 @@ IFS=$'.' read -a i <<<"10.11.22.33";        echo "${i[@]}"                      
 IFS=$'.' read -a i <<<"10.11.22.33";        echo "${i[*]}"                        #10.11.22.33
 IFS=$'.' read -a i <<<"10.11.22.33";        for a in "${i[@]}"; do echo $a; done
 
-
 #other
 echo ">$IFS<"
 OLDIFS=IFS; IFS=:; for dir in $PATH; do ls -ld $dir;                         done; IFS=OLDIFS
                     while [ $path ]; do ls -ld ${path%%:*}; path=${path#*:}; done
+EON

@@ -1,3 +1,5 @@
+vim - <<"EON"
+#!/bin/bash
 bash <<<'             echo ${v1:-default}'        #default
 bash <<<'v1="rabbit"; echo ${v1:-default}'        #rabbit
 bash <<<'             echo ${v1:=default}'        #default
@@ -30,8 +32,6 @@ x="01234567"; echo "${x:(3):(-2)}"   #345
 x="01234567"; echo "${x:(3):(3)}"    #345
 x="01234567"; echo "${x: -2: -1}"    #6
 x="01234567"; echo "${x:(-2):(-1)}"  #6
-
- 
 ---------------------------------------------------
  
 a=("aaa" "bbb" "ccc"); 
@@ -39,3 +39,4 @@ echo "${a[@]}"       #aaa bbb ccc
 echo "${a[@]:1}"     #bbb ccc
 echo "${a[*]:0:1}"   #aaa
 echo "${a[*]: -2}"   #bbb ccc
+EON

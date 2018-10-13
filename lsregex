@@ -1,7 +1,8 @@
-#grep : basic regex
-#egrep: extended regex
-#perl : slightly different
-
+vim - <<"EON"
+#!/bin/bash
+grep  #: basic regex
+egrep #: extended regex
+perl  #: slightly different
 #[[:space:]]  match any whitle space and tabs
 #[[:digit:]]  = [0-9]    = \d 
 #[[:alpha:]]  = [a-zA-Z] 
@@ -16,4 +17,4 @@
 #\S           = [^ \t\n\r\f]
 #\b           match word boundary
 #\B,\<,\>     not at word boundary
-
+EON

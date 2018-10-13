@@ -1,14 +1,16 @@
+vim - <<"EON"
+#!/bin/bash
 ##print all
 declare -p   #all	
 declare -p |awk '{print $1" "$2}' | sort | uniq -c
-     23 declare --
-      8 declare -a
-      3 declare -A
-      1 declare -ar
-      5 declare -i
-      4 declare -ir
-      3 declare -r
-     27 declare -x
+#     23 declare --
+#      8 declare -a
+#      3 declare -A
+#      1 declare -ar
+#      5 declare -i
+#      4 declare -ir
+#      3 declare -r
+#     27 declare -x
 
 ##print all the type of @#%#$
 declare -f   #all functions
@@ -72,3 +74,4 @@ fff(){ echo hello; }; declare -f fff; bash -c "`declare -f fff`; fff"; unset fff
 fff(){ echo hello; }; declare -f fff; bash <<<"`declare -f fff`; fff"; unset fff  #hello                 #not exported
 fff(){ echo hello; }; export  -f fff; bash -c "                  fff"; unset fff  #hello                 #exported
 fff(){ echo hello; }; export  -f fff; bash <<<"                  fff"; unset fff  #hello                 #exported
+EON

@@ -1,3 +1,5 @@
+vim - <<"EON"
+#!/bin/bash
 ls nofile isfile                     
 #ls: cannot access nofile: No such file or directory
 #isfile
@@ -22,3 +24,4 @@ exec 2>&1 > >( tee -i logfile)
 &>/dev/null           STDERR and STDOUT to /dev/null.
 |&                    STDERR and STDOUT to STDIN.(cmd1 |& cmd2)
 2>&-                  STDERR close
+EON

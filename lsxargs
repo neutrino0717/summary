@@ -1,8 +1,10 @@
--t     Print the Command Along with Output
--p     Prompt User Before Execution
--n 2   Limit Output parameters number to 2 Per Line
--L 2   Limit Output Parameters number to 2 lines(non-empty) of arguments from standard input
--l     the same as -L 1
+vim - <<"EON"
+#!/bin/bash
+#-t     Print the Command Along with Output
+#-p     Prompt User Before Execution
+#-n 2   Limit Output parameters number to 2 Per Line
+#-L 2   Limit Output Parameters number to 2 lines(non-empty) of arguments from standard input
+#-l     the same as -L 1
 
 echo p{1..7}                                      #p1 p2 p3 p4 p5 p6 p7
 echo p{1..7}   |xargs                             #p1 p2 p3 p4 p5 p6 p7   #default command is echo
@@ -19,19 +21,21 @@ echo p{1..7}   |xargs -n 4 echo |xargs -L 2 echo  #p1 p2 p3 p4 p5 p6 p7
  
  
 echo p{1..7} |xargs -n 3 -t
-/bin/echo p1 p2 p3
-p1 p2 p3
-/bin/echo p4 p5 p6
-p4 p5 p6
-/bin/echo p7
-p7
+#/bin/echo p1 p2 p3
+#p1 p2 p3
+#/bin/echo p4 p5 p6
+#p4 p5 p6
+#/bin/echo p7
+#p7
  
 echo p{1..7} |xargs -n 3 -p
-/bin/echo p1 p2 p3 ?...
-/bin/echo p4 p5 p6 ?...
-/bin/echo p7 ?...
+#/bin/echo p1 p2 p3 ?...
+#/bin/echo p4 p5 p6 ?...
+#/bin/echo p7 ?...
  
 ls *.sh | xargs -n 1 -i echo cp {} /backup
-cp redirect.sh /backup
-cp xargs.9.sh /backup
-cp xargs--_i-_I.sh /backup
+#cp redirect.sh /backup
+#cp xargs.9.sh /backup
+#cp xargs--_i-_I.sh /backup
+
+EON

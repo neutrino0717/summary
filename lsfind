@@ -1,4 +1,5 @@
-##ignore case
+vim - <<EOF
+#!/bin/bash
 find ~/graduation -iname  test\*                               #
 find ~/graduation -iname "test*"                               #
 find ~/graduation -iname "test*"                   -print      #
@@ -11,7 +12,6 @@ find ~/graduation/ ! -path "*/python/*" ! -path "*/projects*/*"                 
 #problem,with 3 dirs included, for without -print, both side of -o will print by default
 find ~/graduation/ \( -path ~/graduation/python -o -path ~/graduation/projects -o -path ~/graduation/projects_3rd \) -prune -o -name "*.py"        #no ok
 find ~/graduation/ \( -path ~/graduation/python -o -path ~/graduation/projects -o -path ~/graduation/projects_3rd \) -prune -o -name "*.py" -print #OK
- 
  
 find . -type d \( -path dir1 -o -path dir2 -o -path dir3 \) -prune -o -print
  
@@ -63,3 +63,7 @@ command: find / -path '/lab' -prune -o -name *.py
 #-o
 #expr1 -o expr2      means Or; expr2 is not evaluated if expr1 is true.
 find / -path '/lab' -prune -o -name *.py -print
+
+find . \( -name .git -o -name node_modules \) -prune -o -name 'main.ts' -print
+#      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~    ~~~~~~~~~~~~~~~~~~~~~~
+EOF
