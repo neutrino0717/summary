@@ -1,0 +1,12 @@
+.idea/*
+**/*.txt.log
+**/*.pyc
+**/~
+**/*.swp
+**/*.bak
+**/*.class
+**/*.o
+projects/ssr/dodo/log/*
+c/tags
+**/*.so
+**/*.a
