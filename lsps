@@ -1,3 +1,5 @@
+vim - <<"EON"
+#!/bin/bash
 #-l              long format. The -y option is often useful with this.
 #-p pidlist      Select by PID, For example: ps -p "1 2" -p 3,4
 #-f              does full-format listing.
@@ -22,12 +24,11 @@
 #       s    is a session leader
 #       l    is multi-threaded (using CLONE_THREAD, like NPTL pthreads do)
 #       +    is in the foreground process group
-
 ps -e -o pid,state,cmd                             # 9700 R python /home/eml/bash4u/manage.py runserver 0.0.0.0:8080
 ps -e -o start,time,etime,pid,state,cmd            # 23:07:31 00:00:04       07:08  9700 S python /home/eml/bash4u/manage.py runserver 0.0.0.0:8080
 ps -p 9700 -o start,time,etime,pid,state,cmd   
-
 ps alx                                        #F   UID   PID  PPID PRI  NI    VSZ   RSS WCHAN  STAT TTY        TIME COMMAND
 ps aux wwf
 ps alx fww  
 ps axo pid,cmd,wchan,stat
+EON

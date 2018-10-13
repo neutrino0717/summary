@@ -1,3 +1,5 @@
+vim - <<"EON"
+#!/bin/bash
 #-d, --delete #delete characters
 #-c, the complement
 #-s, Compress a series of identical characters to a single character
@@ -13,3 +15,4 @@ tr "a-z"       "A-Z"       <<<"dcbaaaaa"  #map
 tr -s ' '    <<<"aaa   bbb   ccc"          #compress ->aaa bbb ccc
 tr -s 'abc'  <<<"aaa   bbb   ccc"          #compress ->a   b   c
 tr -s 'abc ' <<<"aaa   bbb   ccc"          #compress ->a b c
+EON
