@@ -1,0 +1,2 @@
+#!/bin/bash
+git pull && git status && git add --all && git status && git commit --amend && git push && git status:
