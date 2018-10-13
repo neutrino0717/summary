@@ -1,0 +1,14 @@
+#!/usr/bin/env eepython
+##How to make a lambda, that takes a object as input, return the object's atribute "name"'s value
+##aka:  lambda_fun(object) ---> return object.getname()
+class A(object):
+    name="hello"
+#self is just the name of parameter, which is a object, which must have attribute 'name'
+aaa = lambda self: self.__dict__['name'] 
+print aaa(A)
+
+#or
+def makeGetter(attrName):
+    return lambda self: self.__dict__[attrName]
+aaa = makeGetter('name')
+print aaa(A)

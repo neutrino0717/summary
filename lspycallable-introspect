@@ -1,0 +1,12 @@
+#!/usr/bin/env eepython
+###callable() function. The function checks if an object is a callable object. Or in other words, if an object is a function. 
+print callable.__doc__
+class Car:
+    def setName(self, name):
+        self.name = name
+
+c = Car(); print callable(c.setName)
+def fun(): pass
+print callable(fun)
+print callable([])
+print callable(1)

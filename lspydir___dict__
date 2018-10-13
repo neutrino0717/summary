@@ -1,0 +1,22 @@
+#!/usr/bin/env eepython
+class Base():
+    def __init__(self, conf):
+        print self
+        self.__conf__ = conf
+        print self.__dict__
+        print dir(self)
+class Test(Base):
+      a = 1
+      b = 2
+      def func1(self):
+        self.c = "hello"
+
+## self is instance of subclass
+t = Test("conf")
+print t
+##__dict__ only contains attributes of instance itself
+print t.__dict__
+t.func1()
+print t.__dict__
+##dir() contains __dict_ and class attribues,etc
+print dir(t)

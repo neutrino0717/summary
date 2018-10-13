@@ -1,0 +1,6 @@
+#!/bin/bash
+if ! [ "$1" ]; then echo "usage: ${0##*/} filename1 filename2"; exit 1; fi
+p=~/summary
+set "$p/$1" ${@:2}
+set ${@:1:1} "$p/$2" ${@:3}
+mv "$1" "$2"

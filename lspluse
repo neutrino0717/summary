@@ -1,0 +1,19 @@
+pygmentize -g <<"EOF"
+#!/usr/bin/perl
+use Module VERSION LIST
+use Module VERSION
+
+use Module LIST
+BEGIN { require Module; Module->import( LIST ); }
+
+use Module
+use VERSION
+
+use Module (); 
+BEGIN { require Module }  #or
+
+use Module 12.34;
+#or
+BEGIN { require Module; Module->VERSION(12.34) }
+
+EOF

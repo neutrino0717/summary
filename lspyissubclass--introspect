@@ -1,0 +1,16 @@
+#!/usr/bin/env eepython
+##isinstance(object, classinfo)
+##  check if the object argument is an instance of the classinfo argument
+##  classinfo need to be a class object nor a type object
+##
+class MyObject():
+   def __init__(self):
+      pass
+class Wall(MyObject):
+   def __init__(self):
+      pass
+import inspect; print inspect.getmro(Wall)
+print issubclass(MyObject, MyObject)
+print issubclass(MyObject, Wall)
+print issubclass(Wall, MyObject)
+print issubclass(Wall, Wall)

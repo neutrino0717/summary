@@ -1,0 +1,7 @@
+pygmentize -g <<"EOF"
+pydoc collections.namedtuple
+pydoc lambda
+pydoc os.path
+pydoc open
+pydoc logging
+EOF

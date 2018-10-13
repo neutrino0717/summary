@@ -1,0 +1,21 @@
+pygmentize -g <<"EOF"
+A                  $ a
+dw                 delete a word
+ce                 change to word end, or delete to end then to insert mode
+c$                 change to the end of the line
+ctrl G             current position
+
+/ n N ctrl O/I     search     , next, opposite direction, go back/forward
+? n N ctrl O/I     search back, next, opposite direction, go back/forward
+%                  match ( [ {
+:!cmd              execute a command
+:r !uname -a       insert the output of command
+:r test.txt        insert the content of test.txt
+:w test.txt        save as test.txt
+v :w test.txt      select, save as test.txt
+
+:set ic,:set noic  ignore case when search
+/name\c            ignore only once
+:set hls is        highlight, partial match
+:ctrl D            command completion
+EOF

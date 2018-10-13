@@ -1,0 +1,13 @@
+cat <<"EOF"
+ng new my-app; cd my-app              
+ng serve               
+ng serve --host=0.0.0.0
+ng g c test            
+
+ng g c employ-list
+ng g c employ-detail
+ng g s employ
+
+cd ~/angular/my-app &&  ng serve --host=0.0.0.0
+http://115.126.100.179:4200
+EOF

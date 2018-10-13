@@ -1,0 +1,9 @@
+#!/bin/bash
+if ! [ "$3" ]; then echo "usage: ${0##*/} file old new"; exit 1; fi
+s="$2"; d="$3"; f="$1"; sed -n "s/$s/$d/gp" $f |grep $d --color; 
+GREP_COLOR='37;45' grep $d $f --color
+
+read -p 'do you want to go on? Ctrl-C to cancel ' var
+
+sed -i "s/$s/$d/g" $f 
+GREP_COLOR='1;32'  grep $d $f --color

@@ -1,0 +1,24 @@
+#!/usr/bin/env eepython
+##io.StringIO       is a class. It handles Unicode. It reflects the preferred Python 3 library structure.
+##StringIO.StringIO is a class. It handles strings. It reflects the legacy Python 2 library struct
+##cStringIO.StringIO  is faster version of StringIO.StringIO
+
+import timeit
+test_join='''a=[]
+for i in range(100):
+    a.append('a')
+'''
+
+test_StringIO='''from StringIO import StringIO
+a = StringIO()
+for i in range(100):
+    a.write('a')
+'''
+test_cStringIO='''from cStringIO import StringIO
+a = StringIO()
+for i in range(100):
+    a.write('a')
+'''
+print(timeit.timeit(test_join, number=1))
+print(timeit.timeit(test_StringIO, number=1))
+print(timeit.timeit(test_cStringIO, number=1))

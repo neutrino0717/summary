@@ -1,0 +1,22 @@
+#!/usr/bin/env eepython
+print type([])
+print type({})
+print type("")
+print type(0)
+print type(True)
+print type(os)
+print type(object)
+print type(list)
+print isinstance([], list)
+
+class Test1(object): pass
+class Test2: pass
+t1=Test1()
+t2=Test2()
+print type(t1)
+print type(t2)
+print type(Test1)
+print type(Test2)
+print type(object)
+print isinstance(t1, Test1)
+print isinstance(t1, object)

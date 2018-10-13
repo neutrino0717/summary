@@ -1,0 +1,12 @@
+#!/usr/bin/env eepython
+a_string="this is a global variable"
+def foo():
+    a_string = "this is local variable"
+    print '''-->locals() variabls '''
+    print locals()
+    print '''-->vars() variabls '''
+    print vars()
+
+foo()
+print '''-->global variabls '''
+print globals()

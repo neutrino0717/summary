@@ -1,0 +1,22 @@
+#!/usr/bin/python
+import unittest
+import os
+import sys
+os.system('pygmentize -g ' + sys.argv[0])
+def Calc(x,y): return x * y
+
+class CalcTest(unittest.TestCase):
+    def setUp(self):
+        print "--> in setup"
+    def testwillsucc(self):
+        print "--> in testwillsucc"
+        result = Calc(5,4)
+        self.assertEqual(result, 20)
+    def testwillfail(self):
+        print "--> in testwillfail"
+        result = Calc(3,8)
+        self.assertEqual(result, 20)
+    def tearDown(self):
+        print "--> in teardown"
+unittest.main()
+

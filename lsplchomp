@@ -1,0 +1,11 @@
+pygmentize -g <<"EOF"
+#!/usr/bin/perl
+#chomp will remove the tailing $/
+$a="bob\n";           chomp $a; print ">$a<" #>bob<
+$a="bob ";            chomp $a; print ">$a<" #>bob <
+$a="bob "; $/=" ";    chomp $a; print ">$a<" #>bob<
+$a="bob "; $/="\n";   chomp $a; print ">$a<" #>bob <
+@a=("bob\n","jill\n");chomp @a; print ">@a<" #>bob jill<
+@a=("bob","jill");     chop @a; print ">@a<" #>bo jil<
+%a=(1,"o\n",2,"t\n"); chomp %a; print %a     #1o2t
+EOF

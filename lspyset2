@@ -1,0 +1,7 @@
+#!/usr/bin/env eepython
+import copy
+##assignment will only create a pointer
+set1 = set([0,2,4]); set2 = set1;            set1.clear(); print set1, set2
+##copy() will do a shallow copy
+set1 = set([0,2,4]); set2 = set1.copy();     set1.clear(); print set1, set2
+set1 = set([0,2,4]); set2 = copy.copy(set1); set1.clear(); print set1, set2

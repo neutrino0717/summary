@@ -1,0 +1,17 @@
+#!/usr/bin/env eepython
+##raise an exception
+#raise NameError('HiThere')
+
+#raise then capture an exception
+try:
+    raise NameError('HiThere1')
+except NameError:
+    print 'An exception captured!'
+
+##re-raise the same exception
+#If you need to determine whether an exception was raised but don't intend to handle it, a simpler form of the raise statement allows you to re-raise the same exception:
+try:
+    raise NameError('HiThere2')
+except NameError:
+    print 'An exception flew by!'
+    raise

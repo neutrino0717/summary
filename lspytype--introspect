@@ -1,0 +1,17 @@
+#!/usr/bin/env eepython
+#object: in python, everything is object
+#        class and it's instance, int, string and so on
+#type:   the type of object
+class A:
+    pass
+a=A()
+class B(object):
+    pass
+b=B()
+print "Class 'A','B' has type:  ", type(A), type(B)
+print "Class 'A' has type:      ", type(A).__name__, type(B).__name__
+print "Instance 'a' has type:   ", type(a),type(b)
+print "Instance 'a' has type:   ", type(a).__name__, type(b).__name__
+print "int has type:            ", type(int).__name__
+print "3 has type:              ", type(3).__name__
+print "str has type:            ", type(str).__name__

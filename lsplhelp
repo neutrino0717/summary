@@ -1,0 +1,17 @@
+pygmentize -g <<"EOF"
+perldoc perlvar #Perl doc var         or man perlvar
+perldoc perlsub #perl doc func
+perldoc perlop  #Perl doc operator, such as <>
+perldoc perlre
+perldoc perldebug
+perldoc perldebtut   #debug tutorial
+
+perldoc -v '@_'
+perldoc -v '$\'
+perldoc -v '$/'
+perldoc -v '$_'
+perldoc -f split
+----------------------------------------------
+perldoc perlvar  | egrep '^\s+\$'   #all variables
+
+EOF

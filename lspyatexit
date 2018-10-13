@@ -1,0 +1,7 @@
+#!/usr/bin/env eepython
+def goodbye(name, adjective):
+    print 'Goodbye, %s, it was %s to meet you.' % (name, adjective)
+import atexit
+atexit.register(goodbye, 'Linda', 'good')
+atexit.register(goodbye, adjective='nice', name='Donny')
+print "hello, everyone, this line will print first!!!"

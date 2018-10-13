@@ -1,0 +1,33 @@
+#!/usr/bin/env eepython
+#mode can be 
+#'r'     when the file will only be read,it's default with omitted
+#'w'     for only writing (an existing file with the same name will be erased)
+#'a'     opens the file for appending; any data written is added to the end. 
+#'r+'    opens the file for both reading and writing. 
+#'b'     Windows only, 'b' appended to the mode opens the file in binary mode, 
+#        so there are also modes like 'rb', 'wb', and 'r+b'. 
+
+fo = open('/etc/nsswitch.conf','r')
+print type(fo)
+#some properties
+print fo.name
+print fo.closed
+print fo.mode
+print fo.softspace
+
+#read(10): read 10 bytes to str
+tenbytes=fo.read(10); print tenbytes
+
+#readline: read a line to str
+print fo.readline()
+
+#read(): read all the rest str
+content=fo.read(); fo.close()
+print type(content); print content
+
+#readlines(): read all lines to list
+fo = open('/etc/nsswitch.conf','r')
+arr = fo.readlines(); fo.close()
+print type(arr)
+for i in arr: print i,
+

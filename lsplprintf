@@ -1,0 +1,6 @@
+pygmentize -g <<"EOF"
+#!/usr/bin/perl
+$result = sprintf 'The %s is %d', 'answer', 42; print $result    #The answer is 42
+           printf 'The %s is %d', 'answer', 42                   #The answer is 42
+           print  'The %s is %d', 'answer', 42  #The %s is %danswer42  #print doesn't format
+EOF

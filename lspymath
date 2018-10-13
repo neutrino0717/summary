@@ -1,0 +1,12 @@
+#!/usr/bin/env eepython
+import math
+#square root
+print math.sqrt(81)
+print math.sqrt.__doc__
+#all the functions of module math
+print dir(math)
+#help(math) shows the help of each functions
+#__doc__ to show help
+for i in dir(math):
+    exec "print math.%s.__doc__" %i
+    print 

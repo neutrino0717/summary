@@ -1,0 +1,11 @@
+#!/bin/bash
+if ! [ "$1" ]; then echo "usage: ${0##*/} filename1 filename2"; exit 1; fi
+p=~/summary
+for f in $@; do 
+  [ -f $f ] || [ -f "$p/$f" ] || { echo "No such file: $f"; exit 1; }
+done
+
+[ -f $1 ] || set "$p/$1" ${@:2}
+[ -f $2 ] || set ${@:1:1} "$p/$2" ${@:3}
+tmpfile=$(mktemp $(dirname "$1")/XXXXXX)
+mv "$1" "$tmpfile" && mv "$2" "$1" &&  mv "$tmpfile" "$2"

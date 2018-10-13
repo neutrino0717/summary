@@ -1,0 +1,19 @@
+#!/usr/bin/env eepython
+##This example demostrate how to modify a line of a file
+##writelines(list)
+import os
+print __file__
+print os.getcwd()
+print os.path.realpath(__file__)
+f="/home/neutrino0717/graduation/sample/sample.txt"
+os.system("cat -n " + f)
+fob = open(f, 'r')
+arr = fob.readlines()
+fob.close()
+line=raw_input("change the line 3 to:")
+arr[2]=line+'\n'
+print arr
+fob=open(f, 'w')
+fob.writelines(arr)
+fob.close()
+os.system("cat -n " + f)

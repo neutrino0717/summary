@@ -1,0 +1,4 @@
+pygmentize -g <<"EOF"
+#!/usr/bin/perl
+print join '|', 'test', ('1', '2', '3'), qw(one two thre)
+EOF
