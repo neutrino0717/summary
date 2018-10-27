@@ -18,4 +18,7 @@ v :w test.txt      select, save as test.txt
 /name\c            ignore only once
 :set hls is        highlight, partial match
 :ctrl D            command completion
+
+shift Z Z          save the exit
+shitf Z Q          exit
 EOF
