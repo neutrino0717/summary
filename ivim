@@ -1,16 +1,22 @@
 #!/bin/bash
 if ! [ "$1" ]; then exit 1; fi
-f=~/summary/$1
-if ! [ -f $f ]; then
-  if [[ "$1" =~ ^(ls|sh) ]]; then
-    echo -e 'pygmentize -g <<"EOF"' >> $f
-    if [[ "$1" =~ ^..pl ]]; then echo -e '#!/usr/bin/perl' >> $f; fi
-    if [[ "$1" =~ ^..py ]]; then echo -e '#!/usr/bin/python' >> $f; fi
-    if [[ "$1" =~ ^..sh ]]; then echo -e '#!/bin/bash' >> $f; fi
-    echo -e 'EOF' >>$f
-  else
-    echo -e '#!/bin/bash\nif ! [ "$1" ]; then echo "usage: ${0##*/} alias"; exit 1; fi' >> $f
+for d in summary summary/c graduation/c; do 
+  f=~/$d/$1 
+  echo $f
+  if [ -f $f ]; then
+    vim $f
+    exit
   fi
+done
+
+if [[ "$1" =~ ^(ls|sh) ]]; then
+  echo -e 'pygmentize -g <<"EOF"' >> $f
+  if [[ "$1" =~ ^..pl ]]; then echo -e '#!/usr/bin/perl' >> $f; fi
+  if [[ "$1" =~ ^..py ]]; then echo -e '#!/usr/bin/python' >> $f; fi
+  if [[ "$1" =~ ^..sh ]]; then echo -e '#!/bin/bash' >> $f; fi
+  echo -e 'EOF' >>$f
+else
+  echo -e '#!/bin/bash\nif ! [ "$1" ]; then echo "usage: ${0##*/} alias"; exit 1; fi' >> $f
 fi
 
 vim $f
