@@ -1,14 +1,13 @@
 #!/bin/bash
-pl(){
-  pygmentize -l perl <<<"[pl]$ $@"
-  perl <<<"$@"; echo  #perl -e
-}
+. idcommon
 
-py(){
-  pygmentize -l python <<<"[py]$ $@"
-  python <<<"$@"; echo      #perl -c 
-}
-pl 'print "$_ " for map {$_*2} (1..7)'
-py 'for x in  map (lambda x: x*2, range(1,8)): print x,'
-
-pl 'print grep{ /ue/ } qw(blue red)'
+ppp 'map vs. map'
+pl  'print "$_ " for map {$_*2} (1..7)'
+py  'for x in  map (lambda x: x*2, range(1,8)): print x,'
+ppp 'grep vs. filter'  
+pl  'print grep{ /ue/ } qw(blue red)'
+py  'print filter(lambda x: "ue" in x, ["blue", "red"])'
+ppp 'grep vs. filter vs. for in if'
+pl  'print "$_ " for grep { $a=$_; grep { /^${a}$/ } split " ", "my dog loves pigs cat" } qw(cat pig dog duck)'
+py  "print filter(lambda x: x in 'my dog loves cat'.split(' '), ['cat', 'pig', 'dog', 'duck'])"
+py  "print [ x for x in ['cat', 'pig', 'dog', 'duck'] if  x in 'my dog loves pigs cat'.split(' ') ] "

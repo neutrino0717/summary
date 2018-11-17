@@ -1,0 +1,20 @@
+#!/bin/bash
+ppp(){
+  echo "---------- $@ ---------- "
+}
+pl(){
+  pygmentize -l perl <<<"pl> $@"
+  perl <<<"$@" |sed 's|^|    |' #perl -e
+  echo
+}
+
+py(){
+  pygmentize -l python <<<"py> $@"
+  python <<<"$@" |sed 's|^|    |'  #perl -c 
+}
+
+bs(){
+  pygmentize -l bash <<<"sh> $@"
+  bash <<<"$@" |sed 's|^|    |'
+}
+
