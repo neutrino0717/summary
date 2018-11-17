@@ -1,0 +1,14 @@
+#!/bin/bash
+pl(){
+  pygmentize -l perl <<<"[pl]$ $@"
+  perl <<<"$@"; echo  #perl -e
+}
+
+py(){
+  pygmentize -l python <<<"[py]$ $@"
+  python <<<"$@"; echo      #perl -c 
+}
+pl 'print "$_ " for map {$_*2} (1..7)'
+py 'for x in  map (lambda x: x*2, range(1,8)): print x,'
+
+pl 'print grep{ /ue/ } qw(blue red)'
