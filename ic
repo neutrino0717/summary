@@ -3,7 +3,7 @@ cmd=strace
 if [ ! "$1" ]; then echo "need file name!"; exit 1; fi
 if [ "${1##*.}" = 'cc' ]; then tool='g++ -std=c++14'; else tool='gcc'; fi
 
-#pygmentize -g $1
+pygmentize -g $1
 
 f=$1; shift
 fe=/tmp/${f}.o
