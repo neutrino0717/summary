@@ -1,5 +1,6 @@
-pygmentize -g <<"EOF"
+cat <<"EOF"
 perldoc perlvar #Perl doc var         or man perlvar
+perldoc perlvar  | egrep '^\s+\$'   #all variables
 perldoc perlsub #perl doc func
 perldoc perlop  #Perl doc operator, such as <>
 perldoc perlre
@@ -12,6 +13,9 @@ perldoc -v '$/'
 perldoc -v '$_'
 perldoc -f split
 ----------------------------------------------
-perldoc perlvar  | egrep '^\s+\$'   #all variables
-
+pydoc collections.namedtuple
+pydoc lambda
+pydoc os.path
+pydoc open
+pydoc logging
 EOF

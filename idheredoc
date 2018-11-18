@@ -1,0 +1,5 @@
+pygmentize -g  <<'EOF'
+read -r -d '' var <<'EOD' EOD       #bash
+my $var = <<'EOD' EOD               #perl
+str = r''' '''                      #python
+EOF
