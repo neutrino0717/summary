@@ -7,7 +7,7 @@ int main(int argc, char *argv[])
     int a;
     int b;
     char s[8];
-  } myunion;
+  } myunion; //anonymous union
   strcpy(myunion.s, "happy");
 
   printf("note for ascii code: 68->h, 61->a, 70->p, 70->p\n");
