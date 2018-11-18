@@ -1,0 +1,6 @@
+#!/bin/bash
+. idcommon
+py 'import glob; print glob.glob("/etc/r*.conf")'
+pl 'print "$_ "         for glob "/etc/r*.conf"'
+bs 'for f in /etc/r*.conf; do echo -n "$f "; done'
+echo
