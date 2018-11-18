@@ -1,0 +1,23 @@
+#only contain tags in the project, not the standard lib
+#ctags -R
+
+#solution: https://www.topbug.net/blog/2012/03/17/generate-ctags-files-for-c-slash-c-plus-plus-source-files-and-all-of-their-included-header-files/
+#find . -type f -iname "*.[chS]"
+#find . -type f -iname "*.[chS]" |xargs gcc -M
+#find . -type f -iname "*.[chS]" |xargs gcc -M |sed -e 's/^ //g' -e 's/ \\//g' -e 's/ /\n/g' -e '/.o:/d' | ctags -L - --c++-kinds=+p --fields=+iaS --extra=+q
+
+#solution: or just include all in /usr/include
+ctags -R --c++-kinds=+p --fields=+iaS --extra=+q /usr/include
+
+cat > ~/.vimrc <<EOF
+set tags=tags;
+set autochdir
+EOF
+ln -sf `pwd`/.vimrc_c ~/
+
+Ctrl-]			Jump to the tag underneath the cursor
+:ts <tag> <RET>		Search for a particular tag
+:tn			Go to the next definition for the last tag
+:tp			Go to the previous definition for the last tag
+:ts			List all of the definitions of the last tag
+Ctrl-t			Jump back up in the tag stack

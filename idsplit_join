@@ -1,0 +1,14 @@
+#!/bin/bash
+. idcommon
+
+ppp 'split vs. split vs. read'
+pl "print split /;/, 'bing.com;google.com;yahoo.com'"
+py "print 'bing.com;google.com;yahoo.com'.split(';')"
+bs "IFS=';' read -ra x <<< 'bing.com;google.com;yahoo.com'; declare -p x"
+bs 'IFS=";" x=($(echo "bing.com;google.com;yahoo.com"));    declare -p x'
+
+ppp 'join vs. join vs. echo'
+pl "print join ';', 'test', ('1', '2', '3'), qw(one two three)"
+py "print ';'.join(['test'] + ['1', '2', '3'] + ['one', 'two', 'three'])"
+bs 'IFS=";" a=(test 1 2 3 one two three); echo "${a[*]}"'
+bs 'j(){ local IFS="$1"; shift; echo "$*"; }; j ";" test 1 2 3 one two three'

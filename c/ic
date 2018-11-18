@@ -1,0 +1,17 @@
+#!/bin/bash
+cmd=strace
+if [ ! "$1" ]; then echo "need file name!"; exit 1; fi
+if [ "${1##*.}" = 'cc' ]; then tool='g++'; else tool='gcc'; fi
+pygmentize -g $1
+
+f=$1; shift
+
+lib=''
+if [ "$1" ] && [ "${1:0:2}" = "-l" ]; then lib=$1; shift; fi
+
+echo "$tool -o /tmp/${f}.o ${f} ${lib}" | bash -x
+echo "${cmd} /tmp/${f}.o $@ 2>/tmp/${f}.txt.log" |bash -x
+#${cmd} ./${f}.o $@ 2>/tmp${f}.txt.log
+
+sleep 11 && echo
+pygmentize -g /tmp/${f}.txt.log | less -R

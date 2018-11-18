@@ -1,0 +1,6 @@
+#!/bin/bash
+. idcommon
+
+ppp 'map vs. map'
+pl  'print "$_ " for map {$_*2} (1..7)'
+py  'for x in  map (lambda x: x*2, range(1,8)): print x,'

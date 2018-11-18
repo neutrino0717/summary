@@ -1,0 +1,15 @@
+#!/bin/bash
+. idcommon
+
+ppp 'length $n vs. len(n) vs. ${#n}'
+pl '$n="Scarborough Fair"; print length $n'
+py 'n="Scarborough Fair";  print len(n)'
+bs 'n="Scarborough Fair";  echo ${#n}'
+
+ppp 'substr($n,6,5) vs. n[6:11] vs. ${n:6:5}'
+pl '$n="Scarborough Fair"; print substr($n,6,5)'
+py 'n="Scarborough Fair";  print n[6:11]'
+bs 'n="Scarborough Fair";  echo ${n:6:5}'
+
+<<EOF
+EOF
