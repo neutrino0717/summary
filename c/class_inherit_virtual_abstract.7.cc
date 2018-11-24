@@ -2,22 +2,18 @@
 using namespace std;
 
 class Enemy {
-    public:
-        virtual void attack() { }
+public:
+    virtual void attack() = 0;
 };
 
 class Ninja: public Enemy {
-    public:
-        void attack() {
-            cout << "Ninja!"<<endl;
-        }
+public:
+    void attack() { cout << "Ninja!"<<endl; }
 };
 
 class Monster: public Enemy {
-    public:
-        void attack() {
-            cout << "Monster!"<<endl;
-        }
+public:
+    void attack() { cout << "Monster!"<<endl; }
 };
 
 int main() {

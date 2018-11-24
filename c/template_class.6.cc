@@ -6,14 +6,13 @@ class Pair {
     private:
         T first, second;
     public:
-        Pair (T a, T b):
-        first(a), second(b) { }
+        Pair (T a, T b): first(a), second(b) { }
         T bigger();
 };
 
 template <class T>
 T Pair<T>::bigger() {
-    return (first>second ? first : second);
+    return (first > second ? first : second);
 }
 
 int main()

@@ -3,13 +3,8 @@ using namespace std;
 
 class Birthday {
     public:
-        Birthday(int m, int d, int y)
-        : month(m), day(d), year(y)
-        {  }
-        void printDate()
-        {
-            cout<<month<<"/"<<day <<"/"<<year<<endl;
-        }
+        Birthday(int m, int d, int y) : month(m), day(d), year(y) {  }
+        void printDate() { cout<<month<<"/"<<day <<"/"<<year<<endl; }
     private:
         int month;
         int day;
@@ -18,11 +13,8 @@ class Birthday {
 
 class Person {
     public:
-        Person(string n, Birthday b)
-        : name(n), bd(b)
-        {  }
-        void printInfo()
-        {
+        Person(string n, Birthday b) : name(n), bd(b) {  }
+        void printInfo() {
             cout << name << endl;
             bd.printDate();
         }

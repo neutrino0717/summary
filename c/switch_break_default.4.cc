@@ -30,6 +30,5 @@ int main()
       default:
         cout <<"This is the default case" << endl;
     } 
-
    return 0;
 }

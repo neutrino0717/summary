@@ -3,16 +3,13 @@ using namespace std;
 
 class MyClass
 {
-    public:
-        MyClass();
-        void myPrint();
+public:
+    MyClass();
+    void myPrint();
 };
 
-MyClass::MyClass() {
-}
-void MyClass::myPrint() {
-    cout <<"Hello"<<endl;
-}
+MyClass::MyClass() { }
+void MyClass::myPrint() { cout <<"Hello"<<endl; }
 
 int main() {
     MyClass obj;

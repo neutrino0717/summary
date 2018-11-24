@@ -5,9 +5,10 @@ using namespace std;
 int main()
 {
     cout << "bool *: " << sizeof(bool*) << endl;
-    cout << "int *: " << sizeof(int*) << endl;
+    cout << "int *: "  << sizeof(int*) << endl;
     cout << "string: " << sizeof(string) << endl;
-    string s = "I am C++"; cout << "string s: " << sizeof(s) << endl;
+    string s = "I am C++"; 
+    cout << "string s: " << sizeof(s) << endl;
 
     cout << "bool: " << sizeof(bool) << endl;
     bool b = true; cout << "bool b: " << sizeof(b) << endl;

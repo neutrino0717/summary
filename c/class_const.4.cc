@@ -4,8 +4,8 @@ const int x = 42; //constant variables must be initialized at the time of creati
 
 class MyClass
 {
-    public:
-        void myPrint() const;//A constant object can't call regular functions. Hence, for a constant object to work you need a constant function. 
+public:
+    void myPrint() const;//A constant object can't call regular functions. Hence, for a constant object to work you need a constant function. 
 };
 
 void MyClass::myPrint() const {

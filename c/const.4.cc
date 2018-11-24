@@ -19,12 +19,12 @@ public:
     }
 };
 
-void PrintEntity1(const Entity& e){ //a const ref to prevent copy && change
-    std::cout << e.getx() <<std::endl; //difine 'in getx() const' is a must
+void PrintEntity1(const Entity& e){ //a const to prevent change,  ref to save from copy
+    std::cout << e.getx() <<std::endl; //define 'in getx() const' is a must
     //e = nullptr;   //wrong, cannot change const Entity object
 }
 
-void PrintEntity2(const Entity* e){ //a const ref to prevent copy && change
+void PrintEntity2(const Entity* e){ //a const to prevent change Entity
     std::cout << e->getx() <<std::endl;
     e = nullptr;   //OK, change the pointer variable itself
 }
@@ -45,4 +45,5 @@ int main() {
     c = nullptr;            //OK, same as above
    *d = 2;                 //OK
   //d = nullptr;           //error: assignment of read-only variable ‘d’ 
+    std::cout << "no output, theck the code please\n";
 }

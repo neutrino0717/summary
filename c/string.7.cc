@@ -6,7 +6,8 @@ int main() {
     const char* name1="Cherno";
     const char  name2[] = {'C','h','e','r','n','o',0,'A'};
     const char  name3[] = {'C','h','e','r','n','o','\0','A'};
-    std::string name4 =  "Cherno"; //it is const char array
+    //std::basic_string<char> name4 =  "Cherno"; //it is const char array
+    std::string  name4 =  "Cherno"; //it is const char array
     strlen(name1);
     std::cout << name1 << strlen(name1) <<std::endl; 
     std::cout << name2 << strlen(name2) <<std::endl; 

@@ -9,9 +9,7 @@ class MyClass {
         const int constVar;
 };
 
-MyClass::MyClass(int a, int b)
-: regVar(a), constVar(b)
-{
+MyClass::MyClass(int a, int b) : regVar(a), constVar(b) {
     cout << regVar << endl;
     cout << constVar << endl;
 }

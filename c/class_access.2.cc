@@ -7,7 +7,7 @@ class myClass {
     void setName(string x) {
       name = x;
     }
-    string getName() {
+    string getName() const {
       return name;
     }
   private:
