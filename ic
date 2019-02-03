@@ -1,5 +1,6 @@
 #!/bin/bash
-cmd=strace
+cmd=""
+#cmd=strace
 if [ ! "$1" ]; then echo "ic fname [-llib]"; exit 1; fi
 if [ "${1##*.}" = 'cpp' ]; then tool='g++ -std=c++14'; else tool='gcc'; fi
 

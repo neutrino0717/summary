@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <sys/stat.h>
 #include <sys/types.h>
-#include "color.h"
+#include "../color.h"
 
 int main(int argc, char *argv[])
 {
