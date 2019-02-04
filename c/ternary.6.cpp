@@ -9,7 +9,7 @@ void check (int score) {
 };
 
 int main() {
-    check(30);
-    check(60);
-    check(99);
+    check(30);    //fail
+    check(60);    //pass
+    check(99);    //master
 };

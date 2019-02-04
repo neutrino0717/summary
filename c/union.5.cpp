@@ -8,10 +8,10 @@ struct Vector4 {
     union{
         struct{
             float x, y, z, w;
-	};
-	struct{
-	    Vector2 a, b;
-	};
+        };
+	    struct{
+	        Vector2 a, b;
+	    };
     };
 };
 

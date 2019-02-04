@@ -20,3 +20,7 @@ int  ppp(std::string s) {
     int pad2 = len - pad1 - s.length();
     std::cout << "\n" << std::string(pad1, '-')  << s << std::string(pad2, '-') << "\n";
 }
+
+int  pppp(std::string s) {
+    std::cout << "# " << s << "\n";
+}
