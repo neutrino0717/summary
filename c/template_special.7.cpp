@@ -7,8 +7,7 @@ public:
     MyClass (T x) { cout <<x<<" -  not a char"<<endl; }
 };
 
-template < >
-class MyClass<char> {
+template < > class MyClass<char> {
 public:
     MyClass (char x) { cout <<x<<" is a char!"<<endl; }
 };
@@ -18,3 +17,9 @@ int main () {
     MyClass<double> ob2(5.47);
     MyClass<char> ob3('s');
 }
+
+/*
+42 -  not a char
+5.47 -  not a char
+s is a char!
+ */

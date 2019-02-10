@@ -24,3 +24,7 @@ int  ppp(std::string s) {
 int  pppp(std::string s) {
     std::cout << "# " << s << "\n";
 }
+
+int nl() {
+    std::cout << std::endl;
+}

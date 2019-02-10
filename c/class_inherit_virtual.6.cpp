@@ -3,12 +3,13 @@ using namespace std;
 
 class Enemy {
 public:
+    std::string attach;
     virtual void attack() { }
 };
 
 class Ninja: public Enemy {
 public:
-    void attack() { cout << "Ninja!"<<endl; }
+    void attack() { attach = "hello"; cout << "Ninja!"<< attach << endl; }
 };
 
 class Monster: public Enemy {
