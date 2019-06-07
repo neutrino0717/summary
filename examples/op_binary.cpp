@@ -14,7 +14,8 @@ struct Point {
     void operator +=(Point p){
         x += p.x;
         y += p.y;
-    }
+    }    
+    
 };
 
 Point p1 {1, 1};
