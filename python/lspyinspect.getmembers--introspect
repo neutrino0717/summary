@@ -1,0 +1,7 @@
+#!/usr/bin/env eepython
+import re
+import inspect
+##All functions of the module re:
+print inspect.getmembers(re, inspect.isfunction)
+#or:
+print dir(re); print type(re)

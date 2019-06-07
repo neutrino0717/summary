@@ -1,0 +1,4 @@
+#!/usr/bin/env eepython
+import glob
+for sfile in glob.glob("/etc/r*.conf"):
+    print sfile

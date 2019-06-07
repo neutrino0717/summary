@@ -1,0 +1,22 @@
+#pygmentize -g  <<"EOF"
+vim - <<"EOF"
+##1. diff before stage  (local <---> stage)
+git diff
+
+##2. diff after  stage  (stage <--> commit)
+#git add [-u | --all]
+git diff --cached
+
+##3. diff after  commit  (commit <--> push)
+#git commit -m ""
+#git branch -a
+git diff origin/master
+#git revert HEAD --no-edit  #undo the last commit
+
+##4. diff before pull    (commit <--> pull)
+#git branch --all
+#git pull  =  git fetch; git merge
+git fetch origin        #get a cache of the state of branches from the remote repository
+git log HEAD..origin    #or maybe git diff newlayout origin/newlayout
+#git merge origin
+EOF

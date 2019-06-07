@@ -1,0 +1,72 @@
+#!/usr/bin/env eepython
+##about the sequence slice
+#a[start:end] # items start through end-1
+#a[start:]    # items start through the rest of the array
+#a[:end]      # items from the beginning through end-1
+#a[:]         # a copy of the whole array
+#
+# +---+---+---+---+---+
+# | H | e | l | p | A |
+# +---+---+---+---+---+
+# 0   1   2   3   4   5
+#-5  -4  -3  -2  -1
+
+##"One way to remember how slices work is to think of the indices as pointing between characters, with the left edge of the first character numbered 0."
+#>>> seq[:]                # [seq[0],   seq[1],          ..., seq[-1]    ]
+#>>> seq[low:]             # [seq[low], seq[low+1],      ..., seq[-1]    ]
+#>>> seq[:high]            # [seq[0],   seq[1],          ..., seq[high-1]]
+#>>> seq[low:high]         # [seq[low], seq[low+1],      ..., seq[high-1]]
+#>>> seq[::stride]         # [seq[0],   seq[stride],     ..., seq[-1]    ]
+#>>> seq[low::stride]      # [seq[low], seq[low+stride], ..., seq[-1]    ]
+#>>> seq[:high:stride]     # [seq[0],   seq[stride],     ..., seq[high-1]]
+#>>> seq[low:high:stride]  # [seq[low], seq[low+stride], ..., seq[high-1]]
+
+###sequence supports the following operations
+##1. in, not in
+print "str" in "string"
+print "str" not in "string"
+print 2 in [0, 1, 2, 3]
+print 2 in [0, 1, 22, 3]
+##2. + 
+print [1,2,3] + [3,4]
+print "long live" + " and prosper"
+##3. * 
+print [1,2,3] *3 
+print "cloud" *3 
+##4. slicing: s[i], s[i:j], s[i:j:k]
+#s=[0,1,2,3,4,5,6,7,8,9]
+s=list("0123456789")
+print s[0:4]
+print s[3:5]
+print s[3:]
+print s[-1]
+print s[:-1]
+#reverse the order
+print s[::-1]         #s not changed
+s.reverse(); print s; #s changed
+#sort the order
+print sorted(s)          #s is not changed
+s.sort(); print s        #s is changed
+#remove 2 elements while insert 7 elements
+s[3:5] = [11]*7; print s
+#remove 7 elements
+s[3:3+7] = []; print s
+#insert back the 7 elements with insert()
+s.insert(3, 11); s.insert(3,11); print s
+#remove() will not remove the fist occurence
+s.remove(11); print s
+##5. len(s), min(s), max(s)
+s=(1,2,3); print len(s), min(s), max(s)
+##6. s.index(i), s.count(i), s.find(i)
+s="banana"; print s.index('an'), s.count('an'), s.find('an')
+s=(12,1,2,12); print s.index(2), s.count(2)
+##7. ==, is -->the below difference is caused by that str is immutable
+a=[1,2,3];c=b=[1,2,3]; print a==b, a is b, c is b
+a='12345';c=b='12345'; print a==b, a is b, c is b
+##8. del s[i] only works for mutable sequene 
+a=b=[1,2,3]; del a[0]; print a,b
+a=b=[1,2,3]; a.pop(0); print a,b
+print inspect.getmro(str)
+print inspect.getmro(tuple)
+print inspect.getmro(xrange)
+

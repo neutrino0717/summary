@@ -1,9 +1,0 @@
-pygmentize -g <<"EOF"
-#!/usr/bin/perl
-my @articles = sort @files;                      # sort lexically
-my @articles = sort {$a cmp $b} @files;          # same thing with explicit sort routine
-my @articles = sort {$b cmp $a} @files;          # same thing in reversed order
-my @articles = sort {fc($a) cmp fc($b)} @files;  # now case-insensitively
-my @articles = sort {$a <=> $b} @files;          # sort numerically ascending
-my @articles = sort {$b <=> $a} @files;          # sort numerically descending
-EOF

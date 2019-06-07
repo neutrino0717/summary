@@ -1,0 +1,5 @@
+pygmentize -g <<"EOF"
+#!/usr/bin/perl
+
+#https://mojolicious.org/perldoc/perlthrtut#Thread-Basics
+EOF

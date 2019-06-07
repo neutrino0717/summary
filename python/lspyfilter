@@ -1,0 +1,21 @@
+#!/usr/bin/env eepython
+##The function filter(function, list) offers an elegant way to print out all the elements of a list, that for which the function function returns True. 
+
+fib = [0,1,1,2,3,5,8,13,21,34,55]
+print "Odd numbers: ", filter(lambda x: x % 2, fib)
+print "Even numbers:", filter(lambda x: x % 2 == 0, fib)
+
+##print all elements start with 'h'
+f = ['hello',"where", 'hare', "hmm"]
+print filter(lambda x: x[0:1] == 'h', f)
+print filter(lambda x: x.startswith('h'), f)
+
+import os
+dir1 =  os.path.dirname(os.path.abspath(os.getcwd())); print dir1
+dir2 = os.path.dirname(dir1);                          print dir2
+flist=os.listdir(dir1);                             print flist
+##print files starting with 'c'
+flist1=filter(lambda x: x.startswith('c'), flist); print flist1
+##removing the '.py' extension
+flist2=map(lambda x: x.rstrip('.py'), flist1);      print flist2
+

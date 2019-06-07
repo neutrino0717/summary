@@ -1,0 +1,31 @@
+#!/usr/bin/env eepython
+##The hasattr() function checks if an object has an attribute. The getattr() function returns the contents of an attribute if there are some.
+
+##class attributes:
+class Foo:
+    def __init__(self):
+        self.a = "bar"
+        self.b = 4711
+    def bar(): pass
+foo=Foo()
+
+#object
+print object.__dict__
+print dir(object)
+for i in dir(object): print "class object has attribute", i,":", hasattr(object, i)
+#Foo
+print Foo.__dict__
+print dir(Foo)
+for i in dir(Foo): print "class Foo has attribute", i,":", hasattr(Foo, i)
+#foo
+print foo.__dict__
+print dir(foo)
+for i in dir(foo): print "instance foo has attribute", i,":", hasattr(foo, i)
+for i in dir(foo): print "instance foo's  attribute", i,":", getattr(foo, i)
+
+##function attributes:
+def fun(): pass
+print fun.__dict__
+print dir(fun)
+for i in dir(fun): print "function fun() has attribute", i,":", hasattr(fun, i)
+#for i in dir(fun): print "function fun()'s attribute", i,":", getattr(fun, i)

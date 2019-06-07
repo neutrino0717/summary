@@ -1,0 +1,34 @@
+vim - <<"EON"
+#!/bin/bash
+#-l              long format. The -y option is often useful with this.
+#-p pidlist      Select by PID, For example: ps -p "1 2" -p 3,4
+#-f              does full-format listing.
+#w      Wide output.  Use this option twice for unlimited width.
+#f      ASCII art process hierarchy (forest).
+
+#stat
+#D    uninterruptible sleep (usually IO)
+#R    running or runnable (on run queue) (S+ is running and in frontground)
+#S    interruptible sleep (waiting for an event to complete) (S+ when command sleep 100)
+      neutrin+ 11509  0.0  0.1   7200   672 pts/0    S+   14:42   0:00 sleep 10000
+#T    stopped, either by a job control signal or because it is being traced  (when ctrl-z)
+      neutrin+ 11519  0.1  0.5  18272  2904 pts/0    T    14:45   0:00 man ls
+#W    paging (not valid since the 2.6.xx kernel)
+#X    dead (should never be seen)
+#Z    defunct ("zombie") process, terminated but not reaped by its parent
+
+#For BSD formats and when the stat keyword is used, additional characters may be displayed:
+#       <    high-priority (not nice to other users)
+#       N    low-priority (nice to other users)
+#       L    has pages locked into memory (for real-time and custom IO)
+#       s    is a session leader
+#       l    is multi-threaded (using CLONE_THREAD, like NPTL pthreads do)
+#       +    is in the foreground process group
+ps -e -o pid,state,cmd                             # 9700 R python /home/eml/bash4u/manage.py runserver 0.0.0.0:8080
+ps -e -o start,time,etime,pid,state,cmd            # 23:07:31 00:00:04       07:08  9700 S python /home/eml/bash4u/manage.py runserver 0.0.0.0:8080
+ps -p 9700 -o start,time,etime,pid,state,cmd   
+ps alx                                        #F   UID   PID  PPID PRI  NI    VSZ   RSS WCHAN  STAT TTY        TIME COMMAND
+ps aux wwf
+ps alx fww  
+ps axo pid,cmd,wchan,stat
+EON

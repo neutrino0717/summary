@@ -1,0 +1,24 @@
+pygmentize -g  <<"EOF"
+
+#stage means prepare the conditions for committing your files
+#change file --> stage(git add) --> commit(git commit) --> git push
+#
+##1. changed file --> unchanged file
+git checkout git_sample.txt
+##2. staged file  --> unchanged file
+git reset HEAD git_sample.txt
+git checkout git_sample.txt
+##3. commmited file --> undo commit
+git revert HEAD --no-edit
+  #example: show how to undo commit
+  cat git_sample.txt
+  echo "the second line" >> git_sample.txt
+  git status
+  git add git_sample.txt
+  git commit -m "commit a change for test"
+  git status
+  #undo commit,  --no-edit means no editer launched
+  git revert HEAD --no-edit
+  git status
+  git log | head -n 17
+EOF

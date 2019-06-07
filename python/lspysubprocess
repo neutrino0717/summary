@@ -1,0 +1,34 @@
+#!/usr/bin/env eepython
+###           errorcode                                output 
+# --------------------------------------------------------------------------------
+##  shell     os.system("ls -al")                      os.popen(ls -al).read()  
+##            subprocess.call('ls -al',shell=True)     subprocess.check_output('ls -al', shell=True)
+##                                                     subprocess.popen()								
+# -----------------------------------------------------------------------------------------------
+##  python    subprocess.call(['uname', '-a'])         subprocess.check_output(['ls', '-al'])
+## 
+
+
+##if you need to get the error code, 
+# use os.system()
+# use subprocess.call()
+##if you need to get the stdout,     
+# use os.popen
+# use subprocess.popen
+# use subprocess.check_output (in python2.7)
+import subprocess
+
+os.system('ls -al')
+os.popen('ls -al').read()
+
+#shell=True is only available in subprocess
+subprocess.call('ls -al', shell=True)
+subprocess.check_output('ls -al', shell=True)
+
+errorcode=os.system('uname -a');    print errorcode
+output=os.popen('uname -a').read(); print output
+output=subprocess.check_output('uname -a', shell=True); print output
+output=subprocess.check_output(['uname', '-a']);        print output
+errorcode=subprocess.call('uname -a', shell=True);      print errorcode
+errorcode=subprocess.call(['uname', '-a']);             print errorcode
+

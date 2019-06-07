@@ -1,0 +1,39 @@
+#!/usr/bin/env python
+'''
+Created on Mar, 2016
+
+@author: eml
+'''
+#os.system('pygmentize -g ' + sys.argv[0])
+#print "=============output============"
+from color import *
+print colors.RED + '''''' + colors.ENDC
+ebrun('''
+def func(*a_list):
+    try:
+        print 'the list is:', a_list
+        print 'third element:', a_list[2]
+    except IndexError:
+        print 'raised IndexError'
+    else:
+        print 'no error in try-block'
+func()
+func(1,2,3)
+''')
+
+erun('''
+i = 0
+
+while i < 2:
+    print 'in while: ', i
+    i += 1
+else:
+    print 'in else: ', i   
+''')
+
+erun('''
+for i in range(2):
+    print 'in while: ', i
+else:
+    print 'in else: ', i   
+''')

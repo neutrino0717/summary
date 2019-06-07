@@ -1,2 +1,0 @@
-perldoc perlvar  | egrep '^\s+\$' -A 1 --color
-perldoc perlvar  | egrep '^\s+@'  -A 1 --color

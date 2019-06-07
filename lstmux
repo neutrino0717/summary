@@ -1,7 +1,0 @@
-cat ~/.tmux.conf
-pygmentize -g <<"EOF"
-# https://gist.github.com/spicycode/1229612
-# c-b :source-file ~/.tmux.conf   #reload config
-# tmux source-file ~/.tmux.conf   #reload config
-
-EOF

@@ -1,0 +1,48 @@
+#!/usr/bin/env eepython
+##Usually, a Python dictionary throws a KeyError if you try to get an item with a key that is not currently in the dictionary. 
+##The defaultdict in contrast will simply create any items that you try to access (provided of course they do not exist yet). 
+##
+##To create such a "default" item, it calls the function object that you pass in the constructor (more precisely, it's an arbitrary "callable" object, which includes function and type objects). 
+##
+##1.
+##For the first example, default items are created using int(), which will return the integer object 0. 
+##
+##2.
+##For the second example, default items are created using list(), which returns a new empty list object.
+from collections import defaultdict
+import inspect
+
+#defaultdict is just a subclass of the standard dict type
+print inspect.getmro(defaultdict)
+print int()
+print list()
+print dict()
+s = 'mississippi'
+
+#default items are created using int(), which will return the integer object 0.
+d = defaultdict(int)
+print d
+for k in s:
+    d[k] += 1  #int() will be called when d[k], and assign d[k] = int()
+print d
+print d.items()
+
+#default items are created using list(), which returns a new empty list object.
+s = [('yellow', 1), ('blue', 2), ('yellow', 3), ('blue', 4), ('red', 1)]
+d = defaultdict(list)
+print d
+
+###list() will be called whtn d[k], and assgin d[k]=list()
+for k, v in s:
+    d[k].append(v)   
+print d
+
+#default items are created using dict(), which returns a new empty dict object
+data=defaultdict(dict)
+for n in xrange(7):
+    data[n]["rnc"] = "RNC" + str(n)
+    data[n]["lac"] = "LAC" + str(n)
+print data
+for n in xrange(7):
+    print str(n) + '--> ' + str(data[n])
+

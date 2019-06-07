@@ -1,0 +1,28 @@
+#!/usr/bin/env eepython
+import os, sys
+#e1 = Employee('evan' 'liu',10000)
+#
+#str(e1)     --> call e1.__str__()
+#repr(e1)    --> call e1.__repr__()
+#e1+e2       --> call e1.__add__(e2)
+#'a'+'b'     --> call str.__add__('a','b')
+#1+2         --> call int.__add__(1,2)
+#len('ls')   --> call 'ls'.__len__()
+#
+#'ls'>'la'   --> call 'ls'.__ge__('la')
+#            --> call str.__ge__('ls','la')
+
+class Employee:
+    def __str__(self):
+        return "__str__() called"
+    def __repr__(self):
+        return "__repr__() called"
+    def __add__(self, n):
+        return "__add__() called"
+
+e = Employee()
+print str(e)
+print repr(e)
+e2 = Employee()
+print e + e2
+

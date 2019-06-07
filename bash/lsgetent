@@ -1,0 +1,5 @@
+cat <<"EOF"
+getent services 23
+getent services ssh
+
+EOF

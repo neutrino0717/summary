@@ -1,0 +1,24 @@
+pygmentize -g <<"EOF"
+#!/usr/bin/perl
+$SIG{INT} = sub { die "catch a sigint $!" };
+sleep 20;
+#----------------------------------------------
+
+$SIG{INT}  = \&signal_handler;
+$SIG{TERM} = \&signal_handler;
+sleep 20;
+sub signal_handler {
+    die "catch a sigint $!" ;
+}
+#----------------------------------------------
+
+use sigtrap qw/die normal-signals/; #include HUP PIPE INT TERM
+sleep 20
+#----------------------------------------------
+use sigtrap qw/handler signal_handler normal-signals/; #include HUP PIPE INT TERM
+sleep 20
+sub signal_handler {
+    die "catch a sigint $!" ;
+}
+
+EOF

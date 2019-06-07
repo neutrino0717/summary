@@ -1,0 +1,15 @@
+#!/usr/bin/env eepython
+from collections import deque
+##tail the last nth lines
+def tail(filename, n=3):
+    #deque([iterable[, maxlen]]) --> deque object
+    return deque(open(filename), n)
+print tail('/etc/resolv.conf', 1)
+
+##delete nth elements
+def delete_nth(d, n):
+    d.rotate(-n)
+    d.popleft()
+    d.rotate(n)
+d = deque("012345678")
+delete_nth(d, 3); print d

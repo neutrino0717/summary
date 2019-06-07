@@ -1,0 +1,7 @@
+#!/usr/bin/env epython
+##True is 1, False is 0
+print True + True
+print False + False
+print True + False
+print True == 1, True == 0, True == 2
+print False ==1, False ==0, False ==2

@@ -1,5 +1,0 @@
-pygmentize -g <<"EOF"
-iostream    is a standard header file and contains information about std::cout
-std::cout   std is standard namespace
-            count is defined with std naemspace
-EOF

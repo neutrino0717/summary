@@ -1,4 +1,0 @@
-pygmentize -g <<"EOF"
-#!/usr/bin/perl
-eval '5/0'; print "Error: $@"  #Error: Illegal division by zero at (eval 54)[(eval 53)[/usr/share/perl/5.18/perl5db.pl:732]:2] line 1.
-EOF

@@ -1,0 +1,6 @@
+pygmentize -g <<"EOF"
+#!/usr/bin/perl
+@a=(11..77); print '@a has ' . scalar @a . ' elements'
+@a=(11..77); print '@a has ' .        @a . ' elements'  #or
+
+EOF

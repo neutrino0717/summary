@@ -1,0 +1,20 @@
+#!/usr/bin/env eepython
+##assignment
+import copy
+a = [[1,2,3],[4,5,6]]
+b = a
+a.append(7); print a; print b           #make change to a; b also changed
+
+##shallow copy
+import copy
+a = [[1,2,3],[4,5,6]]
+b = copy.copy(a)
+a.append(7); print a; print b           #make change to a; b not changed because of copy 
+a[0][0] = 0; print a; print b           #make change to a; b also changed because of shallow copy only
+
+##deep copy
+import copy
+a = [[1,2,3],[4,5,6]]
+b = copy.deepcopy(a)
+a.append(7); print a; print b  
+a[0][0] = 0; print a; print b  

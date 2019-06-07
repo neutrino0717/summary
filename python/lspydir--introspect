@@ -1,0 +1,22 @@
+#!/usr/bin/env eepython
+###dir() function
+##dir() is the most important function when doing introspection. The function returns a sorted list of attributes and methods belonging to an object
+###why dir() doesn't display __dict__ attribute
+print dir.__doc__
+
+print dir(())
+print dir([])
+print dir({})
+print dir("")
+
+class Foo:
+    def __init__(self):
+        self.a = "bar"
+        self.b = 4711
+global a
+a=Foo(); 
+print type(Foo), dir(Foo)
+print type(a),   dir(a)
+print a; print a.__class__.__name__
+print type(1),   dir(1)
+print type(int), dir(int)

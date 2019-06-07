@@ -1,9 +1,0 @@
-#!/usr/bin/env eepython
-import inspect
-def f(a, b=1, *pos, **named):
-    pass
-print inspect.getcallargs(f,7)
-print inspect.getcallargs(f,7,2)
-print inspect.getcallargs(f,7,2,'a','b','c')
-m={'d':'dd', 'e':'ee'}
-print inspect.getcallargs(f,7,2,'a','b','c',**m)

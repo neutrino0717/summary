@@ -1,0 +1,9 @@
+#!/usr/bin/env python
+from color import *
+ebrun('''
+#use bitwise to check if even or odd
+print 383 & 1
+print 888 & 1
+aa = 123
+if aa & 1: print "it is odd"
+''')

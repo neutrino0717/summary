@@ -1,0 +1,7 @@
+#!/usr/bin/env eepython
+for i in dir(os):
+    if '__' in i: 
+        print i
+import os; print os.__file__, os.__name__, __name__
+import re; print re.__file__
+import logging; print logging.__file__

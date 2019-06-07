@@ -1,0 +1,21 @@
+#!/usr/bin/env eepython
+###The function reduce(func, seq) continually applies the function func() to the sequence seq. It returns a single value. 
+##reduce(func, seq)
+##reduce(func, [ s1, s2, s3, ... , sn ])
+##reduce(func(s1, s2), [ s3, s4, s5... , sn ])
+##reduce(func(func(s1, s2),s3), [s4, s5 ... ,  sn ])
+##.....
+
+##the largest number
+f = lambda a,b: a if (a > b) else b
+result=reduce(f, [47,11,42,102,13]); print result
+
+##1 + 2 + 3 ...+ 10
+result=reduce(lambda x, y: x+y, range(1,10)); print result
+
+##turn [1, 2, 3, 4, 5, 6, 7, 8] into 12345678
+result=reduce(lambda x, y: 10*x+y, range(1,9)); print result
+
+##turn [[1, 2, 3], [4, 5], [6, 7, 8]] into [1, 2, 3, 4, 5, 6, 7, 8]
+result=reduce(list.__add__,[[1, 2, 3], [4, 5], [6, 7, 8]]); print result
+

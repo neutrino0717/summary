@@ -1,0 +1,41 @@
+#!/usr/bin/env eepython
+##use individual parameters
+def func(p1,p2): 
+    print(p1, p2)
+print func.__doc__
+tup=("param1","param2")
+func("param1","param2")
+func(*tup)
+
+##The single star * unpacks the sequence/collection into positional arguments, use tuple as parmaters instead
+def func(*t): print(t)
+tup=("one", 2, 3.0)
+func("one", 2, 3.0)
+func(*tup)
+
+##The double star ** does the same, only using a dictionary and thus named arguments, use dict as parameter
+def func(**ages): 
+    print(ages)  #**ages is dictionary
+    print "the age of dad, mom, lisa are: %(dad)s, %(mom)s, %(lisa)s" % ages
+dic={'dad':42,'mom':48,'lisa':7}; 
+func(**dic)
+func(dad=42,mom=48,lisa=7)
+
+#The double star ** uses a dictionary --> named arguments
+def func(particle, weight=0): print "the weight of %s is %s" %(particle, weight)
+d={"particle": "neutrino", "weight": 0.001}
+func(**d)
+
+##parameters with default value
+def func4(p1='tst1',p2='tst2'): print(p1+" "+p2)
+func4()
+
+###function with tuple and dictionary as parameters
+#first, last only take one parameters respectively
+#*numbers takes as many as possible until a '=' 
+#**items takes all parameters start with a '='
+def profile(first, last, *numbers, **items):
+    print first, last
+    print numbers
+    print items
+profile('bucky', 'roberts', 1,2,3,4,5, bacon=4, saus=64)

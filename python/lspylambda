@@ -1,0 +1,15 @@
+#!/usr/bin/env eepython
+###Lambda expressions are a shorthand to create anonymous functions; yields a function object. 
+## lambda
+#  lambda arguments: expression 
+## function
+#  def name(arguments): return expression
+import os
+os.system('pydoc lambda|cat')
+
+##equal to 'def sum(x,y): return x + y'
+sum = lambda x,y: x + y
+print sum(1,2)
+
+def sum(x,y): return x + y
+print sum(1,2)

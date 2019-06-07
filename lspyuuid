@@ -1,7 +1,0 @@
-#!/usr/bin/env eepython
-import uuid
-print uuid.__doc__
-print dir(uuid)
-print uuid.uuid4()
-print type(uuid.uuid4())
-print str(uuid.uuid4())

@@ -1,0 +1,24 @@
+#!/usr/bin/env eepython
+##globals() returns the dictionary of the module namespace
+##          global variables can be accessed inside functions, but cann't be modified inside functions
+##locals()  returns a dictionary of the current namespace
+##vars()    returns either a dictionary of the current namespace (if called with no argument) or the dictionary of the argument.
+
+map_l=locals(); print map_l
+map_l=locals(); print type(map_l)
+map_l=locals(); print map_l.get("name")
+map_l=locals(); name=""; print map_l
+print globals()["__name__"]
+print vars()
+
+ages={'dad':42,'mom':48,'me':7}
+ages.clear()          # remove all entries in dict
+print ages if 'ages' in locals() else "ages not defined"
+
+ages={'dad':42,'mom':48,'me':7}
+del ages              # delete all entries
+print ages if 'ages' in locals() else "ages not defined"
+
+age = "16"
+name = "Evan"
+print "hello %(name)s you are %(age)s years old" % locals()

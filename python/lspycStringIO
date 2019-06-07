@@ -1,0 +1,17 @@
+#!/usr/bin/env eepython
+###when you need to build a huge string, please use cStringIO
+###myview: cStringIO is similiar to StringBuffer in Java
+import cStringIO
+
+output = cStringIO.StringIO()
+output.write('First line.\n')
+#add the \n automatically
+print >>output, 'Second line.'
+output.write('Third line.\n')
+
+# Retrieve file contents -- this will be
+# 'First line.\nSecond line.\n'
+contents = output.getvalue()
+print contents
+# Close object and discard memory buffer, .getvalue() will now raise an exception.
+output.close()
