@@ -46,4 +46,13 @@ int main() {
    *d = 2;                 //OK
   //d = nullptr;           //error: assignment of read-only variable ‘d’ 
     std::cout << "no output, theck the code please\n";
+
+    const int i = 9;
+    //i = 6;
+    const_cast<int&>(i) = 6; //cast out the constness
+    int j;
+    //static_cast<const int&>(j) = 7; //error: assignment of read-only location ‘j’
+
+
+
 }
