@@ -1,3 +1,6 @@
 #!/bin/bash
-#git pull && git status && git add --all && git status && git commit -m "no comment" && git push && git status
+<<<<<<< HEAD
+git pull && git status && git add --all && git status && git commit -m "no comment" && git push && git status
+=======
 git pull && git status && git add --all && git commit -m "no comment" && git push
+>>>>>>> 6d95a48db9fd482d059414ceaaef484bd91186ec

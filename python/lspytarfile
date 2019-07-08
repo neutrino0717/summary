@@ -1,7 +1,0 @@
-pygmentize -g <<"EOF"
-#!/usr/bin/python
-import tarfile
-tar = tarfile.open("1.tar.gz")
-tar.extractall()
-tar.close()
-EOF
