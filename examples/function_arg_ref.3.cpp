@@ -8,5 +8,5 @@ void myFunc(int *x) {
 int main() {
     int var = 20;
     myFunc(&var);
-    cout << var;
+    cout << var << endl;
 }

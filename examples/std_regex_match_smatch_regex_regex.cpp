@@ -12,5 +12,5 @@ int main()
 	//match the whole string
 	bool b1 = regex_match(data1, match, regex);
 	bool b2 = regex_match(data2, match, regex);
-	cout << b1<<b2<<endl;
+	cout << b1<<" "<<b2<<endl;
 }
