@@ -1,0 +1,10 @@
+map<int, C> m;
+m[7] = C(1);
+//m[7] call def constructor
+//C(1) call definef constructor
+//= call assign constructor
+
+
+A a[2];//call def constr
+for (auto  x : a) { }//call copy constr
+for (auto& x : a) { }//no call

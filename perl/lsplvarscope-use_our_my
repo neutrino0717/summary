@@ -1,7 +1,0 @@
-pygmentize -g <<"EOF"
-#!/usr/bin/perl
-use vars    #Declare global variables.
-my          #Declare lexical variables, all Perl variables are global unless they are declared with my
-local       #is not what you think, use my instead unless you know why you are using local
-our         #only when your package needs a global variable
-EOF
