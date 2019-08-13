@@ -3,8 +3,9 @@ using namespace std;
 
 int main()
 {
-    //int a[5];
-    int arr[] = {11, 35, 62, 555, 989};
+    int a[5];
+    int arr[5] = {11, 35, 62, 555, 989};
+    int arr2[] = {11, 35, 62, 555, 989};
     int sum = 0; 
     for (int x = 0; x < 5; x++)  sum += arr[x];  //1652
     cout << sum << endl;

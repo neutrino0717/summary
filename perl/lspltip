@@ -1,4 +1,0 @@
-pygmentize -g <<"EOF"
-#!/usr/bin/perl
-perl -c hello.pl  #syntax check only
-EOF

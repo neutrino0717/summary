@@ -4,7 +4,7 @@ cmd=""
 if [ ! "$1" ]; then echo "ic fname [-llib]"; exit 1; fi
 if [ "${1##*.}" = 'cpp' ]; then tool='g++ -std=c++14'; else tool='gcc'; fi
 
-pygmentize -g $1
+#pygmentize -g $1
 
 f=$1; shift
 fe=/tmp/${f}.o
