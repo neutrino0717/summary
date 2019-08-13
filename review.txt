@@ -1,13 +1,13 @@
 map<int, C> m;
 m[7] = C(1);
 //m[7] call def constructor
-//C(1) call definef constructor
+//C(1) call defined constructor
 //= call assign constructor
 
 
 A a[2];              //call def constr
 for (auto  x : a) { }//call copy constr
-for (auto& x : a) { }//no call
+for (auto& x : a) { }//no new object
 
 int aaa[5];
 int arr[] = {11, 35, 62, 555, 989};
@@ -34,6 +34,8 @@ int main() {
 
 int *ptr = NULL;
 cout << "The value of ptr is " << ptr ;  //0
+
+extern "C" int x; //is just a declaration extern "C" { int y; } //is a definition
 
 /*
  * unique smart pointer
@@ -82,4 +84,9 @@ cout << "\n:function parametor\n";
 unique_ptr<Dog> dg8(new Dog("Tianyuan"));
 f(move(dg8)); //Dog Tianyuan rules!
               //dog is destroyed: Tianyuan
+              
+
+//basically the two are the same, however if explicit is used in constr, the  2nd is not ok
+C c1(7)       //direct-initialization
+C c2 = 7     // called copy-initialization
 
