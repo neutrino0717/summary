@@ -1,9 +1,0 @@
-#!/usr/bin/env eepython
-##map(function, iterable, ...)
-##Apply function to every item of iterable and return a list of the results
-print map(lambda x: x*x, [1,2,3])
-
-##map with two iterables for input
-a = [1, 2, 3, 4]
-b = [2, 3, 4, 5]
-print map(lambda x, y: x*y, a, b)
