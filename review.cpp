@@ -1,8 +1,35 @@
+//bilatoral mapping
+enum Season { Summer, Fall, Winter, Spring };
+string arSeason[] = {"Summer", "Fall", "Winter", "Spring"};  //enum --> String  
+map<string, Season> seasons = {                              //String --> enum
+    {"Summer", Summer},
+    {"Fall", Fall},
+    {"Winter", Winter},
+    {"Spring", Spring}
+};
+cout <<Winter << " " << arSeason[Winter] << endl;
+cout <<"Winter" << " " << seasons["Winter"] << endl;
+cout << (Winter==Season(2)) << endl;
+
+
 map<int, C> m;
 m[7] = C(1);
 //m[7] call def constructor
 //C(1) call defined constructor
 //= call assign constructor
+
+//three ways
+class MyClass {
+    public:
+        MyClass(int a) : var(a){ }
+        void printInfo() {
+            cout <<         var <<endl;
+            cout <<   this->var <<endl;
+            cout << (*this).var <<endl;
+        }
+    private:
+        int var;
+};
 
 
 A a[2];              //call def constr
@@ -158,3 +185,18 @@ int main(){                                            int main(){
   obj2.Display();                                    <                   //1
   return 0;                                              return 0;
 }                                                      }
+
+#define MIN(a,b) (a<b ? a : b)
+cout <<"The Minimum number is " << MIN(x, y) << endl;
+
+
+enum Season {
+    Summer, Fall, Winter, Spring
+};
+enum Season2: char {
+    Summer2, Fall2, Winter2, Spring2
+};
+Season winter = Winter;
+int baseValue = winter;           //2
+std::cout <<  Fall << std::endl;  //1
+std::cout << Fall2 << std::endl;  //1
