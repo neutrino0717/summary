@@ -5,7 +5,6 @@ struct Point {
     public:
         int x;
         int y;
-
         // prefix ++, myview:
         Point & operator ++() {
             x++;

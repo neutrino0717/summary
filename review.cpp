@@ -1,8 +1,35 @@
+//bilatoral mapping
+enum Season { Summer, Fall, Winter, Spring };
+string arSeason[] = {"Summer", "Fall", "Winter", "Spring"};  //enum --> String  
+map<string, Season> seasons = {                              //String --> enum
+    {"Summer", Summer},
+    {"Fall", Fall},
+    {"Winter", Winter},
+    {"Spring", Spring}
+};
+cout <<Winter << " " << arSeason[Winter] << endl;
+cout <<"Winter" << " " << seasons["Winter"] << endl;
+cout << (Winter==Season(2)) << endl;
+
+
 map<int, C> m;
 m[7] = C(1);
 //m[7] call def constructor
 //C(1) call defined constructor
 //= call assign constructor
+
+//three ways
+class MyClass {
+    public:
+        MyClass(int a) : var(a){ }
+        void printInfo() {
+            cout <<         var <<endl;
+            cout <<   this->var <<endl;
+            cout << (*this).var <<endl;
+        }
+    private:
+        int var;
+};
 
 
 A a[2];              //call def constr
@@ -90,3 +117,141 @@ f(move(dg8)); //Dog Tianyuan rules!
 C c1(7)       //direct-initialization
 C c2 = 7     // called copy-initialization
 
+
+set<char> chars { 'A', 'B', 'C', 'D' };   //must be sorted for std::includes
+set<char> chars2 { 'A', 'C' };            //must be sorted for std::includes
+cout << (chars.find('A') != chars.end()) << endl;  //1
+cout << (chars.find('E') != chars.end()) << endl;  //0
+bool containAll = includes( chars.begin(), chars.end(), chars2.begin(), chars2.end());   //1
+
+int container[] = {5,10,15,20,25,30,35,40,45,50};
+std::sort (container,container+10);   //5 10 15 20 25 30 35 40 45 50
+
+
+std::vector<int> myvector = {32,71,12,45,26,80,53,33};
+int myints[] = {32,71,12,45,26,80,53,33};
+std::vector<int> myvector (myints, myints+8);
+// using default comparison (operator <):
+std::sort (myvector.begin(), myvector.begin()+4);           //(12 32 45 71)26 80 53 33
+std::sort (myvector.begin()+4, myvector.end(), myfunction); // 12 32 45 71(26 33 53 80)
+// using object as comp
+std::sort (myvector.begin(), myvector.end(), myobject);     //(12 26 32 33 45 53 71 80)
+for (std::vector<int>::iterator it=myvector.begin(); it!=myvector.end(); ++it) std::cout << ' ' << *it;
+
+//Prefix ++ operator overloading with return type    | //postfix ++ operator overloading: int inside barcket(int)
+class Check{                                           class Check{
+  private:                                               private:
+    int i;                                                 int i;
+  public:                                                public:
+    Check(): i(0) {  }                                     Check(): i(0) {  }
+    Check operator ++() {                            |     Check operator ++ (int){
+      Check temp;                                            Check temp;
+      temp.i = ++i;                                  |       temp.i = i++;
+      return temp;                                           return temp;
+    }                                                      }
+    void Display()  { cout << "i=" << i << endl; }         void Display()  { cout << "i=" << i << endl; }
+};                                                     };
+int main(){                                            int main(){
+  Check obj, obj2;                                       Check obj, obj2;
+  obj.Display();                                         obj.Display();   //0 0
+  obj2 = ++obj;                                      |   obj2 = obj++;
+  obj.Display();                                         obj.Display();   //1 1
+  obj2.Display();                                        obj2.Display();  //1 0
+  return 0;                                              return 0;
+}                                                      }
+
+
+//Prefix ++ operator overloading with return type    | //Prefix ++ operator overloading without return type
+#include <iostream>                                    #include <iostream>
+using namespace std;                                   using namespace std;
+
+class Check{                                           class Check{
+  private:                                               private:
+    int i;                                                 int i;
+  public:                                                public:
+    Check(): i(0) {  }                                     Check(): i(0) {  }
+    Check operator ++() {                            |     void operator ++() {
+      Check temp;                                    |       ++i;
+      temp.i = ++i;                                  <
+      return temp;                                   <
+    }                                                      }
+    void Display()  { cout << "i=" << i << endl; }         void Display()  { cout << "i=" << i << endl; }
+};                                                     };
+int main(){                                            int main(){
+  Check obj, obj2;                                   |   Check obj;
+  obj.Display();                                         obj.Display();  //0 0
+  obj2 = ++obj;                                      |   ++obj;
+  obj.Display();                                         obj.Display();  //1 1
+  obj2.Display();                                    <                   //1
+  return 0;                                              return 0;
+}                                                      }
+
+#define MIN(a,b) (a<b ? a : b)
+cout <<"The Minimum number is " << MIN(x, y) << endl;
+
+
+enum Season {
+    Summer, Fall, Winter, Spring
+};
+enum Season2: char {
+    Summer2, Fall2, Winter2, Spring2
+};
+Season winter = Winter;
+int baseValue = winter;           //2
+std::cout <<  Fall << std::endl;  //1
+std::cout << Fall2 << std::endl;  //1
+
+///////////constructions /////////////////////////
+class Dog{};
+/* C++ 03:
+ * 1. default constructor      (generated only if no constructor is declared by user)
+ * 2. copy constructor         (generated only if no (5|6) declared by user)
+ * 3. copy assignment operator (generated only if no (5|6) declared by user)
+ * 4. destructor
+ *
+ * c++ 11:
+ * 5. move constructor         (generated only if no (2|3|4|6) declared by user)
+ * 6. move assinment operator  (generated only if no (2|3|5|6) declared by user)
+ */
+class Cat{ //3, 4
+  Cat(const Cat&){} //copy constructor
+};
+class Duck{ //4
+  Duck(Duck&&){}    //move constructor
+};
+class Frog{ //4
+  Frog(Frog&&, int = 0) {} //move constructor
+  Frog(int = 0){}          //default constructor
+  Frog(const Frog&,int=0) {} //copy constructor
+};
+class Fish{ //1, 2, 3
+  ~Fish(){}
+};
+class Cow{ //1, 2, 4
+  Cow& operator=(const Cow&) = delete;
+};
+
+////////find//////////
+map<int, string>  dic = { {1, "one"}, {2, "two"} };
+bool exists1 = dic.find(1) != dic.end();// 1
+
+////////transform//////
+string str = "Lower and upper";
+std::transform(str.begin(), str.end(), str.begin(), ::tolower); //::tolower global namespace, which is tolower of C lauguage. str is "lower and upper"
+std::transform(str.begin(), str.end(), str.begin(), ::toupper); //str is "LOWER AND UPPER"
+
+////////set////////
+set<int> first  { 1, 2, 3 };
+set<int> second { 3, 4, 5 };
+set<int> third;
+insert_iterator<set<int>> iterator(third, third.begin());
+set_union       (first.begin(), first.end(), second.begin(), second.end(), iterator );  //third is { 1, 2, 3, 4, 5 }
+third.clear();
+
+set_intersection(first.begin(), first.end(), second.begin(), second.end(), iterator);   //third is { 3 }
+third.clear();
+//or
+vector <int> vthird;
+set_intersection(first.begin(), first.end(), second.begin(), second.end(), back_inserter(vthird)); //third is { 3 }
+
+set_difference  (first.begin(), first.end(), second.begin(), second.end(), iterator);              //third is { 1, 2 }

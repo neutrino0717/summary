@@ -7,12 +7,10 @@ int main(){
 
     string lower = str;
     transform(lower.begin(), lower.end(), lower.begin(), ::tolower); //::tolower global namespace, which is tolower of C lauguage
-    //lower is "lower and upper"
-    cout << lower << endl;
+    cout << lower << endl; //lower is "lower and upper"
 
     string upper = str;
     std::transform(upper.begin(), upper.end(), upper.begin(), ::toupper);
-    //upper is "LOWER AND UPPER"
-    cout << upper << endl;
+    cout << upper << endl; //upper is "LOWER AND UPPER"
 
 }

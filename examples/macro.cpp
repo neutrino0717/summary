@@ -10,8 +10,6 @@ x = 40;
 y = 15;
 cout <<"The Minimum number is " << MIN(x, y) << endl;
   
-  
-  
 
 return 1;
 }
