@@ -1,11 +1,11 @@
 #include <iostream>
 #include <string>
-
+#include <pp.h>
 class Entity {
 private:
     int m_x, m_y;
     int* m_a,*m_b;
-    mutable int var;     //mutable can be changed in const fuctions
+    mutable int var;     //mutable can be changed in const functions
 public:
     int getx() const  // getx() cannot change the class member
     {                 // always mark method as const if it's a get
@@ -19,32 +19,42 @@ public:
     }
 };
 
-void PrintEntity1(const Entity& e){ //a const to prevent change,  ref to save from copy
+//5. const to prevent change,  ref to save from copy
+void PrintEntity1(const Entity& e){
     std::cout << e.getx() <<std::endl; //define 'in getx() const' is a must
     //e = nullptr;   //wrong, cannot change const Entity object
 }
-
-void PrintEntity2(const Entity* e){ //a const to prevent change Entity
+//6. const to prevent change Entity, but OK to change the pointer variable itself
+void PrintEntity2(const Entity* e){
     std::cout << e->getx() <<std::endl;
-    e = nullptr;   //OK, change the pointer variable itself
+    e = nullptr;   //OK,  change the pointer variable itself
 }
 
 int main() {
     const int MAX_AGE = 90;
     int* a = new int;
    *a = 2;
-  //a = &MAX_AGE;     //error: invalid conversion from ‘const int*’ to ‘int*’
+   //1. error: invalid conversion from ‘const int*’ to ‘int*’
+   //a = &MAX_AGE;
     a = (int*)&MAX_AGE; //here we break the const promise
 
-    const int* b = new int; //'* b' store 'const int', cannot be changed
+    //2. '* b' store 'const int', cannot be changed
+    const int* b = new int;
     int const* c = new int; //same as above
-    int* const d = new int; // 'd' store const value, cannot be changed
-    const int* const e = new int; //cannot change both
+
+    //3. 'd' store const value, cannot be changed
+    int* const d = new int;
+
+    //4. cannot change both
+    const int* const e = new int;
  //*b = 2;               //error: assignment of read-only location ‘* b’
     b = (int*)&MAX_AGE;     //OK
     c = nullptr;            //OK, same as above
    *d = 2;                 //OK
   //d = nullptr;           //error: assignment of read-only variable ‘d’ 
+<<<<<<< HEAD:c/const.4.cpp
+    std::cout << "no output, check the code please\n";
+=======
     std::cout << "no output, theck the code please\n";
 
     const int i = 9;
@@ -55,4 +65,5 @@ int main() {
 
 
 
+>>>>>>> e8d7673f0c75e3b7d2c6c9ac648471f31baa7cc9:examples/const.4.cpp
 }
