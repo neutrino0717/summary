@@ -246,12 +246,40 @@ set<int> second { 3, 4, 5 };
 set<int> third;
 insert_iterator<set<int>> iterator(third, third.begin());
 set_union       (first.begin(), first.end(), second.begin(), second.end(), iterator );  //third is { 1, 2, 3, 4, 5 }
-third.clear();
-
 set_intersection(first.begin(), first.end(), second.begin(), second.end(), iterator);   //third is { 3 }
-third.clear();
-//or
 vector <int> vthird;
 set_intersection(first.begin(), first.end(), second.begin(), second.end(), back_inserter(vthird)); //third is { 3 }
-
 set_difference  (first.begin(), first.end(), second.begin(), second.end(), iterator);              //third is { 1, 2 }
+equal           (first.begin(), first.end(), second.begin(),second.end());
+
+string str = "one way ticket";
+str.substr(4, 3)     //way,  str unchanged
+
+set<char> set      { 'A', 'B', 'C' };
+set.insert('D'); //{ 'A', 'B', 'C', 'D' }
+set.erase('A');  //{ 'B', 'C', 'D' }
+for(const char &c: set) cout << c << ";"; //B;C;D;
+set.clear();     //{ }
+
+std::string s = "This is an example";
+s.erase(0, 5);                               // s = "is an example"
+s.erase(std::find(s.begin(), s.end(), ' ')); // s = "Thisis an example"
+s.erase(s.find(' '));                        // s = "This"
+
+
+auto x = 4;
+auto y = 3.37;
+auto ptr = &x;
+cout << typeid(x).name() << endl       //i  int
+     << typeid(y).name() << endl       //d  double
+     << typeid(ptr).name() << endl;    //Pi point_to_int
+
+//remove all spaces https://stackoverflow.com/questions/83439/remove-spaces-from-stdstring-in-c
+//str = "Hello everyone bye bye"
+remove_if(str.begin(), str.end(), isspace), str.end()
+//str = "Helloeveryonebyebye   "
+//                          ^
+str.erase(remove_if(str.begin(), str.end(), isspace), str.end());
+//str = Helloeveryonebyebye"
+//the same
+str.erase(remove(str1.begin(),   str.end(), ' '),    str1.end());

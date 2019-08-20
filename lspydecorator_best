@@ -1,0 +1,45 @@
+#pygmentize -g <<"EOF"
+cat <<"EOF"
+#!/usr/bin/python
+
+#1. function func_wrapper call function func
+        def func_wrapper(*args, **kwargs):
+            return "<p>{0}</p>".format(func(*args, **kwargs))
+#2. function p_decorator's argument is func,  return function func_wrapper
+    def p_decorate(func):
+        def func_wrapper(*args, **kwargs):
+          return "<p>{0}</p>".format(func(*args, **kwargs))
+        return func_wrapper
+
+#3 pass argument tags=p
+def tags(tag_name):
+    def p_decorator(func):
+        def func_wrapper(*args, **kwargs):
+            return "<{0}>{1}</{0}>".format(tag_name, func(*args, **kwargs))
+        return func_wrapper
+    return p_decorator
+
+
+#2.1         @p_decorator's argument is get_fullname, return new function get_fullname
+class Person(object):
+    def __init__(self):
+        self.name = "John"
+        self.family = "Doe"
+    @p_decorate
+    def get_fullname(self):
+        return self.name+" "+self.family
+my_person = Person()
+print(my_person.get_fullname())
+
+#3.1         same as above, but 'p' is variable input now
+class Person(object):
+    def __init__(self):
+        self.name = "John"
+        self.family = "Doe"
+    @tags('p')
+    def get_fullname(self):
+        return self.name+" "+self.family
+my_person = Person()
+print(my_person.get_fullname())
+
+EOF
