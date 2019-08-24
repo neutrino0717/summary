@@ -16,7 +16,8 @@ int main()
  
     s = "This is an example";
     s.erase(s.find(' ')); // Trim from ' ' to the end of the string
-    auto pp = s.find(' ');
-    for (auto& i : pp) std::cout << *i << '\n';
     std::cout << s << '\n';
+
+    auto pp = s.find(' ');
+    std::cout << pp << '\n';   //4
 }

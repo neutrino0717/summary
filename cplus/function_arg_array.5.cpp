@@ -2,9 +2,7 @@
 using namespace std;
 
 void printArray(int arr[], int size) {
-    for(int x=0; x<size; x++) {
-        cout <<arr[x]<< endl;
-    }
+    for(int x=0; x<size; x++) cout <<arr[x] << " "; cout << endl; 
 }
 
 int main() {
