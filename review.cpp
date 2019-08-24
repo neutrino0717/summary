@@ -354,7 +354,6 @@ Point point{5, 6};
 Rectangle rect{size, point};
 Rectangle rect = {{10, 10}, {5, 5}};
 
-
 //Initializer list for array
 //1. Array of Employee class by constructor
 Employee employees[] {
@@ -376,7 +375,6 @@ map<int, Employee> employees {
     {1, Employee{"Anton", "Pavlov"}},
     {2, Employee{"Elena", "Kirienko"}}
 };
-
 
 //iostream
 std::cout << "Penguin!\n";
