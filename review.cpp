@@ -406,3 +406,122 @@ unordered_set<int> char2{'B', 'A', 'C', 'D'};
 for (int c:chars) cout << c << ",";//65,66,67,68,
 for (int c:chars) cout << string(1,c) << ";"; //A;B;C;D;
 for (int c:char2) cout << c << ":";//68:67:65:66:
+
+//remove all spaces https://stackoverflow.com/questions/83439/remove-spaces-from-stdstring-in-c
+//str = "Hello everyone bye bye"
+remove_if(str.begin(), str.end(), isspace), str.end()
+//str = "Helloeveryonebyebye   "
+//                          ^
+str.erase(remove_if(str.begin(), str.end(), isspace), str.end());
+//str = Helloeveryonebyebye"
+//the same
+str.erase(remove(str1.begin(),   str.end(), ' '),    str1.end());
+
+std::array<int,8> foo = {3,5,7,11,13,17,19,23};
+std::all_of(foo.begin(), foo.end(), [](int i){return i%2;})  //1, all are odd
+std::array<int,7> foo = {0,1,-1,3,-3,5,-5};
+std::any_of(foo.begin(), foo.end(), [](int i){return i<0;}) )//1, some are negative
+
+//time -> time_t --localtime/gmtime----> tm -> string
+time_t now = time(0);//time(0) will return the current second count
+//1
+tm tm = *localtime(&now);
+tm *gmtm = gmtime(&now); // convert now to tm struct for UTC
+//2
+tm={2, 30, 22, 17, 7-1, 1975-1900};
+int year = tm.tm_year + 1900;
+int month = tm.tm_mon + 1;
+int day = tm.tm_mday;
+int hour = tm.tm_hour;
+int minute = tm.tm_min;
+int second = tm.tm_sec;
+int dayOfWeek = tm.tm_wday;
+cout << year << ":" << month  << ":" << day << ":" << hour << ":" << minute << ":" << second << endl;
+//2019:8:25:22:21:26
+//1975:7:17:22:30:2
+
+//time -> time_t --ctime--------> string 
+#include <ctime>
+time_t now = time(0);  //1566743108
+cout << now << endl;
+char* dt = ctime(&now); // convert now to string form
+cout << "The local date and time is: " << dt << endl;//Sun Aug 25 22:25:08 2019
+tm *gmtm = gmtime(&now); // convert now to tm struct for UTC
+dt = asctime(gmtm);
+cout << "The UTC date and time is:"<< dt << endl; //Sun Aug 25 14:25:08 2019
+
+#include <sstream>
+// istringstream is for input, 
+// ostringstream for output. 
+//  stringstream is input and output. You can use stringstream pretty much everywhere.
+std::string str = "true";
+bool boolValue;
+std::istringstream(str) >> std::boolalpha >> boolValue;
+std::cout << boolValue << std::endl;   //1
+
+stringstream ss;
+ss << "hex of 89 is: " << hex << 89 << ". oct of 89 is: " << oct << 89;
+    cout << ss.str() << endl; //hex of 89 is: 59. oct of 89 is: 131
+
+string str = "1 2 3 4 5";
+stringstream stream(str);
+int numbers[5];
+copy(istream_iterator<int, char>(stream),
+     istream_iterator<int, char>(),
+     numbers); //numbers in {1, 2, 3, 4, 5}
+
+/*
+#include <fstream>
+fstream library contains three classes:
+  ofstream: Output file stream that creates and writes information to files.
+  ifstream: Input file stream that reads information from files.
+   fstream:  General file stream, with both ofstream and ifstream capabilities that allow it to create, read, and write information to files.
+*/
+ofstream outfile;
+outfile.open("file.dat", ios::out | ios::trunc );
+ofstream MyFile1("/tmp/test.txt");
+
+MyFile1 << "This is awesome! \n";
+MyFile1.close();
+
+ifstream MyFile("/tmp/test.txt");
+string line; 
+while ( getline (MyFile, line) ) cout << line << '\n';   //This is awesome!
+MyFile.close();
+
+{
+    std::ofstream ostrm("/tmp/Test.b", std::ios::binary);
+    double d = 3.14;
+    ostrm.write(reinterpret_cast<char*>(&d), sizeof d); // binary output
+    ostrm << 123 << "abc" << '\n';                      // text output
+}
+// read back
+std::ifstream istrm("/tmp/Test.b", std::ios::binary);
+double d;
+istrm.read(reinterpret_cast<char*>(&d), sizeof d);
+int n;
+std::string s;
+istrm >> n >> s;
+std::cout << " read back: " << d << " " << n << " " << s << '\n'; //read back: 3.14 123 abc
+
+
+//unique_ptr
+{ 
+    std::unique_ptr<Entity> entity(new Entity());
+    std::unique_ptr<Entity> entity = std::make_unique<Entity>(); //preferred way
+    entity->Print();
+}
+//shared_ptr 1: after exit block, no more reference to sharedEntity
+std::shared_ptr<Entity> e1;
+{
+    std::shared_ptr<Entity> e2 = std::make_shared<Entity>();
+    e2->Print();
+}
+//shared_ptr 2: after exit block, still has one reference to sharedEntity
+std::shared_ptr<Entity> e1;
+{
+    std::shared_ptr<Entity> e2 = std::make_shared<Entity>();
+    e2->Print();
+    e1 = e2;
+}
+

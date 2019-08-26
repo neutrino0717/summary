@@ -1,0 +1,3 @@
+#!/bin/bash
+if ! [ "$1" ]; then echo "usage: ${0##*/} alias"; exit 1; fi
+find . \( -name .git -o -name old \) -prune -o -iname "*${1}*" "${@:2}" 

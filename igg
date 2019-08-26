@@ -1,0 +1,3 @@
+#!/bin/bash
+if ! [ "$1" ]; then echo "usage: ${0##*/} keyword"; exit 1; fi
+grep --color --exclude-dir=.git -r -P "$@" .
