@@ -1,3 +1,6 @@
+
+
+
 //bilatoral mapping
 enum Season { Summer, Fall, Winter, Spring };
 string arSeason[] = {"Summer", "Fall", "Winter", "Spring"};  //enum --> String  
@@ -137,6 +140,28 @@ set<char> chars2 { 'A', 'C' };            //must be sorted before std::includes
 cout << (chars.find('A') != chars.end()) << endl;  //1
 cout << (chars.find('E') != chars.end()) << endl;  //0
 bool containAll = includes( chars.begin(), chars.end(), chars2.begin(), chars2.end());   //1
+
+// unordered_map::find
+#include <unordered_map>
+std::unordered_map<std::string,double> mymap = {
+   {"mom",5.4},
+   {"dad",6.1},
+   {"bro",5.9} };
+std::unordered_map<std::string,double>::const_iterator got = mymap.find ("dad");
+if ( got == mymap.end() ) std::cout << "not found"; //found
+std::cout << got->first << " is " << got->second; //dad is 6.1
+mymap.count("dad");   //1   //1 if an element with a key equivalent to k is found, or zero otherwise.
+mymap.count("abc");   //0
+mymap.size();        //3
+std::unordered_map<std::string,std::string>
+   first = {{"11","G. Lucas"},{"12","R. Scott"},{"13","J. Cameron"}},
+   second  = {{"21","C. Nolan"},{"22","R. Kelly"}};
+first.swap(second);
+for (auto& x: first)  std::cout << x.first << " (" << x.second << "), ";//{{"21","C. Nolan"},{"22","R. Kelly"}};
+for (auto& x: second) std::cout << x.first << " (" << x.second << "), ";//{{"11","G. Lucas"},{"12","R. Scott"},{"13","J. Cameron"}},
+
+
+
 
 int container[] = {5,10,15,20,25,30,35,40,45,50};
 std::sort (container,container+10);   //5 10 15 20 25 30 35 40 45 50
@@ -310,7 +335,20 @@ string str = "Hello everyone bye bye";
                            ^    */
 str.erase(remove_if(str.begin(), str.end(), isspace), str.end()); //str = Helloeveryonebyebye"
 str.erase(remove(   str.begin(), str.end(), ' '),     str.end()); //str = Helloeveryonebyebye"
-str.erase(find(s    tr.begin(),  str.end(), ' '));                //str = Helloeveryone bye bye
+str.erase(find(     str.begin(), str.end(), ' '));                //str = Helloeveryone bye bye
+
+std::map<std::string,std::string> mymap;
+// populating container:
+mymap["U.S."] = "Washington";
+mymap["U.K."] = "London";
+mymap["France"] = "Paris";
+mymap["Russia"] = "Moscow";
+mymap["China"] = "Beijing";
+mymap["Germany"] = "Berlin";
+mymap["Japan"] = "Tokyo";
+mymap.erase ( mymap.begin() );      // erasing by iterator, china removed
+mymap.erase ("Germany");            // erasing by key, germany removed
+mymap.erase ( mymap.find("China"), mymap.end() ); // erasing by range, all removed
 
 //thread
 #include <thread>
