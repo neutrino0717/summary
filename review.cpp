@@ -1,10 +1,8 @@
 
-
-
 //bilatoral mapping
 enum Season { Summer, Fall, Winter, Spring };
-string arSeason[] = {"Summer", "Fall", "Winter", "Spring"};  //enum --> String  
-map<string, Season> seasons = {                              //String --> enum
+string arSeason[] = {"Summer", "Fall", "Winter", "Spring"};  //enum --> String //arSeason[Fall]
+map<string, Season> seasons = {                              //String --> enum //seasons["Fall"]
     {"Summer", Summer},
     {"Fall", Fall},
     {"Winter", Winter},
@@ -22,7 +20,7 @@ m[7] = C(1);
 	//C(1) call defined constructor
 	//= call assign constructor
 
-//this: three ways
+//three ways
 class MyClass {
     public:
         MyClass(int a) : var(a){ }
@@ -35,7 +33,7 @@ class MyClass {
         int var;
 };
 
-//use reference to avouid new object
+//use reference to avoid new object
 A a[2];              //call def constr
 for (auto  x : a) { }//call copy constr
 for (auto& x : a) { }//no new object
@@ -124,25 +122,24 @@ f(move(dg8)); //Dog Tianyuan rules!
               //dog is destroyed: Tianyuan
               
 //direct and copy initialization
-//basically the two are the same, however if explicit is used in constr, the  2nd is not ok
+//basically the two are the same, however if "explicit" is used in constr, the  2nd is not ok
 C c1(7)       //direct-initialization 
 C c2 = 7     // called copy-initialization
 
 
-//map::find
+//std::map.find
 map<int, string>  dic = { {1, "one"}, {2, "two"} };
 bool exists1 = dic.find(1) != dic.end();// 1
 
-//set.find
+//std::set.find
 //std::includes
 set<char> chars { 'A', 'B', 'C', 'D' };   //must be sorted before std::includes
 set<char> chars2 { 'A', 'C' };            //must be sorted before std::includes
 cout << (chars.find('A') != chars.end()) << endl;  //1
 cout << (chars.find('E') != chars.end()) << endl;  //0
-bool containAll = includes( chars.begin(), chars.end(), chars2.begin(), chars2.end());   //1
+bool containAll = std::includes( chars.begin(), chars.end(), chars2.begin(), chars2.end());   //1
 
-// unordered_map::find
-#include <unordered_map>
+//unordered_map::find
 std::unordered_map<std::string,double> mymap = {
    {"mom",5.4},
    {"dad",6.1},
@@ -172,7 +169,22 @@ std::vector<int> myvector = {32,71,12,45,26,80,53,33};
 //2
 int myints[] = {32,71,12,45,26,80,53,33};
 std::vector<int> myvector (myints, myints+8);
+//vector initialization
+std::vector<std::string> words1 {"the", "frogurt", "is", "also", "cursed"};
+std::vector<std::string> words2(words1.begin(), words1.end());     // words2 == words1 
+std::vector<std::string> words3(words1);      //words3 == words1
+std::vector<std::string> words4(5, "Mo");     //{"Mo", "Mo", "Mo", "Mo", "Mo"}
+std::string mystrs[] = {"the", "frogurt", "is", "also", "cursed"};
+std::vector<std::string> words5(mystrs, mystrs+5);
+//vector move and copy
+std::vector<int> nums1 {3, 1, 4, 6, 5, 9};
+std::vector<int> nums2; 
+std::vector<int> nums3;
+nums2 = nums1;    // copy assignment copies data from nums1 to nums2
+nums3 = std::move(nums1); //move assignment moves data from nums1 to nums3,
+//now nums1 empty; nums2=nums3
 
+	
 //std::sort:  
 //1. using default comparison (operator <):
 std::sort (myvector.begin(), myvector.begin()+4);           //(12 32 45 71)26 80 53 33
