@@ -1,7 +1,8 @@
+
 //bilatoral mapping
 enum Season { Summer, Fall, Winter, Spring };
-string arSeason[] = {"Summer", "Fall", "Winter", "Spring"};  //enum --> String  
-map<string, Season> seasons = {                              //String --> enum
+string arSeason[] = {"Summer", "Fall", "Winter", "Spring"};  //enum --> String //arSeason[Fall]
+map<string, Season> seasons = {                              //String --> enum //seasons["Fall"]
     {"Summer", Summer},
     {"Fall", Fall},
     {"Winter", Winter},
@@ -19,7 +20,7 @@ m[7] = C(1);
 	//C(1) call defined constructor
 	//= call assign constructor
 
-//this: three ways
+//three ways
 class MyClass {
     public:
         MyClass(int a) : var(a){ }
@@ -32,7 +33,7 @@ class MyClass {
         int var;
 };
 
-//use reference to avouid new object
+//use reference to avoid new object
 A a[2];              //call def constr
 for (auto  x : a) { }//call copy constr
 for (auto& x : a) { }//no new object
@@ -121,22 +122,43 @@ f(move(dg8)); //Dog Tianyuan rules!
               //dog is destroyed: Tianyuan
               
 //direct and copy initialization
-//basically the two are the same, however if explicit is used in constr, the  2nd is not ok
+//basically the two are the same, however if "explicit" is used in constr, the  2nd is not ok
 C c1(7)       //direct-initialization 
 C c2 = 7     // called copy-initialization
 
 
-//map::find
+//std::map.find
 map<int, string>  dic = { {1, "one"}, {2, "two"} };
 bool exists1 = dic.find(1) != dic.end();// 1
 
-//set.find
+//std::set.find
 //std::includes
 set<char> chars { 'A', 'B', 'C', 'D' };   //must be sorted before std::includes
 set<char> chars2 { 'A', 'C' };            //must be sorted before std::includes
 cout << (chars.find('A') != chars.end()) << endl;  //1
 cout << (chars.find('E') != chars.end()) << endl;  //0
-bool containAll = includes( chars.begin(), chars.end(), chars2.begin(), chars2.end());   //1
+bool containAll = std::includes( chars.begin(), chars.end(), chars2.begin(), chars2.end());   //1
+
+//unordered_map::find
+std::unordered_map<std::string,double> mymap = {
+   {"mom",5.4},
+   {"dad",6.1},
+   {"bro",5.9} };
+std::unordered_map<std::string,double>::const_iterator got = mymap.find ("dad");
+if ( got == mymap.end() ) std::cout << "not found"; //found
+std::cout << got->first << " is " << got->second; //dad is 6.1
+mymap.count("dad");   //1   //1 if an element with a key equivalent to k is found, or zero otherwise.
+mymap.count("abc");   //0
+mymap.size();        //3
+std::unordered_map<std::string,std::string>
+   first = {{"11","G. Lucas"},{"12","R. Scott"},{"13","J. Cameron"}},
+   second  = {{"21","C. Nolan"},{"22","R. Kelly"}};
+first.swap(second);
+for (auto& x: first)  std::cout << x.first << " (" << x.second << "), ";//{{"21","C. Nolan"},{"22","R. Kelly"}};
+for (auto& x: second) std::cout << x.first << " (" << x.second << "), ";//{{"11","G. Lucas"},{"12","R. Scott"},{"13","J. Cameron"}},
+
+
+
 
 int container[] = {5,10,15,20,25,30,35,40,45,50};
 std::sort (container,container+10);   //5 10 15 20 25 30 35 40 45 50
@@ -147,7 +169,22 @@ std::vector<int> myvector = {32,71,12,45,26,80,53,33};
 //2
 int myints[] = {32,71,12,45,26,80,53,33};
 std::vector<int> myvector (myints, myints+8);
+//vector initialization
+std::vector<std::string> words1 {"the", "frogurt", "is", "also", "cursed"};
+std::vector<std::string> words2(words1.begin(), words1.end());     // words2 == words1 
+std::vector<std::string> words3(words1);      //words3 == words1
+std::vector<std::string> words4(5, "Mo");     //{"Mo", "Mo", "Mo", "Mo", "Mo"}
+std::string mystrs[] = {"the", "frogurt", "is", "also", "cursed"};
+std::vector<std::string> words5(mystrs, mystrs+5);
+//vector move and copy
+std::vector<int> nums1 {3, 1, 4, 6, 5, 9};
+std::vector<int> nums2; 
+std::vector<int> nums3;
+nums2 = nums1;    // copy assignment copies data from nums1 to nums2
+nums3 = std::move(nums1); //move assignment moves data from nums1 to nums3,
+//now nums1 empty; nums2=nums3
 
+	
 //std::sort:  
 //1. using default comparison (operator <):
 std::sort (myvector.begin(), myvector.begin()+4);           //(12 32 45 71)26 80 53 33
@@ -310,7 +347,20 @@ string str = "Hello everyone bye bye";
                            ^    */
 str.erase(remove_if(str.begin(), str.end(), isspace), str.end()); //str = Helloeveryonebyebye"
 str.erase(remove(   str.begin(), str.end(), ' '),     str.end()); //str = Helloeveryonebyebye"
-str.erase(find(s    tr.begin(),  str.end(), ' '));                //str = Helloeveryone bye bye
+str.erase(find(     str.begin(), str.end(), ' '));                //str = Helloeveryone bye bye
+
+std::map<std::string,std::string> mymap;
+// populating container:
+mymap["U.S."] = "Washington";
+mymap["U.K."] = "London";
+mymap["France"] = "Paris";
+mymap["Russia"] = "Moscow";
+mymap["China"] = "Beijing";
+mymap["Germany"] = "Berlin";
+mymap["Japan"] = "Tokyo";
+mymap.erase ( mymap.begin() );      // erasing by iterator, china removed
+mymap.erase ("Germany");            // erasing by key, germany removed
+mymap.erase ( mymap.find("China"), mymap.end() ); // erasing by range, all removed
 
 //thread
 #include <thread>
