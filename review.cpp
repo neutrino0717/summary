@@ -507,21 +507,24 @@ std::cout << " read back: " << d << " " << n << " " << s << '\n'; //read back: 3
 
 //unique_ptr
 { 
-    std::unique_ptr<Entity> entity(new Entity());
-    std::unique_ptr<Entity> entity = std::make_unique<Entity>(); //preferred way
-    entity->Print();
+    std::unique_ptr<Entity> e2(new Entity());
+    std::unique_ptr<Entity> e2 = std::make_unique<Entity>(); //preferred way
 }
 //shared_ptr 1: after exit block, no more reference to sharedEntity
 std::shared_ptr<Entity> e1;
 {
     std::shared_ptr<Entity> e2 = std::make_shared<Entity>();
-    e2->Print();
 }
 //shared_ptr 2: after exit block, still has one reference to sharedEntity
 std::shared_ptr<Entity> e1;
 {
     std::shared_ptr<Entity> e2 = std::make_shared<Entity>();
-    e2->Print();
     e1 = e2;
+}
+//weak_ptr: one weak reference to sharedEntity, which is destroyed
+std::weak_ptr<Entity> e1;
+{//https://www.geeksforgeeks.org/auto_ptr-unique_ptr-shared_ptr-weak_ptr-2/
+    std::shared_ptr<Entity> e2 = std::make_shared<Entity>();
+    e1 = sharedEntity;
 }
 

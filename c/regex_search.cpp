@@ -1,7 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <regex>
-#include <pp.h>
+#include "pp.h"
 using namespace std;
 
 
@@ -17,8 +17,7 @@ int main(){
     while (regex_search(d, mt, re)){
         ppp("smatch: ");
         for(auto s: mt) std::cout << s << " "; std::cout << std::endl;
-        values.push_back(
-                [0]);
+        values.push_back( mt[0]);
         d = mt.suffix();
     }
     ppp("match result: ");
