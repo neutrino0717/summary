@@ -8,7 +8,7 @@ map<string, Season> seasons = {                              //String --> enum /
     {"Winter", Winter},
     {"Spring", Spring}
 };
-cout <<Winter << " " << arSeason[Winter] << endl;
+cout << Winter  << " " << arSeason[Winter]  << endl;
 cout <<"Winter" << " " << seasons["Winter"] << endl;
 cout << (Winter==Season(2)) << endl;
 
@@ -40,7 +40,7 @@ for (auto& x : a) { }//no new object
 
 //c type array
 int aaa[5];
-int arr[] = {11, 35, 62, 555, 989};
+int arr[]  = {11, 35, 62, 555, 989};
 int arr[5] = {11, 35, 62, 555, 989};
 int x[2][3] = {{2, 3, 4}, {8, 9, 10}};
 //c type array as function parameters
@@ -53,14 +53,14 @@ int main() {
 }
 
 //name space
-namespace first { void func(){ cout << "Inside the first namespace" << endl; } }
+namespace first { void func(){ cout << "Inside the first  namespace" << endl; } }
 namespace second{ void func(){ cout << "Inside the second namespace" << endl;} }
 using namespace first;
 int main () { func(); return 0; } //    // This calls function from first name space.
 
 
 //rvalue ref
-void prt(int   i){ std::cout << "value " << i << std::endl; }
+void prt(int   i){ std::cout << "value      " << i << std::endl; }
 void prt(int&  i){ std::cout << "lvalue ref " << i << std::endl; }
 void prt(int&& i){ std::cout << "rvalue ref " << i << std::endl; }
 int main() {
