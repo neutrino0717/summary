@@ -8,7 +8,7 @@ map<string, Season> seasons = {                              //String --> enum /
     {"Winter", Winter},
     {"Spring", Spring}
 };
-cout <<Winter << " " << arSeason[Winter] << endl;
+cout << Winter  << " " << arSeason[Winter]  << endl;
 cout <<"Winter" << " " << seasons["Winter"] << endl;
 cout << (Winter==Season(2)) << endl;
 
@@ -40,7 +40,7 @@ for (auto& x : a) { }//no new object
 
 //c type array
 int aaa[5];
-int arr[] = {11, 35, 62, 555, 989};
+int arr[]  = {11, 35, 62, 555, 989};
 int arr[5] = {11, 35, 62, 555, 989};
 int x[2][3] = {{2, 3, 4}, {8, 9, 10}};
 //c type array as function parameters
@@ -53,26 +53,26 @@ int main() {
 }
 
 //name space
-namespace first { void func(){ cout << "Inside the first namespace" << endl; } }
+namespace first { void func(){ cout << "Inside the first  namespace" << endl; } }
 namespace second{ void func(){ cout << "Inside the second namespace" << endl;} }
 using namespace first;
 int main () { func(); return 0; } //    // This calls function from first name space.
 
 //lvalue occupy identifiable memory, rvalue not
+int x = i + 2; //x: rvalue, i+2: lvalue
 // lvalue = 2  --> OK
 // rvalue = 2   --> wrong
-int x = i + 2; //x: rvalue, i+2: lvalue
 
 //lvalue Reference 
 int i; int& r = i; //r is lvalue reference.
-       int& r = 2;      //error, lvalue reference are only refer to lvalue
+       int& r = 2;      //error, lvalue reference can only refer to lvalue
 	   const int& r = 2 //OK, this is a exception, constant lvalue can be assigned a rvalue
 in square(      int& x){return x*x;}; square(i); square(40);  //OK; error
 in square(const int& x){return x*x;}; square(i); square(40);  //OK; OK
 
-//lvalue create rvalue:
+//lvalue create rvalue normally:
 int x = i + 2;        //i: lvalue --> i+2: rvalue
-//rvalue create lvalue:
+//rvalue create lvalue sometimes:
 int v[3]; *(v+2) = 4; //v+2: rvalue --> *(v+2): lvalue
 
 //function or operator yields rvalue normally
@@ -84,9 +84,8 @@ foo() = 50; //foo() yields lvalue
 //operator [] always yields lvalue
 array[3] = 50;
 
-
 //reference
-void prt(int   i){ std::cout << "value " << i << std::endl; }
+void prt(int   i){ std::cout << "value      " << i << std::endl; }
 void prt(int&  i){ std::cout << "lvalue ref " << i << std::endl; }
 void prt(int&& i){ std::cout << "rvalue ref " << i << std::endl; }
 int main() {
