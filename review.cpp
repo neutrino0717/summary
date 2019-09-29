@@ -58,8 +58,34 @@ namespace second{ void func(){ cout << "Inside the second namespace" << endl;} }
 using namespace first;
 int main () { func(); return 0; } //    // This calls function from first name space.
 
+//lvalue occupy identifiable memory, rvalue not
+// lvalue = 2  --> OK
+// rvalue = 2   --> wrong
+int x = i + 2; //x: rvalue, i+2: lvalue
 
-//rvalue ref
+//lvalue Reference 
+int i; int& r = i; //r is lvalue reference.
+       int& r = 2;      //error, lvalue reference are only refer to lvalue
+	   const int& r = 2 //OK, this is a exception, constant lvalue can be assigned a rvalue
+in square(      int& x){return x*x;}; square(i); square(40);  //OK; error
+in square(const int& x){return x*x;}; square(i); square(40);  //OK; OK
+
+//lvalue create rvalue:
+int x = i + 2;        //i: lvalue --> i+2: rvalue
+//rvalue create lvalue:
+int v[3]; *(v+2) = 4; //v+2: rvalue --> *(v+2): lvalue
+
+//function or operator yields rvalue normally
+int y = sum(3,4)
+//function or operator yields lvalue too
+int myglobal;
+int& foo(){return mygolbal;}; 
+foo() = 50; //foo() yields lvalue
+//operator [] always yields lvalue
+array[3] = 50;
+
+
+//reference
 void prt(int   i){ std::cout << "value " << i << std::endl; }
 void prt(int&  i){ std::cout << "lvalue ref " << i << std::endl; }
 void prt(int&& i){ std::cout << "rvalue ref " << i << std::endl; }
@@ -560,12 +586,12 @@ std::cout << " read back: " << d << " " << n << " " << s << '\n'; //read back: 3
     std::unique_ptr<Entity> e2(new Entity());
     std::unique_ptr<Entity> e2 = std::make_unique<Entity>(); //preferred way
 }
-//shared_ptr 1: after exit block, no more reference to sharedEntity
+//shared_ptr 1: after exit block, no more reference to sharedEntity, sharedEntity destroyed
 std::shared_ptr<Entity> e1;
 {
     std::shared_ptr<Entity> e2 = std::make_shared<Entity>();
 }
-//shared_ptr 2: after exit block, still has one reference to sharedEntity
+//shared_ptr 2: after exit block, still has one reference to sharedEntity, sharedEntity not destoryed
 std::shared_ptr<Entity> e1;
 {
     std::shared_ptr<Entity> e2 = std::make_shared<Entity>();
@@ -578,3 +604,36 @@ std::weak_ptr<Entity> e1;
     e1 = sharedEntity;
 }
 
+//const
+//if const is on the left of *, data is const
+int const *p = &i;
+const int *p = &i;
+//if const is on the right of *, pointer is const
+int* const p;
+
+//cast is bad, avoid them as much as possible
+const int i = 9; 
+i = 6; //compile error
+const_cast<int&>(i) = 6  //const_cast cast away the constness of i 
+int j;
+static_cast<const int&>(j) = 7 //cast data into a const, throw error
+
+//const used with functions
+class Dog {
+	int age;
+	string name;
+	//what is const parameter
+	void setAge(const int& a){age = a}    //prevent setAge from changing reference a
+    void setAge(const int  a){age = a}    //this const is useless
+    //what is const return value
+	const string& getName(){return name;} //prevent caller from changing reference name
+    const string  getName(){return name;} //this const is useless
+    //what is const function
+    void printDog() const { ... }         //prevent printDog from changing Dog member variables and can only call another const function
+    void printDog()       { ... }         //will be invoked when Dog is not a const.
+}
+Dog d1;
+const string &n = d1.getName(); //the caller 
+d1.printDog();   //will invoke void printDog() {}
+const Dog d2;
+d2.printDog();   //will invoke void printDog() const{}
