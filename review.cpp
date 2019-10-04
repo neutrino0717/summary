@@ -97,6 +97,34 @@ int main() {
     prt(b);      //prt(int i) or prt(int&  i)
 }
 
+//rvalue reference have two usages:
+//1. moving semantics
+//2. perfect forwarding
+class boVector {   //1.
+    int size;
+    double* arr_;
+  public:
+    boVector(const boVector& rhs){ //copy constructor
+      size = rhs.size;
+      arr_ = new double[size];
+      for (int i=0; i<size; i++) { arr_[i] = rhs.arr_[i];}
+    }
+    ~boVector() { delete arr_; }
+};
+boVector reusable = createBovector();
+foo(reusable);        //copy constructor, OK if reusable need to be untouched
+                                       //bad if reusable not needed any more
+foo(std::move(reusable));//move           OK if reusable not needed any more
+foo(createBoVecotr()) //copy constructor, bad, why copy?
+class boVector::boVector(boVector&& rhs){ //now, add move constructor
+  size = rhs.size;
+  arr_ = rhs.arr_;
+  rhs.arr_ = nullptr;
+}
+foo(createBoVecotr()) //move constructor called now, OK
+
+  
+
 //NULL
 int *ptr = NULL;
 cout << "The value of ptr is " << ptr ;  //0
@@ -411,12 +439,61 @@ int main(){
 //Main    thread id=0x600000010
 //finished!
 
+
+
+////////tuple///////////////////
+//tuple for one-time usage, struct for readability
 struct Person{ string name; int age; } p;
 tuple<string, int> t;
 p.name;
 p.age;
 get<0>(t);
 get<1>(t);
+
+//pair
+pair<int, string> p1 = make_pair(23, "hello");
+pair<int, string> p2 =          {23, "hello"};
+pair<int, string> p3            {23, "hello"};
+cout << p1.first << " "  << p1.second << "\n";
+cout << p2.first << " "  << p2.second << "\n";
+cout << p3.first << " "  << p3.second << "\n";
+
+tuple<int, string, char> t1(23, "hello", 'a');
+get<1>(t1) = "bye"; //get<>() returns reference
+string& s = get<1>(t1);
+s = "changed";      //s is reference
+cout << get<0>(t1) << " " <<  get<1>(t1) << " " << get<2>(t1) << endl;   //23 changed a
+
+tuple<int, string, char> t2; //default constructor
+t2 = tuple<int, string, char>(24, "hello", 'a');
+t2 = make_tuple(25, "hello", 'a'); //the same, make things easier
+t2 = {26, "hello", 'a'};  //or
+
+//tuple can store references
+//None of the stl container can stroe reference, they always use copy/move
+string st = "to be changed";
+tuple<string&> t3(st); //store reference
+get<0>(t3) = "changed3";
+cout << st << endl;  //changed3
+tuple<string&> t4 = make_tuple(ref(st));
+get<0>(t4) = "changed4";
+cout << st << endl;  //changed4
+t2 = tuple<int, string, char>(27, "hello", 'a');
+int x; string y; char z;
+make_tuple(ref(x), ref(y), ref(z)) = t2;
+cout << x << " " << y << " " << z << endl;  //27 hello a
+std::tie(x, y, z) = t2;                     //same as above
+std::tie(x, std::ignore, z) = t2;           //ignore y
+//catenate
+auto t5 = tuple_cat(t2, t4);  //suport cat
+cout << tuple_size<decltype(t5)>::value << endl; //type traits, 4
+//swap
+int a, b, c;
+tie(b, c, a) = make_tuple(a, b, c);
+//multi index map
+map<tuple<int, char, float>, string> m;
+m[make_tuple(2,'a',2,3)] = "test it"; 
+  
 
 //Initializer list for struct
 //1. need constructor
@@ -603,7 +680,7 @@ std::weak_ptr<Entity> e1;
     e1 = sharedEntity;
 }
 
-//const
+//////////const ////////////////////////////
 //if const is on the left of *, data is const
 int const *p = &i;
 const int *p = &i;
@@ -636,3 +713,15 @@ const string &n = d1.getName(); //the caller
 d1.printDog();   //will invoke void printDog() {}
 const Dog d2;
 d2.printDog();   //will invoke void printDog() const{}
+//mutable
+class BigArray {
+	vector<int> v;
+	mutable int accessCounter; //logically it should should be able to be changed
+public:
+    int getItem(int index) const {//only v should not be changed by this function
+		accessCounter++;
+		//const_cast<BigArray*>(this)->accessCounter++ //use this instead in case accessCounter is not mutable
+		return v[index];
+	}		
+};
+
