@@ -1,101 +1,24 @@
+#include <algorithm>
+#include <array>        // std::array
+#include <bitset>
+#include <cstdlib>
+#include <ctime>
+#include <fstream>
+#include <iostream>
+#include <iterator>
+#include <map>
+#include <memory>
+#include <regex>
+#include <set>
+#include <sstream>
+#include <string>
+#include <thread>
+#include <tuple>
+#include <unordered_map>
+#include <unordered_set>
+#include <vector>
+using namespace std;
 
-//bilatoral mapping
-enum Season { Summer, Fall, Winter, Spring };
-string arSeason[] = {"Summer", "Fall", "Winter", "Spring"};  //enum --> String //arSeason[Fall]
-map<string, Season> seasons = {                              //String --> enum //seasons["Fall"]
-    {"Summer", Summer},
-    {"Fall", Fall},
-    {"Winter", Winter},
-    {"Spring", Spring}
-};
-cout << Winter  << " " << arSeason[Winter]  << endl;
-cout <<"Winter" << " " << seasons["Winter"] << endl;
-cout << (Winter==Season(2)) << endl;
-
-
-//call constr 3 times
-map<int, C> m;
-m[7] = C(1);
-	//m[7] call def constructor
-	//C(1) call defined constructor
-	//= call assign constructor
-
-//three ways
-class MyClass {
-    public:
-        MyClass(int a) : var(a){ }
-        void printInfo() {
-            cout <<         var <<endl;
-            cout <<   this->var <<endl;
-            cout << (*this).var <<endl;
-        }
-    private:
-        int var;
-};
-
-//use reference to avoid new object
-A a[2];              //call def constr
-for (auto  x : a) { }//call copy constr
-for (auto& x : a) { }//no new object
-
-//c type array
-int aaa[5];
-int arr[]  = {11, 35, 62, 555, 989};
-int arr[5] = {11, 35, 62, 555, 989};
-int x[2][3] = {{2, 3, 4}, {8, 9, 10}};
-//c type array as function parameters
-void printArray(int arr[], int size) {
-    for(int x=0; x<size; x++) { cout <<arr[x]<< endl; }
-}
-int main() {
-    int myArr[3]= {42, 33, 88};
-    printArray(myArr, 3);  //42 33 88
-}
-
-//name space
-namespace first { void func(){ cout << "Inside the first  namespace" << endl; } }
-namespace second{ void func(){ cout << "Inside the second namespace" << endl;} }
-using namespace first;
-int main () { func(); return 0; } //    // This calls function from first name space.
-
-//lvalue occupy identifiable memory, rvalue not
-int x = i + 2; //x: rvalue, i+2: lvalue
-// lvalue = 2  --> OK
-// rvalue = 2   --> wrong
-
-//lvalue Reference 
-int i; int& r = i; //r is lvalue reference.
-       int& r = 2;      //error, lvalue reference can only refer to lvalue
-	   const int& r = 2 //OK, this is a exception, constant lvalue can be assigned a rvalue
-in square(      int& x){return x*x;}; square(i); square(40);  //OK; error
-in square(const int& x){return x*x;}; square(i); square(40);  //OK; OK
-
-//lvalue create rvalue normally:
-int x = i + 2;        //i: lvalue --> i+2: rvalue
-//rvalue create lvalue sometimes:
-int v[3]; *(v+2) = 4; //v+2: rvalue --> *(v+2): lvalue
-
-//function or operator yields rvalue normally
-int y = sum(3,4)
-//function or operator yields lvalue too
-int myglobal;
-int& foo(){return mygolbal;}; 
-foo() = 50; //foo() yields lvalue
-//operator [] always yields lvalue
-array[3] = 50;
-
-//reference
-void prt(int   i){ std::cout << "value      " << i << std::endl; }
-void prt(int&  i){ std::cout << "lvalue ref " << i << std::endl; }
-void prt(int&& i){ std::cout << "rvalue ref " << i << std::endl; }
-int main() {
-    int a = 5;  //a is lvalue
-    int& b = a; //b is lvalue ref
-    int&& c ;   //c is rvalue ref
-    prt(3);      //prt(int i) or prt(int&& i)
-    prt(a);      //prt(int i) or prt(int&  i)
-    prt(b);      //prt(int i) or prt(int&  i)
-}
 
 //rvalue reference have two usages:
 //1. moving semantics
@@ -123,15 +46,7 @@ class boVector::boVector(boVector&& rhs){ //now, add move constructor
 }
 foo(createBoVecotr()) //move constructor called now, OK
 
-  
 
-//NULL
-int *ptr = NULL;
-cout << "The value of ptr is " << ptr ;  //0
-
-//extern
-extern "C" int x; //is just a declaration 
-extern "C" { int y; } //is a definition
 
 /*
  * unique smart pointer
@@ -178,39 +93,6 @@ f(move(dg8)); //Dog Tianyuan rules!
 //basically the two are the same, however if "explicit" is used in constr, the  2nd is not ok
 C c1(7)       //direct-initialization 
 C c2 = 7     // called copy-initialization
-
-
-//std::map.find
-map<int, string>  dic = { {1, "one"}, {2, "two"} };
-bool exists1 = dic.find(1) != dic.end();// 1
-
-//std::set.find
-//std::includes
-set<char> chars { 'A', 'B', 'C', 'D' };   //must be sorted before std::includes
-set<char> chars2 { 'A', 'C' };            //must be sorted before std::includes
-cout << (chars.find('A') != chars.end()) << endl;  //1
-cout << (chars.find('E') != chars.end()) << endl;  //0
-bool containAll = std::includes( chars.begin(), chars.end(), chars2.begin(), chars2.end());   //1
-
-//unordered_map::find
-std::unordered_map<std::string,double> mymap = {
-   {"mom",5.4},
-   {"dad",6.1},
-   {"bro",5.9} };
-std::unordered_map<std::string,double>::const_iterator got = mymap.find ("dad");
-if ( got == mymap.end() ) std::cout << "not found"; //found
-std::cout << got->first << " is " << got->second; //dad is 6.1
-mymap.count("dad");   //1   //1 if an element with a key equivalent to k is found, or zero otherwise.
-mymap.count("abc");   //0
-mymap.size();        //3
-std::unordered_map<std::string,std::string>
-   first = {{"11","G. Lucas"},{"12","R. Scott"},{"13","J. Cameron"}},
-   second  = {{"21","C. Nolan"},{"22","R. Kelly"}};
-first.swap(second);
-for (auto& x: first)  std::cout << x.first << " (" << x.second << "), ";//{{"21","C. Nolan"},{"22","R. Kelly"}};
-for (auto& x: second) std::cout << x.first << " (" << x.second << "), ";//{{"11","G. Lucas"},{"12","R. Scott"},{"13","J. Cameron"}},
-
-
 
 
 int container[] = {5,10,15,20,25,30,35,40,45,50};
