@@ -40,8 +40,8 @@ int nl() {
     std::cout << std::endl;
 }
 
-namespace first { void func(){ cout << "Inside the first namespace" << endl; } };
-namespace second{ void func(){ cout << "Inside the second namespace" << endl;} }
+namespace first { void func(){ std::cout << "Inside the first namespace" << endl; } };
+namespace second{ void func(){ std::cout << "Inside the second namespace" << endl;} }
 
 int myglobal;
 int& foo(){return myglobal;};
@@ -57,7 +57,7 @@ extern "C" int xxx; //is just a declaration
 extern "C" { int yyy; } //is a definition
 
 int main(){
-  //bilatoral mapping
+  pp("bilatoral mapping");
   enum Season { Summer, Fall, Winter, Spring };
   string arSeason[] = {"Summer", "Fall", "Winter", "Spring"};  //enum --> String //arSeason[Fall]
   map<string, Season> seasons = {                              //String --> enum //seasons["Fall"]
@@ -67,18 +67,28 @@ int main(){
       {"Spring", Spring}
   };
 
-  cout << Winter  << " " << arSeason[Winter]  << endl;
-  cout <<"Winter" << " " << seasons["Winter"] << endl;
-  cout << (Winter==Season(2)) << endl;
+  std::cout << Winter  << " " << arSeason[Winter]  << endl;
+  std::cout <<"Winter" << " " << seasons["Winter"] << endl;
+  std::cout << (Winter==Season(2)) << endl;
+
+  pp("enum");
+  enum Season1       { Summer1, Fall1, Winter1, Spring1 };
+  enum Season2: char { Summer2, Fall2, Winter2, Spring2 };
+  enum Season3: int  { Summer3, Fall3, Winter3, Spring3 };
+  std::cout << Fall1 << std::endl;  //1
+  std::cout << Fall2 << std::endl;  //1
+  std::cout << Fall1 << std::endl;  //1
+  Season w1 = Winter;
+  int    w2 = w1;           //2
 
   //three ways
   class MyClass {
       public:
-          MyClass(int a=0) : var(a){ cout << "a="<<a<<endl; }
+          MyClass(int a=0) : var(a){ std::cout << "a="<<a<<endl; }
           void printInfo() {
-              cout <<         var <<endl;
-              cout <<   this->var <<endl;
-              cout << (*this).var <<endl;
+              std::cout <<         var <<endl;
+              std::cout <<   this->var <<endl;
+              std::cout << (*this).var <<endl;
           }
       private:
           int var;
@@ -104,7 +114,7 @@ int main(){
   int x[2][3] = {{2, 3, 4}, {8, 9, 10}};
   //c type array as function parameters
   auto printArray = [](int arr[], int size) { 
-      for(int x=0; x<size; x++) { cout <<arr[x]<< " "; }; nl();
+      for(int x=0; x<size; x++) { std::cout <<arr[x]<< " "; }; nl();
   };
   printArray(arr1, 5);
   //void printArray(int arr[], int size) {   //--> note: nested function not supported in c++
@@ -129,7 +139,7 @@ int main(){
 
   //function or operator yields rvalue normally
   int y = [](int x, int y){return x+y; }(33,44);
-  cout << y << endl;
+  std::cout << y << endl;
 
   //function or operator yields lvalue too
   foo() = 50; //foo() yields lvalue
@@ -187,7 +197,7 @@ int main(){
   bool containAll = std::includes( chars.begin(), chars.end(), chars2.begin(), chars2.end());   //1
   cout << containAll << endl;
 
-  //unordered_map::find
+  pp("unordered_map::find");
   std::unordered_map<std::string,double> mymap = {
     {"mom",5.4},
     {"dad",6.1},
@@ -206,5 +216,149 @@ int main(){
   for (auto& x: first)  std::cout << x.first << " (" << x.second << "), "; nl();//{{"21","C. Nolan"},{"22","R. Kelly"}};
   for (auto& x: second) std::cout << x.first << " (" << x.second << "), "; nl();//{{"11","G. Lucas"},{"12","R. Scott"},{"13","J. Cameron"}},
 
+  pp("std::string::substr");
+  string str = "one way ticket";
+  cout << str.substr(4, 3) << endl;     //return "way"`,  str unchanged
+
+  pp("std::string::{erase,find}");
+  str = "This is an example"; str.erase(0, 5);
+  cout << str << endl;  //erase 0~5, return "is an example",
+  str = "This is an example"; str.erase(4);
+  cout << str << endl;  //erase 4~ , return "This",
+  str = "This is an example"; str.erase(str.find(' '));
+  cout << str << endl;  //erase 4~ , return "This",       s.find(' ') return 4
+  str = "This is an example"; str.erase(std::find(str.begin(), str.end(), ' ')); 
+  cout << str << endl;  //erase 4~5, return "Thisis an example" //std::find() return InputIt
+  
+  pp("std::string::{erase,remove}");
+  //remove all spaces https://stackoverflow.com/questions/83439/remove-spaces-from-stdstring-in-c
+  auto is_space = [](unsigned char x){return isspace(x);};
+  str = "This is an example";
+  str.erase(remove(str.begin(),   str.end(), ' '),      str.end());
+  cout << str << endl;
+  str.erase(remove_if(str.begin(), str.end(),is_space), str.end());
+  cout << str << endl;
+  //1 remove_if() change the string str to     "This is an example   "
+  //2 remove_if() return iterator pointing to  "This is an example   "
+  //                                                              ^
+  str = "This is an example";
+  remove_if(str.begin(), str.end(), is_space);
+  //cout << "-->" << str << "<--"<< endl;
+  //string str2=" aaa, bbb, ccc   ";
+  //cout << "-->" << str2 << "<--"<< endl;
+
+  pp("set: auto sort");
+  unordered_set<int> charu{'B', 'A', 'C', 'D'};
+  set<int>           charv{'B', 'A', 'C', 'D'};
+  for (int c:charu) cout << c << ":"; nl();           //68:67:65:66:
+  for (int c:charv) cout << c << ","; nl();           //65,66,67,68,
+  for (int c:charv) cout << string(1,c) << ";"; nl(); //A;B;C;D;
+
+  pp("all_of, any_of");
+  std::array<int,8> foo2 = {3,5,7,11,13,17,19,23};
+  cout << std::all_of(foo2.begin(), foo2.end(), [](int i){return i%2;}) << endl;  //1, all are odd
+  std::array<int,7> foo3 = {0,1,-1,3,-3,5,-5};
+  cout << std::any_of(foo3.begin(), foo3.end(), [](int i){return i<0;}) << endl;//1, some are negative
+
+  pp("pair");
+  pair<int, string> p1 = make_pair(23, "hello");
+  pair<int, string> p2 =          {23, "hello"};
+  pair<int, string> p3            {23, "hello"};
+  cout << p1.first << " "  << p1.second << "\n";
+  cout << p2.first << " "  << p2.second << "\n";
+  cout << p3.first << " "  << p3.second << "\n";
+
+  pp("tuple is for one-time usage");
+  //tuple for one-time usage, struct for readability
+  struct Person{ string name; int age; } p = {"mars", 11};
+  tuple<string, int> t = {"moon", 17};
+  cout << p.name    << " " << p.age     << endl;
+  cout << get<0>(t) << " " << get<1>(t) << endl;
+
+  pp("tuple get<>() returns reference");
+  tuple<int, string, char> t1(21, "hello", 'a');
+  get<1>(t1) = "bye"; //get<>() returns reference
+  string& s = get<1>(t1);
+  s = "changed";       //s is reference
+  cout << get<0>(t1) << " " <<  get<1>(t1) << " " << get<2>(t1) << endl;   //23 changed a
+
+  tuple<int, string, char> t2; //default constructor
+  tuple<int, string, char> t3 = {23, "hello", 'a'};  //or
+  auto                     t4 = tuple<int, string, char>(24, "hello", 'a');
+  auto                     t5 = make_tuple(25, "hello", 'a'); //the same, make things easier
+  cout << get<0>(t2) << "_" <<  get<1>(t2) << "_" << get<2>(t2) << endl;
+  cout << get<0>(t3) << " " <<  get<1>(t3) << " " << get<2>(t3) << endl;
+  cout << get<0>(t4) << " " <<  get<1>(t4) << " " << get<2>(t4) << endl;
+  cout << get<0>(t5) << " " <<  get<1>(t5) << " " << get<2>(t5) << endl;
+
+  pp("tuple can store references");
+  //None of the stl container can store reference, they always use copy/move
+  //string st = "to be changed";
+  //tuple<string&> t6(st); //store reference
+  //get<0>(t6) = "changed3";
+  //cout << st << endl;  //changed3
+  //tuple<string&> t4 = make_tuple(ref(st));
+  //get<0>(t4) = "changed4";
+  //cout << st << endl;  //changed4
+
+  pp("tuple can store references 2");
+  t2 = tuple<int, string, char>(27, "hello", 'b');
+  int ax; string ay; char az;
+  //make_tuple(ax, ay, az) = t2;
+  make_tuple(ref(ax), ref(ay), ref(az)) = t2;
+  cout << ax << " " << ay << " " << az << endl;  //27 hello b
+
+  int bx; string by; char bz;
+  std::tie(bx, std::ignore, bz) = t2;           //same as above, ignore y
+  cout << bx << " " << by << " " << bz << endl;  //27  b
+  std::tie(bx, by, bz) = t2;                    //
+  cout << bx << " " << by << " " << bz << endl;  //27 hello b
+
+  pp("tuple catenate");
+  auto t8 = tuple_cat(t2, t3);  //suport cat
+  cout << tuple_size<decltype(t8)>::value << endl; //type traits, 6
+  pp("tuple swap");
+  int sa=1, sb=2, sc=3;
+  tie(sb, sc, sa) = make_tuple(sa, sb, sc);
+  cout << sa << sb << sc << endl;
+
+  pp("multi index map");
+  map<tuple<int, char, float>, string> mt;
+  mt[make_tuple(2,'a',2.3)] = "test it";
+  cout <<  mt[make_tuple(2,'a',2.3)] << endl;
+
+  pp("std::transform");
+  str = "Lower and upper";
+  std::transform(str.begin(), str.end(), str.begin(), ::tolower); //::tolower global namespace, which is tolower of C lauguage. str is "lower and upper"
+  cout << str << endl;
+  std::transform(str.begin(), str.end(), str.begin(), ::toupper); //str is "LOWER AND UPPER"
+  cout << str << endl;
+
+  pp("std::set::{insert,erase,clear}");
+  set<char> set1{ 'A', 'B', 'C' };
+  set1.insert('D'); //{ 'A', 'B', 'C', 'D' }
+  set1.erase('A');  //{ 'B', 'C', 'D' }
+  for(const char &c: set1) cout << c << ";"; nl();//B;C;D;
+  set1.clear();     //{ }
+  for(const char &c: set1) cout << c << ";"; nl();
+
+  pp("std::{set_union,intersection,set_difference,equal}");
+  set<int> sss1{ 1, 2, 3, 4 };
+  set<int> sss2{ 3, 4, 5 };
+  set<int> sss3, sss4, sss5;
+  insert_iterator<set<int>> iterator3(sss3, sss3.begin());
+  insert_iterator<set<int>> iterator4(sss4, sss4.begin());
+  insert_iterator<set<int>> iterator5(sss5, sss5.begin());
+  
+  set_union       (sss1.begin(), sss1.end(), sss2.begin(), sss2.end(), iterator3 );  //third is { 1, 2, 3, 4, 5 }
+  for (const int& i: sss3) cout << i; nl();
+  set_intersection(sss1.begin(), sss1.end(), sss2.begin(), sss2.end(), iterator4);   //third is { 3, 4 }
+  for (const int& i: sss4) cout << i; nl();
+  set_difference  (sss1.begin(), sss1.end(), sss2.begin(), sss2.end(), iterator5);   //third is { 1, 2 }
+  for (const int& i: sss5) cout << i; nl();
+  vector <int> vthird;
+  set_intersection(sss1.begin(), sss1.end(), sss2.begin(), sss2.end(), back_inserter(vthird)); //third is { 3, 4 }
+  for (const int& i: vthird) cout << i; nl();
+  cout << equal   (sss1.begin(), sss1.end(), sss2.begin(), sss2.end()) << endl;
 
 }

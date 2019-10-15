@@ -199,17 +199,7 @@ cout << typeid(y).name() << endl;   //c   char
 #define MIN(a,b) (a<b ? a : b)
 cout <<"The Minimum number is " << MIN(x, y) << endl;
 
-//enum
-enum Season {
-    Summer, Fall, Winter, Spring
-};
-enum Season2: char {
-    Summer2, Fall2, Winter2, Spring2
-};
-Season winter = Winter;
-int baseValue = winter;           //2
-std::cout <<  Fall << std::endl;  //1
-std::cout << Fall2 << std::endl;  //1
+
 
 ///////////constructions /////////////////////////
 class Dog{};
@@ -240,49 +230,6 @@ class Fish{ //1, 2, 3
 class Cow{ //1, 2, 4
   Cow& operator=(const Cow&) = delete;
 };
-
-//std::transform
-string str = "Lower and upper";
-std::transform(str.begin(), str.end(), str.begin(), ::tolower); //::tolower global namespace, which is tolower of C lauguage. str is "lower and upper"
-std::transform(str.begin(), str.end(), str.begin(), ::toupper); //str is "LOWER AND UPPER"
-
-//std::set.{insert,erase,clear}
-set<char> set{ 'A', 'B', 'C' };
-set.insert('D'); //{ 'A', 'B', 'C', 'D' }
-set.erase('A');  //{ 'B', 'C', 'D' }
-for(const char &c: set) cout << c << ";"; //B;C;D;
-set.clear();     //{ }
-
-//std::{set_union,intersection,set_difference,equal}
-set<int> first  { 1, 2, 3 };
-set<int> second { 3, 4, 5 };
-set<int> third;
-insert_iterator<set<int>> iterator(third, third.begin());
-set_union       (first.begin(), first.end(), second.begin(), second.end(), iterator );  //third is { 1, 2, 3, 4, 5 }
-set_intersection(first.begin(), first.end(), second.begin(), second.end(), iterator);   //third is { 3 }
-vector <int> vthird;
-set_intersection(first.begin(), first.end(), second.begin(), second.end(), back_inserter(vthird)); //third is { 3 }
-set_difference  (first.begin(), first.end(), second.begin(), second.end(), iterator);              //third is { 1, 2 }
-equal           (first.begin(), first.end(), second.begin(),second.end());
-
-//std::string.substr
-string str = "one way ticket";
-str.substr(4, 3)     //return "way"`,  str unchanged
-
-//std::string.{erase,find}
-std::string s = "This is an example";
-s.erase(0, 5);                               //erase 0~5, s = "is an example",
-s.erase(s.find(' '));                        //erase 4~ , s = "This",             //s.find(' ') return 4
-s.erase(std::find(s.begin(), s.end(), ' ')); //erase 4~5, s = "Thisis an example" //std::find() return InputIt
-
-//std::{remove_if,remove,find}
-string str = "Hello everyone bye bye";
-          remove_if(str.begin(), str.end(), isspace)
-/*str = "Helloeveryonebyebye   "
-                           ^    */
-str.erase(remove_if(str.begin(), str.end(), isspace), str.end()); //str = Helloeveryonebyebye"
-str.erase(remove(   str.begin(), str.end(), ' '),     str.end()); //str = Helloeveryonebyebye"
-str.erase(find(     str.begin(), str.end(), ' '));                //str = Helloeveryone bye bye
 
 std::map<std::string,std::string> mymap;
 // populating container:
@@ -321,61 +268,6 @@ int main(){
 //Main    thread id=0x600000010
 //finished!
 
-
-
-////////tuple///////////////////
-//tuple for one-time usage, struct for readability
-struct Person{ string name; int age; } p;
-tuple<string, int> t;
-p.name;
-p.age;
-get<0>(t);
-get<1>(t);
-
-//pair
-pair<int, string> p1 = make_pair(23, "hello");
-pair<int, string> p2 =          {23, "hello"};
-pair<int, string> p3            {23, "hello"};
-cout << p1.first << " "  << p1.second << "\n";
-cout << p2.first << " "  << p2.second << "\n";
-cout << p3.first << " "  << p3.second << "\n";
-
-tuple<int, string, char> t1(23, "hello", 'a');
-get<1>(t1) = "bye"; //get<>() returns reference
-string& s = get<1>(t1);
-s = "changed";      //s is reference
-cout << get<0>(t1) << " " <<  get<1>(t1) << " " << get<2>(t1) << endl;   //23 changed a
-
-tuple<int, string, char> t2; //default constructor
-t2 = tuple<int, string, char>(24, "hello", 'a');
-t2 = make_tuple(25, "hello", 'a'); //the same, make things easier
-t2 = {26, "hello", 'a'};  //or
-
-//tuple can store references
-//None of the stl container can stroe reference, they always use copy/move
-string st = "to be changed";
-tuple<string&> t3(st); //store reference
-get<0>(t3) = "changed3";
-cout << st << endl;  //changed3
-tuple<string&> t4 = make_tuple(ref(st));
-get<0>(t4) = "changed4";
-cout << st << endl;  //changed4
-t2 = tuple<int, string, char>(27, "hello", 'a');
-int x; string y; char z;
-make_tuple(ref(x), ref(y), ref(z)) = t2;
-cout << x << " " << y << " " << z << endl;  //27 hello a
-std::tie(x, y, z) = t2;                     //same as above
-std::tie(x, std::ignore, z) = t2;           //ignore y
-//catenate
-auto t5 = tuple_cat(t2, t4);  //suport cat
-cout << tuple_size<decltype(t5)>::value << endl; //type traits, 4
-//swap
-int a, b, c;
-tie(b, c, a) = make_tuple(a, b, c);
-//multi index map
-map<tuple<int, char, float>, string> m;
-m[make_tuple(2,'a',2,3)] = "test it"; 
-  
 
 //Initializer list for struct
 //1. need constructor
@@ -432,29 +324,7 @@ data = regex_replace(data, regex, "<f>$0</f>"); //Pi = <f>3.14</f>, exponent = <
 srand(time(0)); //time(0) will return the current second count
 for (int x = 1; x <= 7; x++) cout << 1 + (rand() % 6) << " ";  //4 5 3 6 5 1 2
 
-//set: auto sort
-#include <set>
-#include <unordered_set>
-set<int>           chars{'B', 'A', 'C', 'D'};
-unordered_set<int> char2{'B', 'A', 'C', 'D'};
-for (int c:chars) cout << c << ",";//65,66,67,68,
-for (int c:chars) cout << string(1,c) << ";"; //A;B;C;D;
-for (int c:char2) cout << c << ":";//68:67:65:66:
 
-//remove all spaces https://stackoverflow.com/questions/83439/remove-spaces-from-stdstring-in-c
-//str = "Hello everyone bye bye"
-remove_if(str.begin(), str.end(), isspace), str.end()
-//str = "Helloeveryonebyebye   "
-//                          ^
-str.erase(remove_if(str.begin(), str.end(), isspace), str.end());
-//str = Helloeveryonebyebye"
-//the same
-str.erase(remove(str1.begin(),   str.end(), ' '),    str1.end());
-
-std::array<int,8> foo = {3,5,7,11,13,17,19,23};
-std::all_of(foo.begin(), foo.end(), [](int i){return i%2;})  //1, all are odd
-std::array<int,7> foo = {0,1,-1,3,-3,5,-5};
-std::any_of(foo.begin(), foo.end(), [](int i){return i<0;}) )//1, some are negative
 
 //time -> time_t --localtime/gmtime----> tm -> string
 time_t now = time(0);//time(0) will return the current second count
