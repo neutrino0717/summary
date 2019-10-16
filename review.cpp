@@ -231,18 +231,6 @@ class Cow{ //1, 2, 4
   Cow& operator=(const Cow&) = delete;
 };
 
-std::map<std::string,std::string> mymap;
-// populating container:
-mymap["U.S."] = "Washington";
-mymap["U.K."] = "London";
-mymap["France"] = "Paris";
-mymap["Russia"] = "Moscow";
-mymap["China"] = "Beijing";
-mymap["Germany"] = "Berlin";
-mymap["Japan"] = "Tokyo";
-mymap.erase ( mymap.begin() );      // erasing by iterator, china removed
-mymap.erase ("Germany");            // erasing by key, germany removed
-mymap.erase ( mymap.find("China"), mymap.end() ); // erasing by range, all removed
 
 //thread
 #include <thread>
@@ -269,42 +257,6 @@ int main(){
 //finished!
 
 
-//Initializer list for struct
-//1. need constructor
-Size size(10, 11);
-Point point(5, 6);
-Rectangle rect(size, point);
-//2. Initializer_list
-Size size{10, 11};
-Point point{5, 6};
-Rectangle rect{size, point};
-Rectangle rect = {{10, 10}, {5, 5}};
-
-//Initializer list for array
-//1. Array of Employee class by constructor
-Employee employees[] {
-    Employee("Anton", "Pavlov"),
-    Employee("Elena", "Kirienko")
-};
-//2. Array of Employee class by initializer list
-Employee employees2[] {
-    {"Anton", "Pavlov"},
-    {"Elena", "Kirienko"}
-};
-//3. Array of integer
-int primeNumbers[] = { 2, 3, 5, 7, 11, 13, 17, 19 };
-//4. Array of string
-string gameList[] { "soccer", "hockey", "basketball" };
-
-//Initializer for map
-map<int, Employee> employees {
-    {1, Employee{"Anton", "Pavlov"}},
-    {2, Employee{"Elena", "Kirienko"}}
-};
-
-//iostream
-std::cout << "Penguin!\n";
-std::cout.put('P');         //low-level I/O
 
 //std::{regex,smatch,regex_match}
 string data1 = "aaab";
@@ -317,42 +269,6 @@ bool b2 = regex_match(data2, match, regex);  //0.
 string data = "Pi = 3.14, exponent = 2.718, done.";
 regex regex(R"(\d+\.\d+)", regex::icase);
 data = regex_replace(data, regex, "<f>$0</f>"); //Pi = <f>3.14</f>, exponent = <f>2.718</f>, done.
-
-//rand
-#include <cstdlib>
-#include <ctime>
-srand(time(0)); //time(0) will return the current second count
-for (int x = 1; x <= 7; x++) cout << 1 + (rand() % 6) << " ";  //4 5 3 6 5 1 2
-
-
-
-//time -> time_t --localtime/gmtime----> tm -> string
-time_t now = time(0);//time(0) will return the current second count
-//1
-tm tm = *localtime(&now);
-tm *gmtm = gmtime(&now); // convert now to tm struct for UTC
-//2
-tm={2, 30, 22, 17, 7-1, 1975-1900};
-int year = tm.tm_year + 1900;
-int month = tm.tm_mon + 1;
-int day = tm.tm_mday;
-int hour = tm.tm_hour;
-int minute = tm.tm_min;
-int second = tm.tm_sec;
-int dayOfWeek = tm.tm_wday;
-cout << year << ":" << month  << ":" << day << ":" << hour << ":" << minute << ":" << second << endl;
-//2019:8:25:22:21:26
-//1975:7:17:22:30:2
-
-//time -> time_t --ctime--------> string 
-#include <ctime>
-time_t now = time(0);  //1566743108
-cout << now << endl;
-char* dt = ctime(&now); // convert now to string form
-cout << "The local date and time is: " << dt << endl;//Sun Aug 25 22:25:08 2019
-tm *gmtm = gmtime(&now); // convert now to tm struct for UTC
-dt = asctime(gmtm);
-cout << "The UTC date and time is:"<< dt << endl; //Sun Aug 25 14:25:08 2019
 
 #include <sstream>
 // istringstream is for input, 
@@ -476,4 +392,3 @@ public:
 		return v[index];
 	}		
 };
-

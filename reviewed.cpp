@@ -40,6 +40,47 @@ int nl() {
     std::cout << std::endl;
 }
 
+template <class T, class U>
+int pmap(std::map<T, U>& m){
+  for (auto i: m)  cout << i.first << " -> " << i.second << endl;
+}
+
+
+
+struct Size {
+    int width, height;
+    /*
+    Size () {}
+    Size (int width, int height) {
+      this->width = width;
+      this->height = height;
+    }*/
+};
+
+struct Point {
+    int top, left;
+    Point () {}
+    Point (int top, int left) {
+      this->top = top;
+      this->left = left;
+    }
+};
+
+struct Rectangle {
+    Size size;
+    Point point;
+    /*    
+    Rectangle (Size size1, Point point) {
+      this->size = size1;
+      this->point = point;
+    }*/
+    void pp(){
+        cout << this->size.width << ","<<this->size.height<<";"<<this->point.top<<","<<this->point.left<<endl;;
+    }
+};
+
+
+
 namespace first { void func(){ std::cout << "Inside the first namespace" << endl; } };
 namespace second{ void func(){ std::cout << "Inside the second namespace" << endl;} }
 
@@ -210,11 +251,11 @@ int main(){
   cout << mymap.count("abc") << endl;   //0
   cout << mymap.size() << endl;        //3
   std::unordered_map<std::string,std::string>
-    first = {{"11","G. Lucas"},{"12","R. Scott"},{"13","J. Cameron"}},
-    second  = {{"21","C. Nolan"},{"22","R. Kelly"}};
-  first.swap(second);
-  for (auto& x: first)  std::cout << x.first << " (" << x.second << "), "; nl();//{{"21","C. Nolan"},{"22","R. Kelly"}};
-  for (auto& x: second) std::cout << x.first << " (" << x.second << "), "; nl();//{{"11","G. Lucas"},{"12","R. Scott"},{"13","J. Cameron"}},
+    first1 = {{"11","G. Lucas"},{"12","R. Scott"},{"13","J. Cameron"}},
+    second1  = {{"21","C. Nolan"},{"22","R. Kelly"}};
+  first1.swap(second1);
+  for (auto& x: first1)  std::cout << x.first << " (" << x.second << "), "; nl();//{{"21","C. Nolan"},{"22","R. Kelly"}};
+  for (auto& x: second1) std::cout << x.first << " (" << x.second << "), "; nl();//{{"11","G. Lucas"},{"12","R. Scott"},{"13","J. Cameron"}},
 
   pp("std::string::substr");
   string str = "one way ticket";
@@ -360,5 +401,83 @@ int main(){
   set_intersection(sss1.begin(), sss1.end(), sss2.begin(), sss2.end(), back_inserter(vthird)); //third is { 3, 4 }
   for (const int& i: vthird) cout << i; nl();
   cout << equal   (sss1.begin(), sss1.end(), sss2.begin(), sss2.end()) << endl;
+
+  pp("std::map::{erase, find, end}");
+  std::map<std::string,std::string> mymap2;
+  // populating container:
+  mymap2["U.S."] = "Washington";
+  mymap2["U.K."] = "London";
+  mymap2["France"] = "Paris";
+  mymap2["Russia"] = "Moscow";
+  mymap2["China"] = "Beijing";
+  mymap2["Germany"] = "Berlin";
+  mymap2["Japan"] = "Tokyo";
+  cout << "sorted:\n";         pmap(mymap2);        
+  mymap2.erase ( mymap2.begin() );      // erasing by iterator, china removed
+  cout << "China removed:\n";  pmap(mymap2);
+  mymap2.erase ("Germany");             // erasing by key, germany removed
+  cout << "Germany removed:\n";pmap(mymap2);
+  mymap2.erase ( mymap2.find("U.K."), mymap2.end() ); // erasing by range, all removed
+  cout << "U.K. U.S. removed:\n"; pmap(mymap2);
+
+  pp("Initializer list for struct");
+  //way1. need constructor
+  //Size size(10, 11);
+  //Point point(5, 6);
+  //Rectangle rect(size, point);
+
+  //way2, Initializer_list, no need for constructor
+  Size size{1, 2};
+  Point point{3, 4};
+  Rectangle rect{size, point};  
+  rect.pp();
+
+  //way3, Initializer_list
+  Rectangle rect2 = {{5, 6}, {7, 8}};   
+  rect2.pp();
+
+  pp("Initializer list for Array of integer/string");
+  int primeNumbers[] = { 2, 3, 5, 7, 11, 13, 17, 19 };
+  string gameList[] { "soccer", "hockey", "basketball" };
+
+  pp("use constructor for Array of objects");
+  Point point2[] { Point(1, 2), Point(3, 4) };
+  Point point3[] { Point{1, 2}, Point{3, 4} };
+
+  pp("Initializer list for map");
+  map<int, Point> point4 { {1, Point{11, 12}}, {2, Point{21, 22}} };
+
+  pp("iostream");
+  std::cout.put('P'); nl();         //low-level I/O
+
+  pp("time -> time_t --localtime/gmtime----> tm -> string");
+  time_t now = time(0);//time(0) will return the current second count: 1566743108
+  tm tm0 = *localtime(&now);
+  tm tm1={2, 30, 22, 17, 7-1, 1975-1900}; //or
+  //tm* gmtm = gmtime(&now); // convert now to tm struct for UTC
+  int year = tm1.tm_year + 1900;
+  int month = tm1.tm_mon + 1;
+  int day = tm1.tm_mday;
+  int hour = tm1.tm_hour;
+  int minute = tm1.tm_min;
+  int second = tm1.tm_sec;
+  int dayOfWeek = tm1.tm_wday;
+  cout << year << ":" << month  << ":" << day << ":" << hour << ":" << minute << ":" << second << endl; //1975:7:17:22:30:2
+  //2019:8:25:22:21:26
+  
+  pp("time -> time_t --ctime--------> string");
+  time_t now2 = time(0);  //1566743108
+  cout << now2 << endl;
+  char* dt = ctime(&now2); // convert now to string form
+  cout << "The local date and time is: " << dt << endl;//Sun Aug 25 22:25:08 2019
+
+  pp("time -> time_t --gmtime-->tm --asctime---> string");
+  tm *gmtm2 = gmtime(&now2); // convert now to tm struct for UTC
+  dt = asctime(gmtm2);
+  cout << "The UTC date and time is:"<< dt << endl; //Sun Aug 25 14:25:08 2019
+ 
+  pp("srand");
+  srand(time(0)); //time(0) will return the current second count
+  for (int x = 1; x <= 7; x++) cout << 1 + (rand() % 6) << " ";  //4 5 3 6 5 1 2
 
 }
