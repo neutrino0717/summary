@@ -37,7 +37,7 @@ int main(int argc, char *argv[])
   m = &x;
   n = &y; 
 
-  printf("*m = %d\n", *m);
+printf("*m = %d\n", *m);
   printf("*n = %d\n", *n);
   printf("m = %p\n", m);
   printf("n = %p\n", n);
