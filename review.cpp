@@ -21,6 +21,7 @@ m[7] = C(1);
 	//= call assign constructor
 
 //three ways
+-
 class MyClass {
     public:
         MyClass(int a) : var(a){ }
@@ -58,7 +59,6 @@ namespace second{ void func(){ cout << "Inside the second namespace" << endl;} }
 using namespace first;
 int main () { func(); return 0; } //    // This calls function from first name space.
 
-
 //rvalue ref
 void prt(int   i){ std::cout << "value      " << i << std::endl; }
 void prt(int&  i){ std::cout << "lvalue ref " << i << std::endl; }
@@ -71,6 +71,11 @@ int main() {
     prt(a);      //prt(int i) or prt(int&  i)
     prt(b);      //prt(int i) or prt(int&  i)
 }
+
+//rvalue reference is used for two things
+//1. Moving Semantics
+//2. Perfect Forwarding
+
 
 //NULL
 int *ptr = NULL;
