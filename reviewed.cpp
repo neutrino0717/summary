@@ -481,6 +481,38 @@ int main(){
   srand(time(0)); //time(0) will return the current second count
   for (int x = 1; x <= 7; x++) cout << 1 + (rand() % 6) << " ";  //4 5 3 6 5 1 2
 
+  //#include <sstream>
+  // istringstream is for input, 
+  // ostringstream for output. 
+  //  stringstream is input and output. You can use stringstream pretty much everywhere.
+  pp("ostringstream and istringstream and sstream");
+  {
+    bool boolValue;
+    int intValue;
+    std::istringstream("true") >> std::boolalpha >> boolValue;
+    std::cout << boolValue << std::endl;   //1
+    std::istringstream("10") >> std::hex >> intValue;
+    std::cout << intValue << std::endl;    //1
+   
+
+    stringstream ss;
+    ss << "hex of 89 is: " << hex << 89 << "\noct of 89 is: " << oct << 89;
+    cout << ss.str() << endl; //hex of 89 is: 59. oct of 89 is: 131
+
+    stringstream ss2("1 2 3 4 5");
+    int numbers[5];
+    /*template<class InputIterator, class OutputIterator>
+      OutputIterator copy (InputIterator first, InputIterator last, OutputIterator result) {
+        while (first!=last) { *result = *first; ++result; ++first; }
+        return result;
+      }*/
+    // input one int + one char --> "1" + " " from ss2
+    copy(istream_iterator<int, char>(ss2), istream_iterator<int, char>(), numbers); //numbers in {1, 2, 3, 4, 5}
+    for(int &i: numbers) cout << i << ":"; cout << endl;
+
+  }
+
+
   /*
   #include <fstream>
   fstream library contains three classes:
@@ -552,9 +584,9 @@ int main(){
     cout << regex_replace(data, reg2, "<f>$0</f>") << endl; //Pi = <f>3.14</f>, exponent = <f>2.718</f>, done.
   }
 
-   pp("typeid");
-   {
-     auto x = 4;
+  pp("typeid");
+  {
+    auto x = 4;
     auto y = 3.37;
     auto ptrx = &x;
     auto ptry = &y;  
@@ -562,10 +594,15 @@ int main(){
          << typeid(y).name() << endl        //d  double
          << typeid(ptrx).name() << endl     //Pi point_to_int
          << typeid(ptry).name() << endl;    //Pi point_to_int
-   }
+  }
 
-
-
+  pp("decltype");
+  {
+	  //decltype
+	  decltype(pp("hello")) x;//Data type of x is same as return type of pp()
+  	cout << typeid(x).name() << endl;   //i   int
+    cout << typeid(decltype(pp("hello"))).name() << endl;
+  }
 
   pp("std::sort vector");
   {

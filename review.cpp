@@ -1,26 +1,4 @@
 
-#include <algorithm>
-#include <array>        // std::array
-#include <bitset>
-#include <cstdlib>
-#include <ctime>
-#include <fstream>
-#include <iostream>
-#include <iterator>
-#include <map>
-#include <memory>
-#include <regex>
-#include <set>
-#include <sstream>
-#include <string>
-#include <thread>
-#include <tuple>
-#include <unordered_map>
-#include <unordered_set>
-#include <vector>
-using namespace std;
-
-
 //rvalue reference have two usages:
 //1. moving semantics
 //2. perfect forwarding
@@ -172,15 +150,7 @@ int main(){                                            int main(){
   return 0;                                              return 0;
 }                                                      }
 
-//decltype
-int fun1() { return 10; }
-char fun2() { return 'g'; }
-decltype(fun1()) x;//Data type of x is same as return type of fun1()
-decltype(fun2()) y;
-cout << typeid(x).name() << endl;   //i   int
-cout << typeid(y).name() << endl;   //c   char
 
-    return 0;
 
 
 //Micro
@@ -219,26 +189,6 @@ class Cow{ //1, 2, 4
   Cow& operator=(const Cow&) = delete;
 };
 
-
-#include <sstream>
-// istringstream is for input, 
-// ostringstream for output. 
-//  stringstream is input and output. You can use stringstream pretty much everywhere.
-std::string str = "true";
-bool boolValue;
-std::istringstream(str) >> std::boolalpha >> boolValue;
-std::cout << boolValue << std::endl;   //1
-
-stringstream ss;
-ss << "hex of 89 is: " << hex << 89 << ". oct of 89 is: " << oct << 89;
-    cout << ss.str() << endl; //hex of 89 is: 59. oct of 89 is: 131
-
-string str = "1 2 3 4 5";
-stringstream stream(str);
-int numbers[5];
-copy(istream_iterator<int, char>(stream),
-     istream_iterator<int, char>(),
-     numbers); //numbers in {1, 2, 3, 4, 5}
 
 //unique_ptr
 { 
