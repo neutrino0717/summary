@@ -93,10 +93,7 @@ f(move(dg8)); //Dog Tianyuan rules!
 //basically the two are the same, however if "explicit" is used in constr, the  2nd is not ok
 C c1(7)       //direct-initialization 
 C c2 = 7     // called copy-initialization
-
-
-int container[] = {5,10,15,20,25,30,35,40,45,50};
-std::sort (container,container+10);   //5 10 15 20 25 30 35 40 45 50
+ 30 35 40 45 50
 
 //vector initialization
 //1
@@ -119,14 +116,6 @@ nums2 = nums1;    // copy assignment copies data from nums1 to nums2
 nums3 = std::move(nums1); //move assignment moves data from nums1 to nums3,
 //now nums1 empty; nums2=nums3
 
-	
-//std::sort:  
-//1. using default comparison (operator <):
-std::sort (myvector.begin(), myvector.begin()+4);           //(12 32 45 71)26 80 53 33
-std::sort (myvector.begin()+4, myvector.end(), myfunction); // 12 32 45 71(26 33 53 80)
-//2. using object as comp
-std::sort (myvector.begin(), myvector.end(), myobject);     //(12 26 32 33 45 53 71 80)
-for (std::vector<int>::iterator it=myvector.begin(); it!=myvector.end(); ++it) std::cout << ' ' << *it;
 
 //Prefix ++ operator overloading with return type    | //postfix ++ operator overloading: int inside barcket(int)
 class Check{                                           class Check{
@@ -176,14 +165,6 @@ int main(){                                            int main(){
   return 0;                                              return 0;
 }                                                      }
 
-//typeid
-auto x = 4;
-auto y = 3.37;
-auto ptr = &x;
-cout << typeid(x).name() << endl       //i  int
-     << typeid(y).name() << endl       //d  double
-     << typeid(ptr).name() << endl;    //Pi point_to_int
-
 //decltype
 int fun1() { return 10; }
 char fun2() { return 'g'; }
@@ -232,44 +213,6 @@ class Cow{ //1, 2, 4
 };
 
 
-//thread
-#include <thread>
-static bool s_finished = false;
-using namespace std::literals::chrono_literals;
-void DoWork() {
-    while(!s_finished){
-        std::cout << "Started thread id=" << std::this_thread::get_id() << std::endl;
-        std::this_thread::sleep_for(1s);
-    }
-}
-int main(){
-    std::thread worker(DoWork);
-    std::this_thread::sleep_for(2s);
-    s_finished = true;
-    worker.join();
-    std::cout << "Main    thread id=" << std::this_thread::get_id() << std::endl;
-    std::cout << "finished!\n";
-}
-//Started thread id=0x60005aa20
-//Started thread id=0x60005aa20
-//Started thread id=0x60005aa20
-//Main    thread id=0x600000010
-//finished!
-
-
-
-//std::{regex,smatch,regex_match}
-string data1 = "aaab";
-string data2 = "aaaba";
-regex regex("a+b");
-smatch match;
-bool b1 = regex_match(data1, match, regex);  //1, match the whole string
-bool b2 = regex_match(data2, match, regex);  //0.
-//std::{regex,smatch,regex_replace}
-string data = "Pi = 3.14, exponent = 2.718, done.";
-regex regex(R"(\d+\.\d+)", regex::icase);
-data = regex_replace(data, regex, "<f>$0</f>"); //Pi = <f>3.14</f>, exponent = <f>2.718</f>, done.
-
 #include <sstream>
 // istringstream is for input, 
 // ostringstream for output. 
@@ -289,41 +232,6 @@ int numbers[5];
 copy(istream_iterator<int, char>(stream),
      istream_iterator<int, char>(),
      numbers); //numbers in {1, 2, 3, 4, 5}
-
-/*
-#include <fstream>
-fstream library contains three classes:
-  ofstream: Output file stream that creates and writes information to files.
-  ifstream: Input file stream that reads information from files.
-   fstream:  General file stream, with both ofstream and ifstream capabilities that allow it to create, read, and write information to files.
-*/
-ofstream outfile;
-outfile.open("file.dat", ios::out | ios::trunc );
-ofstream MyFile1("/tmp/test.txt");
-
-MyFile1 << "This is awesome! \n";
-MyFile1.close();
-
-ifstream MyFile("/tmp/test.txt");
-string line; 
-while ( getline (MyFile, line) ) cout << line << '\n';   //This is awesome!
-MyFile.close();
-
-{
-    std::ofstream ostrm("/tmp/Test.b", std::ios::binary);
-    double d = 3.14;
-    ostrm.write(reinterpret_cast<char*>(&d), sizeof d); // binary output
-    ostrm << 123 << "abc" << '\n';                      // text output
-}
-// read back
-std::ifstream istrm("/tmp/Test.b", std::ios::binary);
-double d;
-istrm.read(reinterpret_cast<char*>(&d), sizeof d);
-int n;
-std::string s;
-istrm >> n >> s;
-std::cout << " read back: " << d << " " << n << " " << s << '\n'; //read back: 3.14 123 abc
-
 
 //unique_ptr
 { 

@@ -17,6 +17,7 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
+#include <thread>
 using namespace std;
 int  pp(std::string s) {
     int len = 80;
@@ -480,4 +481,126 @@ int main(){
   srand(time(0)); //time(0) will return the current second count
   for (int x = 1; x <= 7; x++) cout << 1 + (rand() % 6) << " ";  //4 5 3 6 5 1 2
 
+  /*
+  #include <fstream>
+  fstream library contains three classes:
+    ofstream: Output file stream that creates and writes information to files.
+    ifstream: Input file stream that reads information from files.
+     fstream: General file stream, with both ofstream and ifstream capabilities that allow it to create, read, and write information to files.
+  */
+  pp("ofstream and ifstream");
+  {
+    //ofstream outfile;
+    //outfile.open("file.dat", ios::out | ios::trunc );
+    ofstream MyFile1("/tmp/test.txt");
+    MyFile1 << "This is awesome! \n";
+    MyFile1.close();
+
+    ifstream MyFile("/tmp/test.txt");
+    string line; 
+    while ( getline (MyFile, line) ) cout << line << '\n';   //This is awesome!
+    MyFile.close();
+  }
+
+  pp("ofstream and ifstream -> binary");   
+  {
+    std::ofstream ostrm("/tmp/Test.bin", std::ios::binary);
+    double d = 3.14;
+    ostrm.write(reinterpret_cast<char*>(&d), sizeof d); // binary output
+    ostrm << 123 << "abc" << '\n';                      // text output
+
+    std::ifstream istrm("/tmp/Test.bin", std::ios::binary);  // read back
+    istrm.read(reinterpret_cast<char*>(&d), sizeof d);
+    int n2;
+    std::string s2;
+    istrm >> n2 >> s2;
+    std::cout << "read back: " << d << " " << n2 << " " << s2 << '\n'; //read back: 3.14 123 abc
+  }
+
+  pp("std::thread");   
+  {
+    static bool s_finished = false;
+    auto DoWork =[]() {
+      while(!s_finished){
+        std::cout << "in thread id=" << std::this_thread::get_id() << std::endl;
+        std::this_thread::sleep_for(0.2s);
+      }
+    };
+
+    std::thread worker(DoWork);
+
+    std::this_thread::sleep_for(0.5s);
+    s_finished = true;
+    worker.join();
+    std::cout << "Main thread id=" << std::this_thread::get_id() << std::endl;
+    std::cout << "finished! \n";
+  }
+
+
+  pp("regex_match(string, smatch, regex)");
+  {
+    string data1 = "aaab";
+    string data2 = "aaaba";
+    regex reg("a+b");
+    smatch match;
+    cout << regex_match(data1, match, reg) << endl;  //1, match the whole string
+    cout << regex_match(data2, match, reg) << endl;  //0.
+
+    pp("regex_replace(string, regex, string)");
+    string data = "Pi = 3.14, exponent = 2.718, done.";
+    regex reg2(R"(\d+\.\d+)", regex::icase);
+    cout << regex_replace(data, reg2, "<f>$0</f>") << endl; //Pi = <f>3.14</f>, exponent = <f>2.718</f>, done.
+  }
+
+   pp("typeid");
+   {
+     auto x = 4;
+    auto y = 3.37;
+    auto ptrx = &x;
+    auto ptry = &y;  
+    cout << typeid(x).name() << endl        //i  int
+         << typeid(y).name() << endl        //d  double
+         << typeid(ptrx).name() << endl     //Pi point_to_int
+         << typeid(ptry).name() << endl;    //Pi point_to_int
+   }
+
+
+
+
+  pp("std::sort vector");
+  {
+    struct myclass { //how to understand: think struct as class
+      bool operator() (int i,int j) { return (i<j);}
+    } myobject;
+
+    //1. using default comparison (operator <):
+    std::vector<int> myvector = {32,71,12,45,26,80,53,33};
+    std::sort (myvector.begin(), myvector.begin()+4);           //(12 32 45 71)26 80 53 33
+    for (std::vector<int>::iterator it=myvector.begin(); it!=myvector.end(); ++it) cout << *it << " "; nl();
+
+   //2. using function
+    std::sort (myvector.begin()+4, myvector.end(), [](int x, int y){ return x<y;}); // 12 32 45 71(26 33 53 80)
+    for(auto i: myvector) cout << i << " "; nl();
+
+    //3. using object as comp
+    std::sort (myvector.begin(), myvector.end(), myobject);     //(12 26 32 33 45 53 71 80)
+    for(auto i: myvector) cout << i << " "; nl();
+
+  }
+
+  pp("std:srot array");
+  {
+    int container[] = {5,10,15,20,25,30,35,40,45,50};
+    std::sort (container,container+10);   //5 10 15 20 25 30 35 40 45 50
+    for(auto i: container) cout << i << " "; nl();
+  }
+
 }
+
+
+
+
+
+
+
+//lib: -pthread

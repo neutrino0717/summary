@@ -15,7 +15,7 @@ if [ "$1" ] && [ "${1:0:2}" = "-l" ]; then lib=$1; shift; fi
 lib2=`tail -n1 "$f" |grep '//lib' |grep -Po 'p.*$'`
 [ "$lib2" ] && lib="$lib -$lib2"
 
-echo "$tool -o $fe ${f} ${lib}" | bash -x
+echo "$tool  -o $fe ${f} ${lib}" | bash -x
 sleep 2
 echo "${cmd} $fe $@ 2>$fo" |bash -x
 
