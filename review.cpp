@@ -153,11 +153,6 @@ int main(){                                            int main(){
 
 
 
-//Micro
-#define MIN(a,b) (a<b ? a : b)
-cout <<"The Minimum number is " << MIN(x, y) << endl;
-
-
 
 ///////////constructions /////////////////////////
 class Dog{};
@@ -213,19 +208,6 @@ std::weak_ptr<Entity> e1;
     e1 = sharedEntity;
 }
 
-//////////const ////////////////////////////
-//if const is on the left of *, data is const
-int const *p = &i;
-const int *p = &i;
-//if const is on the right of *, pointer is const
-int* const p;
-
-//cast is bad, avoid them as much as possible
-const int i = 9; 
-i = 6; //compile error
-const_cast<int&>(i) = 6  //const_cast cast away the constness of i 
-int j;
-static_cast<const int&>(j) = 7 //cast data into a const, throw error
 
 //const used with functions
 class Dog {

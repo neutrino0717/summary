@@ -24,29 +24,28 @@ int  pp(std::string s) {
     int pad1 = (len - s.length()) / 2;
     int pad2 = len - pad1 - s.length();
     std::cout << "\n" << std::string(pad1, '=')  << s << std::string(pad2, '=') << "\n";
+    return 0;
 }
 
-int  ppp(std::string s) {
+void  ppp(std::string s) {
     int len = 80;
     int pad1 = (len - s.length()) / 2;
     int pad2 = len - pad1 - s.length();
     std::cout << "\n" << std::string(pad1, '-')  << s << std::string(pad2, '-') << "\n";
 }
 
-int  pppp(std::string s) {
+void  pppp(std::string s) {
     std::cout << "# " << s << "\n";
 }
 
-int nl() {
+void nl() {
     std::cout << std::endl;
 }
 
 template <class T, class U>
-int pmap(std::map<T, U>& m){
+void pmap(std::map<T, U>& m){
   for (auto i: m)  cout << i.first << " -> " << i.second << endl;
 }
-
-
 
 struct Size {
     int width, height;
@@ -146,8 +145,6 @@ int main(){
   MyClass a[2];              //call def constr
   for (auto  x : a) { }//call copy constr
   for (auto& x : a) { }//no new object
-  exit;
-
 
   pp("c type array");
   int arr[5];
@@ -625,19 +622,36 @@ int main(){
 
   }
 
-  pp("std:srot array");
+  pp("std:sort array");
   {
     int container[] = {5,10,15,20,25,30,35,40,45,50};
     std::sort (container,container+10);   //5 10 15 20 25 30 35 40 45 50
     for(auto i: container) cout << i << " "; nl();
   }
 
+  pp("const, const_cast, static_cast");
+  {
+    //if const is on the left of *, data is const
+    int i = 7;
+    int const *p1 = &i;
+    const int *p2 = &i;
+    //if const is on the right of *, pointer is const
+    int* const p3 = &i;
+
+    //cast is bad, avoid them as much as possible
+    const int i2 = 9; 
+    //i2 = 6; //compile error
+    const_cast<int&>(i2) = 6;  //const_cast cast away the constness of i 
+    int j;
+    //static_cast<const int&>(j) = 7; //cast data into a const, then assign a valued which throws error
+  }
+
+
+
+
+
+
+
 }
-
-
-
-
-
-
 
 //lib: -pthread
