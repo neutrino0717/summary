@@ -18,6 +18,8 @@
 #include <unordered_set>
 #include <vector>
 #include <thread>
+#include <assert.h>
+
 using namespace std;
 int  pp(std::string s) {
     int len = 80;
@@ -99,7 +101,7 @@ extern "C" { int yyy; } //is a definition
 
 int main(){
   pp("bilatoral mapping");
-  enum Season { Summer, Fall, Winter, Spring };
+  enum Season { Summer, Fall, Winter, Spring };       
   string arSeason[] = {"Summer", "Fall", "Winter", "Spring"};  //enum --> String //arSeason[Fall]
   map<string, Season> seasons = {                              //String --> enum //seasons["Fall"]
       {"Summer", Summer},
@@ -112,8 +114,8 @@ int main(){
   std::cout <<"Winter" << " " << seasons["Winter"] << endl;
   std::cout << (Winter==Season(2)) << endl;
 
-  pp("enum");
-  enum Season1       { Summer1, Fall1, Winter1, Spring1 };
+  pp("enum");     
+  enum Season1       { Summer1, Fall1, Winter1, Spring1 };  //c++ 03: enum are basically integers
   enum Season2: char { Summer2, Fall2, Winter2, Spring2 };
   enum Season3: int  { Summer3, Fall3, Winter3, Spring3 };
   std::cout << Fall1 << std::endl;  //1
@@ -121,6 +123,12 @@ int main(){
   std::cout << Fall1 << std::endl;  //1
   Season w1 = Winter;
   int    w2 = w1;           //2
+
+  enum class apple {green, red};                          //c++ 11: introduct enum class, more strong typed
+  enum class orange {big, small};                         //c++ 11: introduct enum class, more safe to use
+  apple ap = apple::red;                 //not 1
+  orange og = orange::small;             //not 1
+  //std::cout << ap == og << std::endl;    //compile fails because we haven't define "== (apple, orange)"
 
   //three ways
   class MyClass {
@@ -143,8 +151,8 @@ int main(){
 
   pp("use reference to avoid new object");
   MyClass a[2];              //call def constr
-  for (auto  x : a) { }//call copy constr
-  for (auto& x : a) { }//no new object
+  for (auto  x : a) { }//call copy constr, readonly access.
+  for (auto& x : a) { }//no new object,    changes the values in a by x
 
   pp("c type array");
   int arr[5];
@@ -220,13 +228,17 @@ int main(){
   //prt4(c5);  //cannot bind non-const lvalue reference of type ‘int&’ to an rvalue of type ‘int’
 
   pp("int *ptr = NULL;");
-  int *ptr = NULL;
-  cout << "The value of ptr is " << ptr << endl;  //0
+  int *ptr1 = NULL;
+  cout << "The value of ptr1 is " << ptr1 << endl;  //NULL is 0 which cause issues
+  pp("nullptr replace NULL in C++ 03");
+  int *ptr2 = nullptr;
+  cout << "The value of ptr2 is " << ptr2 << endl;
 
   pp("std::map.find");
   map<int, string>  dic = { {1, "one"}, {2, "two"} };
   bool exists1 = dic.find(1) != dic.end();// 1
   cout << exists1 << endl;
+
 
   pp("std::set.find, std::includes");
   set<char> chars { 'A', 'B', 'C', 'D' };   //must be sorted before std::includes
@@ -436,7 +448,7 @@ int main(){
 
   pp("Initializer list for Array of integer/string");
   int primeNumbers[] = { 2, 3, 5, 7, 11, 13, 17, 19 };
-  string gameList[] { "soccer", "hockey", "basketball" };
+  string gameList[] { "soccer", "hockey", "basketball" }; //the same as above
 
   pp("use constructor for Array of objects");
   Point point2[] { Point(1, 2), Point(3, 4) };
@@ -646,9 +658,28 @@ int main(){
     //static_cast<const int&>(j) = 7; //cast data into a const, then assign a valued which throws error
   }
 
+  pp("static and run-time assert");
+  {
+    //include "assert.h"
+    int i = 10;
+    int* ptr = &i;
+    static_assert(sizeof(int) == 4); //the code will not work if size of integer is not 4
+    assert(ptr != nullptr);          //abort exection if ptr==nullptr
+
+  }
+
+  pp("delecating constructor in c++ 11");
+  {
+    class dog{
+      int age = 9;//c++ 11 allow in-class class member initialization. so all constructors initialized age here.
+      dog(){ /*do something*/}
+      dog(int a): dog() { /*do something else*/}
+    };//limitation: dog() can only be invoked at the beginning of dog(int a) 
+
+  }
 
 
-
+  //todo static_cast
 
 
 
