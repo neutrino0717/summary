@@ -670,10 +670,27 @@ int main(){
     //include "assert.h"
     int i = 10;
     int* ptr = &i;
+<<<<<<< HEAD
     static_assert(sizeof(int) == 4, "The code will not work if size of integer is not 4"); 
     assert(ptr != nullptr);          //abort exection if ptr==nullptr
 
   }
+=======
+    static_assert(sizeof(int) == 4); //the code will not work if size of integer is not 4
+    assert(ptr != nullptr);          //abort exection if ptr==nullptr
+
+  }
+
+  pp("delecating constructor in c++ 11");
+  {
+    class dog{
+      int age = 9;//c++ 11 allow in-class class member initialization. so all constructors initialized age here.
+      dog(){ /*do something*/}
+      dog(int a): dog() { /*do something else*/}
+    };//limitation: dog() can only be invoked at the beginning of dog(int a) 
+
+  }
+>>>>>>> a6ed804e6217135deccdcde2970be34b2b52d30a
 
   pp("delecating constructor in c++ 11");
   {
