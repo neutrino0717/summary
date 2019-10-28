@@ -1,6 +1,5 @@
 #include <algorithm>
 #include <numeric>
-#include <array>        // std::array
 #include <bitset>
 #include <cstdlib>
 #include <ctime>
@@ -10,14 +9,17 @@
 #include <map>
 #include <memory>
 #include <regex>
-#include <set>
 #include <sstream>
 #include <string>
 #include <thread>
 #include <tuple>
 #include <unordered_map>
 #include <unordered_set>
+#include <array>
 #include <vector>
+#include <list>
+#include <set>
+#include <map>
 #include <thread>
 #include <assert.h>
 
@@ -670,27 +672,9 @@ int main(){
     //include "assert.h"
     int i = 10;
     int* ptr = &i;
-<<<<<<< HEAD
     static_assert(sizeof(int) == 4, "The code will not work if size of integer is not 4"); 
     assert(ptr != nullptr);          //abort exection if ptr==nullptr
-
   }
-=======
-    static_assert(sizeof(int) == 4); //the code will not work if size of integer is not 4
-    assert(ptr != nullptr);          //abort exection if ptr==nullptr
-
-  }
-
-  pp("delecating constructor in c++ 11");
-  {
-    class dog{
-      int age = 9;//c++ 11 allow in-class class member initialization. so all constructors initialized age here.
-      dog(){ /*do something*/}
-      dog(int a): dog() { /*do something else*/}
-    };//limitation: dog() can only be invoked at the beginning of dog(int a) 
-
-  }
->>>>>>> a6ed804e6217135deccdcde2970be34b2b52d30a
 
   pp("delecating constructor in c++ 11");
   {
@@ -727,6 +711,20 @@ int main(){
     f = 3e-5;  std::cout << f << " " << std::to_string(f) << endl;
     f = 12345; std::cout << f << " " << std::to_string(f) << endl;
     f = 12345678; std::cout << f << " " << std::to_string(f) << endl;
+  }
+
+  pp("std::advance()");
+  {
+    //std::list<int> mylist;
+    std::vector<int> mylist; //or
+    for (int i=0; i<10; i++) mylist.push_back (i*10);
+    auto it = mylist.begin();
+    std::advance (it,5);  cout << *it << endl; //50, Advances the iterator it by 5 element positions
+    auto it2 = std::prev(it, 2); cout << *it2 << endl;//30
+    auto it3 = std::next(it, 2); cout << *it3 << endl;//70
+    pp("std::for_each()");
+    std::for_each(mylist.begin(), std::next(mylist.begin(), 3), [](int i){cout << i << " "; }); nl(); //0 10 20
+    cout << std::distance(it2, it3) << endl;          //4
   }
 
   //todo static_cast
