@@ -1,0 +1,10 @@
+#!/usr/bin/env eepython
+##str(), repr(), `` are three ways to convert objects to str
+#str is a class, repr is a function
+print str.__class__, repr.__class__
+print str.__doc__
+print repr.__doc__
+##back tick is similar to str(), to trasform everything to string
+print "my mom is " + `29`
+##where everstr() works, repr() also works
+print "my mom is " + repr(29)

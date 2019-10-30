@@ -1,0 +1,23 @@
+#!/usr/bin/env eepython
+##This function returns a list of tuples, 
+##where the i-th tuple contains the i-th element from each of the argument sequences or iterables. 
+#zip([iterable, ...])
+
+print zip.__doc__
+name=("zhang","li","he"); age=(32,15,19); weigh=(70.3, 60.1, 63.4)
+staff=zip(name,age,weigh); print staff
+staff.sort(); print staff
+print zip(*staff)   #get back the original tuples
+print map(lambda t:list(t), zip(*staff))  #get back lists instead of tuples 
+
+x='test'; y='1234'; z='----'
+print zip(x,z,y)
+
+listen="127.0.0.1:8088|127.0.0.1:8089"
+fetchserver="http://scan.org/fetch.php|http://goagent.sinaapp.com/fetch.php"
+print zip(listen.split('|'), fetchserver.split('|'))
+
+#combine two lists to a dict
+keys = ['a','b','c']
+values = [1, 2, 3]
+print dict(zip(keys, values))

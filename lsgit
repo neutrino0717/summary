@@ -1,0 +1,6 @@
+pygmentize -g <<"EOF"
+#checkout a old commit to a branch
+git diff --name-only HEAD~10 HEAD~5
+git diff --stat      HEAD^^^^^^^^^^^^^^^^^^^^^^ HEAD
+git checkout  -b oldbranch HEAD^^^^^^^^^^^^^^^^^^^^^^
+EOF

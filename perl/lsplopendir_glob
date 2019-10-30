@@ -1,0 +1,13 @@
+pygmentize -g <<"EOF"
+#!/usr/bin/perl
+#1.
+opendir(my $dh, $some_dir) || die "Can't opendir $some_dir: $!";
+#my @all  = readdir($dh);
+#my @dots = grep { /^\./ && -f "$some_dir/$_" } readdir($dh);
+while (readdir $dh) { print "$some_dir/$_\n"; }  #perl5.12
+closedir $dh;
+
+#2.
+@all = glob('/tmp/*')
+@all = glob('*.c *.h')
+EOF

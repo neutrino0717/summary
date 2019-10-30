@@ -1,0 +1,7 @@
+#!/usr/bin/env eepython
+print dir(cmp)
+print cmp.__doc__
+print cmp.__class__
+print cmp(5,10)
+print cmp(10,10)
+print cmp(10,5)

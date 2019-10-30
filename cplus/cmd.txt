@@ -1,0 +1,5 @@
+# -E  Stop after the preprocessing stage; do not run the compiler proper.  
+# The output is in the form of preprocessed source code, which is sent to the standard output.
+gcc -E -c test.c
+
+

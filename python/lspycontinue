@@ -1,0 +1,18 @@
+#!/usr/bin/env python
+'''
+Created on Mar, 2016
+
+@author: eml
+'''
+from color import *
+ebrun('''
+def func(p1):
+    for i in xrange(p1+1):
+        if i==7: print "break out!"; break
+        if i==2: print "two",; continue
+        print i,
+    else:
+        print "done!"
+func(10)
+func(5)
+''')

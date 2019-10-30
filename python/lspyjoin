@@ -1,0 +1,15 @@
+#!/usr/bin/env eepython
+##needs an iterator as parameter
+##list("python")
+#['p', 'y', 't', 'h', 'o', 'n']
+##list({"ming":36, "meng":25, "xia":27})
+#['xia', 'meng', 'ming']
+
+print ":".join(["a", "b", "c"])
+print list("python")
+print "".join(list("python"))
+
+map={"guo":36, "zhi":25, "shang":27}
+print list(map)
+print "--".join(map)
+print "--".join(list(map))

@@ -1,0 +1,9 @@
+pygmentize -g <<"EOF"
+string  name  = "Ericsson"    # 'name' ==  address1
+                                 name  ==  "Ericsson", value in the address1, can be changed
+string *ref   = &name         # 'ref'  ==   address2
+                                 ref   ==  "address1", value in the address2, can be changed
+string &alias = name         # 'alias' ==   address1
+                                alias  ==  "Ericsson", value in the address1, can be changed
+
+EOF

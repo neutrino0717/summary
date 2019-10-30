@@ -1,0 +1,6 @@
+pygmentize -g <<"EOF"
+               base_class  derived_class  other_objects
+public         *           *              *
+protected      *           *
+private        * 
+EOF

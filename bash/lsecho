@@ -1,0 +1,31 @@
+vim - <<"EON"
+#!/bin/bash
+
+$'\n' and $'\t' are the real newline and tab
+'\n' and '\t' are not real, but they can be interpreted as newline and tab by echo -e
+-n     do not output the trailing newline
+-E     disable interpretation of backslash escapes (default)
+-e     enable interpretation of backslash escapes
+ 
+echo -n "I will "; echo "have a try"                      #I will have a try
+echo -E "planet\tdistance\nMars\t333\n"                   #planet\tdistance\nMars\t333\n
+echo    "planet\tdistance\nMars\t333\n"                   #planet\tdistance\nMars\t333\n
+echo    "planet"$'\t'"distance"$'\n'"Mars"$'\t'"333"$'\n' #planet  distance
+                                                          #Mars    333
+echo -e "planet\tdistance\nMars\t333\n"                   #planet  distance
+                                                          #Mars    333
+##the other way using variables 
+n=$'\n'; t=$'\t'; echo "planet${t}distance${n}Mars${t}333${n}"   #planet  distance
+                                                                 #Mars    333
+echo planet$'\t'distance$'\n'Mars$'\t'333$'\n'  #planet  distance
+                                                #Mars    333
+------------------------------------------------------------------
+echo "Hello World!!"                            #wrong in interactive shells
+echo 'Hello World!!'                            #work
+set +H 
+echo "Hello World!!"                            #work, turn off history expansion
+set -H           
+exmark='!'; echo "Hello, world$exmark$exmark"               #work
+histchars= 
+echo "Hello World!!"
+EON

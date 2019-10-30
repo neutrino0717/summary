@@ -1,0 +1,18 @@
+#!/usr/bin/env eepython
+##two ways to define a Set
+set1 = set([0,2,4,6,8,2,6]); print set1, type(set1)
+set1 = {0,2,4,6,8,2,6};      print set1, type(set1)  # using curly braces
+
+##add, remove, discard#
+print dir(set)
+print set.__doc__
+print set.__bases__
+set1 = set([0,2,4,6,8])
+set1.add(10);    print set1
+set1.remove(10); print set1
+#discard() is similar to remove(), butt it will not throw error if the 9 not a member of set1
+set1.discard(9); print set1
+
+##frozensets are sets immutable, 'set2.add(11)' will throw exception
+set2 = frozenset([1,3,5,7,9]); print set2
+

@@ -1,0 +1,9 @@
+#!/usr/bin/env eepython
+###1. the way to capture multiple exceptions is use a tuple as the first parmamter of except
+###2. and always use 'as', for both python 2&3 support it
+
+try:
+    l = ["a", "b"]
+    int(l[2])
+except (ValueError, IndexError) as e:  
+    print "expection captured"

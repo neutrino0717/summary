@@ -1,0 +1,8 @@
+pygmentize -g <<"EOF"
+#include "Common.sh"  //double quotes only mean current directory
+#include "../Log.h"   //parent directory
+#include <iosteam>    //must be in the include path for compiler
+#include <abc.h>    //c type head file
+#include <abc>    //c++ type head file
+
+EOF

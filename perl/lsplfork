@@ -1,0 +1,4 @@
+pygmentize -g <<"EOF"
+#!/bin/bash
+perl -e ' foreach(0..10){ unless(fork()){print $$, "\n"; exit}} '
+EOF

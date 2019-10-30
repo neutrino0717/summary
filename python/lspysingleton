@@ -1,0 +1,21 @@
+#!/usr/bin/env eepython
+## getinstance is same as Myclass,    they are class 
+## geinstance() is same as Myclass(), they are instance
+def singleton(class_):
+  instances = {}
+  def getinstance(*args, **kwargs):
+    if class_ not in instances:
+        instances[class_] = class_(*args, **kwargs)
+        print "-->instance created here with id: %s" % id(instances[class_]) 
+    return instances[class_]
+  print "-->class created here with id: %s" % id(getinstance)
+  return getinstance
+
+@singleton
+class Myclass(object):
+  pass
+
+c=Myclass
+a=Myclass(); print id(a)
+b=Myclass(); print id(b)
+

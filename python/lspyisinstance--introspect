@@ -1,0 +1,14 @@
+#!/usr/bin/env eepython
+##isinstance(object, classinfo)
+##  check if the object argument is an instance of the classinfo argument
+##  classinfo need to be a class object nor a type object
+print isinstance ("hello", str)
+print isinstance ("hello", object)
+print isinstance (123.0, float )
+print isinstance (False, bool )
+print isinstance (0, bool )
+print isinstance(u'foo', (str))
+print isinstance(u'foo', (str,basestring))
+print isinstance(u'foo', (str,unicode))
+print isinstance([], list)
+print isinstance((), tuple)

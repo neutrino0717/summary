@@ -1,0 +1,15 @@
+#!/usr/bin/env python
+'''
+Created on Mar, 2016
+
+@author: eml
+'''
+from color import *
+
+print colors.RED + "to solve: ImportError: No module named foo actually means the module foo.py or package foo/__init__.py could not be found in any of the directories in the search path (sys.path list)." + colors.ENDC
+import os
+erun("print sys.path")
+erun("sys.path.append('/path/to/the/example_file.py');  print sys.path")
+
+erun("print sys.argv")
+erun("print sys.executable")

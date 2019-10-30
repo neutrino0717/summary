@@ -1,0 +1,40 @@
+vim - <<"EON"
+#!/bin/bash
+seq                       # Sequence
+-f, --format=FORMAT       # use printf style floating-point FORMAT (default: %g)
+-s, --separator=STRING    # use STRING to separate numbers (default: \n)
+-w, --equal-width         # equalize width by padding with leading zeroes
+
+seq                      11 | tr '\n' ' '              #1 2 3 4 5 6 7 8 9 10 11 
+seq                  1   11 | tr '\n' ' '              #1 2 3 4 5 6 7 8 9 10 11 
+seq -s ' '           1   11                            #1 2 3 4 5 6 7 8 9 10 11
+seq -s ' '           0   11                            #0 1 2 3 4 5 6 7 8 9 10 11 
+seq -w -s ' '        0   11                            #00 01 02 03 04 05 06 07 08 09 10 11
+seq -w -s ' '        0 2 11                            #00 02 04 06 08 10                     #every two
+seq    -s ' ' -f 'p%g'   11                            #p1 p2 p3 p4 p5 p6 p7 p8 p9 p10 p11 
+seq    -s ' ' -f 'p%01g' 11                            #p1 p2 p3 p4 p5 p6 p7 p8 p9 p10 p11 
+seq    -s ' ' -f 'p%02g' 11                            #p01 p02 p03 p04 p05 p06 p07 p08 p09 p10 p11
+seq    -s ' ' -f 'p%03g' 11                            #p001 p002 p003 p004 p005 p006 p007 p008 p009 p010 p011
+seq                1   11 |xargs -i printf 'p%03d ' {} #p001 p002 p003 p004 p005 p006 p007 p008 p009 p010 p011
+seq    -s ' ' --format 'p%03g' 11                      #p001 p002 p003 p004 p005 p006 p007 p008 p009 p010 p011
+awk 'BEGIN{while(num<11)printf "p%03d ",++num;exit}'   #p001 p002 p003 p004 p005 p006 p007 p008 p009 p010 p011 
+awk 'BEGIN{while(num<11)printf "p%03g ",++num;exit}'   #p001 p002 p003 p004 p005 p006 p007 p008 p009 p010 p011
+echo p{001..011}                                       #p001 p002 p003 p004 p005 p006 p007 p008 p009 p010 p011
+printf 'p%03d ' {1..11}                                #p001 p002 p003 p004 p005 p006 p007 p008 p009 p010 p011
+------------------------------------------------------------------------------------------
+printf
+0      #: add 0 in the front
+5      #: 5 bits space
+d      #: integer
+ 
+printf   "%d\n"            123             #123
+printf  "%5d\n"            123             #  123
+printf "%05d\n"            123             #00123
+printf "%.5d\n"            123             #00123
+printf "%05g\n"            123             #00123
+printf   "%s\n"            "Hello world"   #Hello world
+printf   "%s %s\n"          Hello world    #Hello world
+printf   "%s\n"             Hello world    ##Hello world in two lines
+printf "\e[1;34m%s\e[0m\n" "Hello world"   #Hello world
+arr=(/etc/*.conf); printf '%s\n' "${arr[@]}"          # dump an array, one element per line
+EON

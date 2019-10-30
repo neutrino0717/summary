@@ -1,0 +1,63 @@
+#!/usr/bin/env eepython
+###os.name is 'posix', 'nt', 'os2', 'ce' or 'riscos'
+###os.curdir is a string representing the current directory ('.' or ':')
+###os.pardir is a string representing the parent directory ('..' or '::')
+###os.sep is the (or a most common) pathname separator ('/' or ':' or '\\')
+###os.extsep is the extension separator ('.' or '/')
+###os.altsep is the alternate pathname separator (None or '/')
+###os.pathsep is the component separator used in $PATH etc
+###os.linesep is the line separator in text files ('\r' or '\n' or '\r\n')
+###os.defpath is the default search path for executables
+###os.devnull is the file path of the null device ('/dev/null', etc.)
+
+###difference between os.fchdir() and os.chdir()
+##1.os.fchdir(fd) 
+# change the current working directory to the directory represented by the file descriptor fd. 
+# The descriptor must refer to an opened directory, not an open file.
+##2.os.chdir(str)
+# ...
+
+
+import os, sys
+## use chdir()
+# current working dir:
+print os.getcwd()
+# change current working dir to home dir:
+os.chdir(os.path.expanduser("~")); print os.getcwd()
+
+## use fchdir()
+fd = os.open( "/tmp", os.O_RDONLY )
+os.fchdir(fd); print os.getcwd()
+
+##get pid and parent pid
+print os.getpid(), os.getppid()
+
+##os data values
+print os.environ['HOME']
+print type(os.environ)
+print os.curdir
+print os.pardir
+print os.sep
+print os.pathsep
+print ">%s<"%os.linesep
+print os.defpath
+print os.devnull
+
+##directory 
+os.makedirs("/tmp/tmp1/tmp2"); print os.path.isdir("/tmp/tmp1/tmp2")
+os.removedirs("/tmp/tmp1/tmp2");print os.path.isdir("/tmp/tmp1")
+os.makedirs("/tmp/tmp1/tmp2"); print os.path.isdir("/tmp/tmp1/tmp2")
+os.rmdir("/tmp/tmp1/tmp2")
+os.rmdir("/tmp/tmp1")
+
+##document
+print os.remove.__doc__
+print os.rmdir.__doc__
+print os.removedirs.__doc__
+print os.rename.__doc__
+print os.stat.__doc__
+print os.unlink.__doc__
+print os.utime.__doc__
+print os.symlink.__doc__
+print os.link.__doc__
+print os.chown.__doc__

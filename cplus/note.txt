@@ -1,0 +1,9 @@
+##### error: ‘make_unique’ is not a member of ‘std’
+#ubuntu 14.04
+sudo add-apt-repository ppa:ubuntu-toolchain-r/test
+sudo apt-get update
+
+sudo apt-get install g++-5
+g++-5 -v
+g++   -v
+sudo ln -f -s /usr/bin/g++-5 /usr/bin/g++  #set as default

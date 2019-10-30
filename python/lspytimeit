@@ -1,0 +1,8 @@
+#!/usr/bin/env eepython
+import timeit
+##creating generator is faster than creating list
+print(timeit.timeit('''(i for i in range(100) if i % 5 == 0)''',number=1000))
+print(timeit.timeit('''[i for i in range(100) if i % 5 == 0]''',number=1000))
+print(timeit.timeit('''list((i for i in range(100) if i % 5 == 0))''',number=1000))
+print(timeit.timeit('''list(i for i in range(100) if i % 5 == 0)''',number=1000))
+

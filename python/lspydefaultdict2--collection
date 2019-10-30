@@ -1,0 +1,50 @@
+#!/usr/bin/env eepython
+### if elements in dict are list, how to give default value '[]' 
+##1. when use dict, no default value build in for dict
+contxt = {}
+if True:
+    if "name_list" in contxt:
+        contxt["name_list"].append("Fiona")
+    else:
+        contxt["name_list"] = ["Fiona"]
+print contxt
+
+##2. when use defaultdict, default value is available for all elements
+from collections import defaultdict
+contxt = defaultdict(list)
+contxt["name_list"].append("Fiona")
+print contxt
+
+##3. use setdefault to set default for only one element
+contxt = {}
+contxt.setdefault("name_list", []).append("Fiona")
+print contxt
+
+contxt = {}
+tmp = contxt.get("name_list", [])
+contxt["name_list"] = tmp.append("Fiona")
+##4. use fromkeys to set default for multiple elements
+#   fromkeys() creates a new dictionary with keys from seq and values set to value.
+#   dict.fromkeys(seq[, value]))
+lst = ['name_list', 'school_list']
+#warn: the value [] is for all elements, so normaly we should use immutable as value
+contxt = {}.fromkeys(lst, [])
+print contxt
+contxt['name_list'].append("Fiona")
+print contxt  
+#                ^^^^^^                  ^^^^^^^
+###make dict with two list
+keys = ['a', 'b', 'c']
+values = [1, 2, 3]
+dd = dict(zip(keys, values))
+print dd
+#reverse dict
+print {v: k for k, v in dd.items()}
+#another way to reverse dict
+print                 dd.items()
+print            zip(*dd.items())
+print            zip(*dd.items())[::-1]
+print      zip(*(zip(*dd.items())[::-1]))
+print dict(zip(*(zip(*dd.items())[::-1])))
+#the 3rd way
+print dict(zip(dd.values(), dd.keys()))

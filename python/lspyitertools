@@ -1,0 +1,29 @@
+#!/usr/bin/env eepython
+
+
+import itertools
+##1. itertools.chain(*iterables)
+for i in itertools.chain('ABC', 'DEF','XYZ'): print i,
+#user defined equivelent
+#chain('ABC', 'DEF') --> A B C D E F
+def chain(*iterables):
+    for it in iterables:
+        for element in it:
+            yield element
+
+for i in chain('ABC', 'DEF', 'XYZ'): print i,
+
+##2. itertools.count(start=0, step=1: once for each integer, Infinite!
+for num in itertools.count():
+    if num < 10000: continue
+    if num > 10007: break
+    print num,
+
+##3. chain, repeat, cycle
+##   itertools.cycle(iterable)
+##   itertools.repeat(object[, times])
+seq = itertools.chain(itertools.repeat(17,3), itertools.cycle(range(7, 11, 1)))
+print seq
+for count, num in enumerate(seq):
+    if count > 20: break
+    print num,

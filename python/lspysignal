@@ -1,0 +1,17 @@
+#!/usr/bin/env eepython
+import sys
+import signal
+print signal.__doc__
+def signal_handler(signal, frame):
+    print 'signal -->', signal
+    print 'frame -->', frame
+    print dir(frame)
+    #print frame.f_globals
+    #print frame.f_locals
+    #print frame.f_trace
+    print('You pressed Ctrl+C!')
+    sys.exit(0)
+signal.signal(signal.SIGINT, signal_handler)
+print('Press Ctrl+C')
+print signal.pause.__doc__
+signal.pause()
