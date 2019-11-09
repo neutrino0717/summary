@@ -236,26 +236,28 @@ int main(){
   //prt4(c5);  //cannot bind non-const lvalue reference of type ‘int&’ to an rvalue of type ‘int’
 
   pp("int *ptr = NULL;");
-  int *ptr1 = NULL;
-  cout << "The value of ptr1 is " << ptr1 << endl;  //NULL is 0 which cause issues
-  pp("nullptr replace NULL in C++ 03");
-  int *ptr2 = nullptr;
-  cout << "The value of ptr2 is " << ptr2 << endl;
+  {
+    int *ptr1 = NULL;
+    cout << "The value of ptr1 is " << ptr1 << endl;  //NULL is 0 which cause issues
+    pp("nullptr replace NULL in C++ 03");
+    int *ptr2 = nullptr;
+    cout << "The value of ptr2 is " << ptr2 << endl;
 
-  pp("std::map.find");
-  map<int, string>  dic = { {1, "one"}, {2, "two"} };
-  bool exists1 = dic.find(1) != dic.end();// 1
-  cout << exists1 << endl;
+    pp("std::map.find()");
+    map<int, string>  dic = { {1, "one"}, {2, "two"} };
+    bool exists1 = dic.find(2) != dic.end();// 1
+    cout << exists1 << endl;
+  }
 
-
-  pp("std::set.find, std::includes");
-  set<char> chars { 'A', 'B', 'C', 'D' };   //must be sorted before std::includes
-  set<char> chars2 { 'A', 'C' };            //must be sorted before std::includes
-  cout << (chars.find('A') != chars.end()) << endl;  //1
-  cout << (chars.find('E') != chars.end()) << endl;  //0
-  bool containAll = std::includes( chars.begin(), chars.end(), chars2.begin(), chars2.end());   //1
-  cout << containAll << endl;
-
+  pp("std::set.find(), std::includes()");
+  {
+    set<char> chars { 'A', 'B', 'C', 'D' };   //must be sorted before std::includes
+    set<char> chars2 { 'A', 'C' };            //must be sorted before std::includes
+    cout << (chars.find('A') != chars.end()) << endl;  //1
+    cout << (chars.find('E') != chars.end()) << endl;  //0
+    bool containAll = std::includes( chars.begin(), chars.end(), chars2.begin(), chars2.end());   //1
+    cout << containAll << endl;
+  }
   pp("unordered_map::find");
   std::unordered_map<std::string,double> mymap = {
     {"mom",5.4},
@@ -264,23 +266,27 @@ int main(){
     {"bro",5.8} };
   std::unordered_map<std::string,double>::const_iterator got = mymap.find ("dad");
   if ( got != mymap.end() ) std::cout << "found" << endl; //found
-  std::cout << got->first << " is " << got->second << endl; //dad is 6.1
-  cout << mymap.count("bro") << endl;   //1   //1 if an element with a key equivalent to k is found, or zero otherwise.
-  cout << mymap.count("abc") << endl;   //0
-  cout << mymap.size() << endl;        //3
-  std::unordered_map<std::string,std::string>
-    first1 = {{"11","G. Lucas"},{"12","R. Scott"},{"13","J. Cameron"}},
-    second1  = {{"21","C. Nolan"},{"22","R. Kelly"}};
-  first1.swap(second1);
-  for (auto& x: first1)  std::cout << x.first << " (" << x.second << "), "; nl();//{{"21","C. Nolan"},{"22","R. Kelly"}};
-  for (auto& x: second1) std::cout << x.first << " (" << x.second << "), "; nl();//{{"11","G. Lucas"},{"12","R. Scott"},{"13","J. Cameron"}},
+  {
+    std::cout << got->first << " is " << got->second << endl; //dad is 6.1
+    cout << mymap.count("bro") << endl;   //1   //1 if an element with a key equivalent to k is found, or zero otherwise.
+    cout << mymap.count("abc") << endl;   //0
+    cout << mymap.size() << endl;         //3
+    std::unordered_map<std::string,std::string>
+      first1 = {{"11","G. Lucas"},{"12","R. Scott"},{"13","J. Cameron"}},
+      second1  = {{"21","C. Nolan"},{"22","R. Kelly"}};
+    first1.swap(second1);
+    for (auto& x: first1)  std::cout << x.first << " (" << x.second << "), "; nl();//{{"21","C. Nolan"},{"22","R. Kelly"}};
+    for (auto& x: second1) std::cout << x.first << " (" << x.second << "), "; nl();//{{"11","G. Lucas"},{"12","R. Scott"},{"13","J. Cameron"}},
+  }
 
-  pp("std::string::substr");
-  string str = "one way ticket";
-  cout << str.substr(4, 3) << endl;     //return "way"`,  str unchanged
+  pp("std::string::substr()");
+  {
+    string str = "one way ticket";
+    cout << str.substr(4, 3) << endl;     //return "way"`,  str unchanged
+  }
 
   pp("std::string::{erase,find}");
-  str = "This is an example"; str.erase(0, 5);
+  string str = "This is an example"; str.erase(0, 5);
   cout << str << endl;  //erase 0~5, return "is an example",
   str = "This is an example"; str.erase(4);
   cout << str << endl;  //erase 4~ , return "This",
@@ -703,7 +709,7 @@ int main(){
     pvector(v);
   }
 
-  pp("std::to_string");
+  pp("std::to_string()");
   {
     double f;
     f = 12.34; std::cout << f << " " << std::to_string(f) << endl;
@@ -719,7 +725,7 @@ int main(){
     std::vector<int> mylist; //or
     for (int i=0; i<10; i++) mylist.push_back (i*10);
     auto it = mylist.begin();
-    std::advance (it,5);  cout << *it << endl; //50, Advances the iterator it by 5 element positions
+    std::advance (it, 5);  cout << *it << endl; //50, Advances the iterator it by 5 element positions
     auto it2 = std::prev(it, 2); cout << *it2 << endl;//30
     auto it3 = std::next(it, 2); cout << *it3 << endl;//70
     pp("std::for_each()");
