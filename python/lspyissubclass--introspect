@@ -1,7 +1,4 @@
 #!/usr/bin/env eepython
-##isinstance(object, classinfo)
-##  check if the object argument is an instance of the classinfo argument
-##  classinfo need to be a class object nor a type object
 ##
 class MyObject():
    def __init__(self):

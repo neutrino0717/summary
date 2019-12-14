@@ -828,3 +828,377 @@ import glob
 for sfile in glob.glob("/etc/r*.conf"):
     print sfile
 """)
+
+pp("hasattr")
+ebrun("""
+##The hasattr() function checks if an object has an attribute. The getattr() function returns the contents of an attribute if there are some.
+
+##class attributes:
+class Foo:
+    def __init__(self):
+        self.a = "bar"
+        self.b = 4711
+    def bar(): pass
+foo=Foo()
+
+#object
+print object.__dict__
+print dir(object)
+for i in dir(object): print "class object has attribute", i,":", hasattr(object, i)
+#Foo
+print Foo.__dict__
+print dir(Foo)
+for i in dir(Foo): print "class Foo has attribute", i,":", hasattr(Foo, i)
+#foo
+print foo.__dict__
+print dir(foo)
+for i in dir(foo): print "instance foo has attribute", i,":", hasattr(foo, i)
+for i in dir(foo): print "instance foo's  attribute", i,":", getattr(foo, i)
+
+##function attributes:
+def fun(): pass
+print fun.__dict__
+print dir(fun)
+for i in dir(fun): print "function fun() has attribute", i,":", hasattr(fun, i)
+#for i in dir(fun): print "function fun()'s attribute", i,":", getattr(fun, i)
+""")
+
+pp("dec and hex");
+ebrun("""
+#dec to hex
+print hex(16)           #0x10
+print "%X"     % 16     #10
+print "%x"     % 16     #10
+print "0x%x"   % 16     #0x10
+print "0x%x"   % 1616   #0x650
+print "0x%2x"  % 1616   #0x650
+print "0x%17x" % 1616   #0x              650
+
+print ord.__doc__
+print chr.__doc__
+
+print ord('a'), chr(ord('a'))  #97 a
+print ord('1'), chr(ord('a'))  #49 a
+
+s = "Hello world!"
+print ":".join(            str(ord(x))for x in s)  #72:101:108:108:111:32:119:111:114:108:100:33
+print ":".join(  '%d'  %       ord(x) for x in s)  #72:101:108:108:111:32:119:111:114:108:100:33
+print ":".join(  '%x'  %       ord(x) for x in s)  #48:65:6c:6c:6f:20:77:6f:72:6c:64:21
+print ":".join( '%0X'  %       ord(x)  for x in s) #48:65:6C:6C:6F:20:77:6F:72:6C:64:21
+print ":".join("{:02x}".format(ord(x)) for x in s) #48:65:6c:6c:6f:20:77:6f:72:6c:64:21
+print ":".join(            hex(ord(x)) for x in s) #0x48:0x65:0x6c:0x6c:0x6f:0x20:0x77:0x6f:0x72:0x6c:0x64:0x21
+
+#a list of A-E
+print map(lambda x: chr(x), xrange(ord('A'),ord('E')+1))     #['A', 'B', 'C', 'D', 'E']
+print    [ chr(x) for x in xrange(ord('A'), ord('E')+1)]     #['A', 'B', 'C', 'D', 'E']
+print    ( chr(x) for x in xrange(ord('a'), ord('z')+1))     #<generator object <genexpr> at 0x7f16f2c915f0>
+""")
+
+pp("id")
+ebrun("""
+##Return the identity of an object. This is an integer (or long integer) which is guaranteed to be unique and constant for this object during its lifetime.
+##
+##id() (or its equivalent) is used in the is operator.
+##
+import copy
+foo = 1; bar = foo; print id(foo), id(bar)
+list = [1,2,3]; print id(list)
+print id(list[0]), id(list[1]), id(list[2])
+for i in list: print id(i), 
+print
+#for imutable, copy.copy() don't really copy
+list2 = copy.copy(list); print id(list2)
+for i in list2: print id(i),
+""")
+
+pp("inspect.getcallargs()")
+ebrun("""
+import inspect
+def f(a, b=1, *pos, **named):
+    pass
+print inspect.getcallargs(f,7)
+print inspect.getcallargs(f,7,2)
+print inspect.getcallargs(f,7,2,'a','b','c')
+m={'d':'dd', 'e':'ee'}
+print inspect.getcallargs(f,7,2,'a','b','c',**m)
+""")
+
+pp("inspect.getmembers()")
+ebrun("""
+##All functions of the module re:
+print inspect.getmembers(re, inspect.isfunction)
+#or:
+print dir(re); print type(re)
+""")
+
+pp("inspect.getmro()")
+ebrun("""
+##inspect.getmro(cls)
+##mro --> method resolution order
+##Return a tuple of class cls's base classes, including cls, in method resolution order. No class appears more than once in this tuple. Note that the method resolution order depends on cls type. Unless a very peculiar user-defined metatype is in use, cls will be the first element of the tuple.
+import inspect
+print inspect.getmro.__class__
+print inspect.getmro.__doc__
+
+class A(object): pass
+class B(A): pass
+print inspect.getmro(B)
+print B.__base__
+print B.__base__.__base__
+print B.__base__.__base__.__base__
+""")
+
+pp("isinstance()")
+ebrun("""
+##isinstance(object, classinfo)
+##  check if the object argument is an instance of the classinfo argument
+##  classinfo need to be a class object nor a type object
+print isinstance ("hello", str)
+print isinstance ("hello", object)
+print isinstance (123.0, float )
+print isinstance (False, bool )
+print isinstance (0, bool )
+print isinstance(u'foo', (str))
+print isinstance(u'foo', (str,basestring))
+print isinstance(u'foo', (str,unicode))
+print isinstance([], list)
+print isinstance((), tuple)
+""")
+
+pp("issubclass()")
+ebrun("""
+class MyObject():
+   def __init__(self):
+      pass
+class Wall(MyObject):
+   def __init__(self):
+      pass
+import inspect; print inspect.getmro(Wall)
+print issubclass(MyObject, MyObject)
+print issubclass(MyObject, Wall)
+print issubclass(Wall, MyObject)
+print issubclass(Wall, Wall)
+
+""")
+
+pp("iterator")
+ebrun("""
+##what is iterable: 
+#An iterable is an object that you can get an iterator from.
+#list, str, xrange, dict, file are iterable
+#An iterable is an object that has 
+#1. __iter__()   #method which returns an iterator,  or
+#2. __getitem__  #method 
+
+##what is iterator:
+#An iterator is an object with a next (Python 2) or __next__ (Python 3) method. 
+#Iterator objects are required to support the following two methods
+#1. __iter__()
+#    Return the iterator object itself
+#    allow both containers and iterators to be used with the for and in statements.
+#2. next()   #I think it's generator instead of Iterator
+#    Return the next item from the container. If there are no further items, raise the StopIteration exception. 
+
+#Whenever you use a for loop, or map, or a list comprehension, etc. in Python, the next method is called automatically to get each item from the iterator, thus going through the process of iteration.
+
+##iterable
+#1. Iterable_instance.__iter__()  --> Iterrator_instance
+#2. iter(Iterable_instance)       --> Iterrator_instance
+#3. Iterable_instance.__getitem__()->  the item of the index
+##iterator
+#1. Iterator_instance.__iter__() --> get the iterator itself
+#2. Iterator_instance.next()      --> get item for python 2
+#3. Iterator_instance.__next__()  --> get item for python 3
+
+#fname=os.path.dirname(os.path.abspath(__file__))+'/color.py'
+fname=os.path.join(os.path.expanduser('~'), 'graduation/python/color.py')
+x=[1,2,3];           print type(iter(x)), type(x.__iter__()), x.__getitem__(1)
+x='123';             print type(iter(x)),                     x.__getitem__(1)
+x=xrange(1,4);       print type(iter(x)), type(x.__iter__()), x.__getitem__(1)
+x=range(1,4);        print type(iter(x)), type(x.__iter__()), x.__getitem__(1)
+with open(fname) as x:print type(x), type(iter(x)), type(x.__iter__())
+
+i=iter([1,2,3]);     print i.next(), i.next(), i.next()
+i=iter('123');       print i.next(), i.next(), i.next()
+i=iter(xrange(1,4)); print i.next(), i.next(), i.next()
+i=iter(range(1,4));  print i.next(), i.next(), i.next()
+i=open(fname);       print i.next(), i.next(), i.next()
+ii=iter(i);          print ii.next(),ii.next(),ii.next(); i.close()
+
+#use the 'globl' next() method
+i=iter([1,2,3]);     print next(i), next(i), next(i)
+i=open(fname);       print next(i), next(i), next(i); i.close()
+
+#iterator type 1 --> str
+print "__getitem__" in  dir(str)
+for c in 'python': print c
+
+#iterator type 2 --> list
+for i in [1,2,3,4]: print i
+for i in iter([1,2,3,4]): print i
+
+#iterator type 3: dictionary
+for k in {"feng":36, "yu":25, "zhong":27}: print k
+for k in {"feng":36, "yu":25, "zhong":27}.keys(): print k
+for k in {"feng":36, "yu":25, "zhong":27}.values(): print k
+for k in {"feng":36, "yu":25, "zhong":27}.items(): print k
+#iterator type 4: read file
+with open("/etc/hosts") as f:
+    print type(f) 
+    for line in f: print line,
+""")
+
+pp("itertools.chain(),count(),repeat(),cycle()")
+ebrun("""
+import itertools
+##1. itertools.chain(*iterables)
+print [ i for i in itertools.chain('ABC', 'DEF','XYZ') ]
+
+#user defined equivelent
+#chain('ABC', 'DEF') --> A B C D E F
+
+def chain(*iterables):
+    for it in iterables:
+        for element in it:
+            yield element
+
+##2. itertools.count(start=0, step=1: once for each integer, Infinite!
+for num in itertools.count():
+    if num < 10000: continue
+    if num > 10007: break
+    print num,
+
+##3. chain, repeat, cycle
+##   itertools.cycle(iterable)
+##   itertools.repeat(object[, times])
+seq = itertools.chain(itertools.repeat(17,3), itertools.cycle(range(7, 11, 1)))
+print seq
+for count, num in enumerate(seq):
+    if count > 20: break
+    print num,
+""")
+
+pp("join")
+ebrun("""
+print ":".join(["a", "b", "c"])
+print list("python")
+print "".join(list("python"))
+
+map={"guo":36, "zhi":25, "shang":27}
+print list(map)
+print "--".join(map)
+print "--".join(list(map))
+""")
+
+pp("json.load()")
+ebrun("""
+import json
+from pprint import pprint
+
+cmd='''cat > AAT.conf <<EOF
+{
+    "data"              : "/home/eenmliu/aat/data01",
+    "backup"            : "/home/eenmliu/aat/backup",
+    "log-dir"           : "/home/eenmliu/aat/logs"
+}
+EOF
+'''
+os.system(cmd)
+with open('AAT.conf') as f:
+    print f.read()
+    f.seek(0)
+    data = json.load(f)
+print type(data)
+print data[u'log-dir']
+print data['log-dir']
+pprint(data)
+""")
+
+pp("Lambda")
+ebrun("""
+###Lambda expressions are a shorthand to create anonymous functions; yields a function object. 
+## lambda
+#  lambda arguments: expression 
+## function
+#  def name(arguments): return expression
+import os
+os.system('pydoc lambda|cat')
+
+##equal to 'def sum(x,y): return x + y'
+sum = lambda x,y: x + y
+print sum(1,2)
+
+def sum(x,y): return x + y
+print sum(1,2)
+
+
+##How to make a lambda, that takes a object as input, return the object's atribute "name"'s value
+##aka:  lambda_fun(object) ---> return object.getname()
+class A(object):
+    name="hello"
+#self is just the name of parameter, which is a object, which must have attribute 'name'
+aaa = lambda self: self.__dict__['name'] 
+print aaa(A)
+
+#or
+def makeGetter(attrName):
+    return lambda self: self.__dict__[attrName]
+aaa = makeGetter('name')
+print aaa(A)
+
+""")
+
+pp("list")
+ebrun("""
+x = [ 1, 2 ,3 ]; print id(x), x  #140714377773496 [1, 2, 3]
+x.append(4);     print id(x), x  #140714377773496 [1, 2, 3, 4]
+x.append([4,5]); print id(x), x  #140714377773496 [1, 2, 3, 4, [4, 5]]
+x.extend([4,5]); print id(x), x  #140714377773496 [1, 2, 3, 4, [4, 5], 4, 5]
+x = x + [4, 5 ]; print id(x), x  #140714377754240 [1, 2, 3, 4, [4, 5], 4, 5, 4, 5]
+
+list1=['1', '2', '3']; 
+print      ''.join(list1)        #123
+print list(''.join(list1))       #['1', '2', '3']
+
+""")
+
+pp("locals(), vars(), globals()")
+ebrun("""
+##globals() returns the dictionary of the module namespace
+##          global variables can be accessed inside functions, but cann't be modified inside functions
+##locals()  returns a dictionary of the current namespace
+##vars()    returns either a dictionary of the current namespace (if called with no argument) or the dictionary of the argument.
+
+map_l=locals(); print map_l
+map_l=locals(); print type(map_l)
+map_l=locals(); print map_l.get("name")
+map_l=locals(); name=""; print map_l
+print globals()["__name__"]
+print vars()
+
+ages={'dad':42,'mom':48,'me':7}
+ages.clear()          # remove all entries in dict
+print ages if 'ages' in locals() else "ages not defined"
+
+ages={'dad':42,'mom':48,'me':7}
+del ages              # delete all entries
+print ages if 'ages' in locals() else "ages not defined"
+
+age = "16"
+name = "Evan"
+print "hello %(name)s you are %(age)s years old" % locals()
+
+
+a_string="this is a global variable"
+def foo():
+    a_string = "this is local variable"
+    print '''-->locals() variabls '''
+    print locals()
+    print '''-->vars() variabls '''
+    print vars()
+
+foo()
+print '''-->global variabls '''
+print globals()
+
+""")

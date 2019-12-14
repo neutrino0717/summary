@@ -1,6 +1,5 @@
 #!/usr/bin/env eepython
 
-
 import itertools
 ##1. itertools.chain(*iterables)
 for i in itertools.chain('ABC', 'DEF','XYZ'): print i,
