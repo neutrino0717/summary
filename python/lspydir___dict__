@@ -12,7 +12,7 @@ class Test(Base):
         self.c = "hello"
 
 ## self is instance of subclass
-t = Test("conf")
+t = Test("myconf")
 print t
 ##__dict__ only contains attributes of instance itself
 print t.__dict__
