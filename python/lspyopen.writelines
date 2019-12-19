@@ -5,7 +5,7 @@ import os
 print __file__
 print os.getcwd()
 print os.path.realpath(__file__)
-f="/home/neutrino0717/graduation/sample/sample.txt"
+f="/tmp/sample.txt"
 os.system("cat -n " + f)
 fob = open(f, 'r')
 arr = fob.readlines()

@@ -215,3 +215,12 @@ if len(sys.argv) > 1:
     with open(sys.argv[1]) as eef:
         eecontent = eef.readlines()
     EEfsm().run(eecontent)
+else:
+    import fileinput
+    lines = []
+    for l in fileinput.input():
+        lines.append(l)
+    EEfsm().run(lines)
+
+
+

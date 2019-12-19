@@ -3,8 +3,8 @@
 import sys, select
 print select.select.__doc__
 
-print "You have five seconds to say something!"
-i, o, e = select.select( [sys.stdin], [], [], 5 )
+print "You have 1 seconds to say something!"
+i, o, e = select.select( [sys.stdin], [], [], 1 )
 print i
 print o
 print e

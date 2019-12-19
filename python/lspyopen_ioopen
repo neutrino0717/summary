@@ -17,16 +17,17 @@
 #
 
 #read() to str
+f='/etc/resolv.conf'
 import io
-with io.open('/etc/nsswitch.conf', 'r') as file:
+with io.open(f, 'r') as file:
     print file; print file.read()
-with open('/etc/nsswitch.conf','r') as file:
+with open(f,'r') as file:
     print file; print file.read()
-fo = open('/etc/nsswitch.conf','r'); print fo.read(); fo.close()
-fo = open('/etc/nsswitch.conf','r'); arr = fo.readlines(); fo.close()
+fo = open(f,'r'); print fo.read(); fo.close()
+fo = open(f,'r'); arr = fo.readlines(); fo.close()
 for i in arr: print i,
 
-print open("/etc/nsswitch.conf").readlines()
-print open("/etc/nsswitch.conf").read()
-print io.open("/etc/nsswitch.conf", 'r').readlines()
-print io.open("/etc/nsswitch.conf", 'r').read()
+print open(f).readlines()
+print open(f).read()
+print io.open(f, 'r').readlines()
+print io.open(f, 'r').read()

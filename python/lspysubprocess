@@ -6,8 +6,7 @@
 ##                                                     subprocess.popen()								
 # -----------------------------------------------------------------------------------------------
 ##  python    subprocess.call(['uname', '-a'])         subprocess.check_output(['ls', '-al'])
-## 
-
+##
 
 ##if you need to get the error code, 
 # use os.system()

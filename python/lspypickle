@@ -1,8 +1,6 @@
 #!/usr/bin/env eepython
-###called when being pickled
-##__getstate__  
-###called when being unpickled
-##__setstate__
+###called when being pickled: __getstate__
+###called when being unpickled: __setstate__
 ##unless you need to override how a class is pickled or unpickled you shouldn't need to worry about it.
 
 import pickle

@@ -14,10 +14,20 @@ def ep(str):
     print RED + str + ENDC
     exec (str, globals())
 
+def eep(str):
+    import subprocess
+    str = '''eepython << "EOF"
+''' + str + '''
+EOF
+'''
+    print subprocess.check_output(str, shell=True)
+
+def peep(head, str):
+    pp(head)
+    eep(str)
+
 
 pp("multilayer decorator")
-
-
 def strong_decorate(func):  # get_text = strong_decorate(get_text)
     def func_wrapper(name):
         return "<strong>{0}</strong>".format(func(name))
@@ -1201,4 +1211,853 @@ foo()
 print '''-->global variabls '''
 print globals()
 
+""")
+
+pp("logging stream=sys.stdout")
+ebrun("""
+### stream=sys.stdout
+lightyear={'Sun':0,'Sirius':8.6}
+import logging
+#set the logging output level to debug, by default, sys.stderr will be used.
+logging.basicConfig(level=logging.INFO,stream=sys.stdout)
+#logging is hierarchical,getLogger() will return root logger
+logger=logging.getLogger(__name__); print logger
+logger.warn ('the distance of nearby stars: %s ' % lightyear)
+logger.info ('the distance of nearby stars: %s ' % lightyear)
+logger.debug('the distance of nearby stars: %s ' % lightyear)
+
+### handler
+logging.basicConfig(level=logging.INFO)
+logger=logging.getLogger(__name__); print logger
+#create a filehandle
+handler=logging.FileHandler('/tmp/stars.log','w')
+logger.addHandler(handler)
+logger.warn ('the distance of nearby stars: %s ' % lightyear)
+logger.info ('the distance of nearby stars: %s ' % lightyear)
+logger.debug('the distance of nearby stars: %s ' % lightyear)
+with open('/tmp/stars.log', 'r') as f: print f.read()
+
+### format
+logging.basicConfig(level=logging.INFO)
+logger=logging.getLogger(__name__); print logger
+#create a filehandle
+handler=logging.FileHandler('/tmp/stars2.log','w')
+logger.addHandler(handler)
+fmt1=logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s') 
+fmt2=logging.Formatter('%(asctime)s %(levelname)s %(threadName)s: %(message)s','%b %d %H:%M:%S')
+handler.setFormatter(fmt2) 
+lightyear={'Sun':0,'Sirius':8.6}
+logger.warn ('the distance of nearby stars: %s ' % lightyear)
+logger.info ('the distance of nearby stars: %s ' % lightyear)
+logger.debug('the distance of nearby stars: %s ' % lightyear)
+with open('/tmp/stars2.log', 'r') as f: print f.read()
+""")
+
+pp("magic *****")
+ebrun("""
+#e1 = Employee('evan' 'liu',10000)
+#
+#str(e1)     --> call e1.__str__()
+#repr(e1)    --> call e1.__repr__()
+
+#e1+e2       --> call e1.__add__(e2)
+#'a'+'b'     --> call str.__add__('a','b')
+#1+2         --> call int.__add__(1,2)
+
+#'ls'>'la'   --> call 'ls'.__ge__('la')
+#            --> call str.__ge__('ls','la')
+
+#len('ls')   --> call 'ls'.__len__()
+import inspect
+class Employee:
+    def __str__(self):
+        return inspect.stack()[0][3] + " called"
+    def __repr__(self):
+        return inspect.currentframe().f_code.co_name + " called"
+    def __add__(self, n):
+        return inspect.currentframe().f_code.co_name + " called"
+e1 = Employee()
+e2 = Employee()
+print str(e1)            #__str__ called
+print repr(e2)           #__repr__ called
+print e1 + e2            #__add__ called
+""")
+
+pp("map")
+ebrun("""
+##map(function, iterable, ...)
+##Apply function to every item of iterable and return a list of the results
+print map(lambda x: x*x, [1,2,3])
+
+##map with two iterables for input
+a = [1, 2, 3, 4]
+b = [2, 3, 4, 5]
+print map(lambda x, y: x*y, a, b)
+""")
+
+ebrun("""
+#check if items in a list exits in a string
+alist = ["scala", "akka", "play framework", "sbt", "typesafe"]
+print map(lambda x: x in "This is an example tweet talking about scala and sbt.".split(), alist)
+print [ x in "This is an example tweet talking about scala and sbt.".split() for x in alist ]          #[True, False, False, False, False]
+""")
+
+pp("math")
+ebrun("""
+import math
+#square root
+print math.sqrt(81)
+print math.sqrt.__doc__
+#all the functions of module math
+print dir(math)
+#help(math) shows the help of each functions
+#__doc__ to show help
+for i in dir(math):
+    #exec "print math.%s.__doc__" % i
+    print "math.%s.__doc__" % i
+    print
+""")
+
+pp("namedtuple")
+ebrun("""
+from collections import namedtuple
+###Named tuples assign meaning to each position in a tuple and allow for more readable, self-documenting code. 
+###they add the ability to access fields by name instead of position index.
+
+###      namedtuple(typename, field_names[, verbose=False][, rename=False])
+#Point = namedtuple('Point',  ['x', 'y'],   verbose=True)
+Point  = namedtuple('Point',  ['x', 'y'])
+## instantiate with positional or keyword arguments
+p = Point(11, y=22)     
+
+## by index like the plain tuple (11, 22)
+print p[0] + p[1]       
+## by name new feature
+print p.x + p.y               
+
+## readable __repr__ with a name=value style
+print p                       
+##others
+x, y = p; print x, y
+
+""")
+
+pp("os and subprocess")
+ebrun("""
+###           errorcode                                output
+# --------------------------------------------------------------------------------
+##  shell     os.system("ls -al")                      os.popen(ls -al).read()
+##            subprocess.call('ls -al',shell=True)     subprocess.check_output('ls -al', shell=True)
+##                                                     subprocess.popen()
+# -----------------------------------------------------------------------------------------------
+##  python    subprocess.call(['uname', '-a'])         subprocess.check_output(['ls', '-al'])
+##
+
+##if you need to get the error code,
+# use os.system()
+# use subprocess.call()
+##if you need to get the stdout,
+# use os.popen
+# use subprocess.popen
+# use subprocess.check_output (in python2.7)
+import subprocess
+
+os.system('ls -al |head -n3')
+print os.popen('ls -al |head -n3').read()
+
+#shell=True is only available in subprocess
+subprocess.call('ls -al |head -n3', shell=True)
+subprocess.check_output('ls -al |head -n3', shell=True)
+
+errorcode=os.system('uname -a');    print errorcode
+output=os.popen('uname -a').read(); print output
+output=subprocess.check_output('uname -a', shell=True); print output
+output=subprocess.check_output(['uname', '-a']);        print output
+errorcode=subprocess.call('uname -a', shell=True);      print errorcode
+errorcode=subprocess.call(['uname', '-a']);             print errorcode
+""")
+
+
+pp("multiprocessing.Queue")
+eep("""
+# multiprocessing.Queue, a near clone of Queue.Queue, thread and process safe
+from multiprocessing import Process, Queue
+def f(q):
+    q.put([42, None, 'hello'])
+q = Queue()
+p = Process(target=f, args=(q,))
+p.start()
+print q.get()                        #[42, None, 'hello'], #data retrieved from the subprocess by queue.
+p.join()
+""")
+
+pp("multiprocessing.Pipe")
+ebrun("""
+#multiprocessing.Pipe, a pipe which by default is duplex (two-way)
+from multiprocessing import Process, Pipe
+def f(conn):
+    conn.send([42, None, 'hello'])
+    conn.close()
+parent_conn, child_conn = Pipe()
+p = Process(target=f, args=(child_conn,))
+p.start()
+print parent_conn.recv()            #[42, None, 'hello'],  #data retrieved from the subprocess by pipe.
+p.join()
+""")
+
+pp("Process vs. Pool")
+eep("""
+from multiprocessing import Process
+from multiprocessing import Pool
+def f(title):
+    print '-->{}'.format(title)
+    print 'module name:', __name__
+    if hasattr(os, 'getppid'):  # only available on Unix
+        print 'parent process:', os.getppid()
+    print 'process id:', os.getpid()
+    return title
+print os.getpid()          ###current process, 43003
+f('function all')          #not start a new process, parent process: 60652, process id: 43003
+p  = Process(target=f, args=('function all with process',)) 
+p.start()
+p.join()                   #    start a new process, parent process: 43003, process id: 43004
+p2 = Pool(5)               #    start multiple new processes ....
+result = p2.map(f, ['function call {} in pool'.format(x) for x in xrange(7)])
+print result
+""")
+
+pp("multiprocessing.Lock")
+eep("""
+import multiprocessing
+l = multiprocessing.Lock()
+def timer(tLock, name, delay, repeat):
+    tLock.acquire();
+    print 'delay %s, repeat %s' % (delay, repeat)
+    tLock.release();
+multiprocessing.Process(target=timer, args=(l, "Test1", 1, 5)).start()
+multiprocessing.Process(target=timer, args=(l, "Test2", 2, 4)).start()
+
+#multiprocessing.Pool
+##return value from all the processes will be in a list as Pool.map() function's return value
+def f1(x): 
+    return x*x
+print multiprocessing.Pool(processes=4).map(f1,range(1,11))
+""")
+
+
+pp("open")
+
+eep("""
+#mode can be 
+#'r'     when the file will only be read,it's default with omitted
+#'w'     for only writing (an existing file with the same name will be erased)
+#'a'     opens the file for appending; any data written is added to the end. 
+#'r+'    opens the file for both reading and writing. 
+#'b'     Windows only, 'b' appended to the mode opens the file in binary mode, 
+#        so there are also modes like 'rb', 'wb', and 'r+b'. 
+
+fo = open('/etc/hosts','r')
+print type(fo)
+#some properties
+print fo.name
+print fo.closed
+print fo.mode
+print fo.softspace
+
+#read(10): read 10 bytes to str
+tenbytes=fo.read(10); print tenbytes
+
+#readline: read a line to str
+print fo.readline()
+
+#read(): read all the rest str
+content=fo.read(); fo.close()
+print type(content); print content
+
+#readlines(): read all lines to list
+fo = open('/etc/hosts','r')
+arr = fo.readlines(); fo.close()
+print type(arr)
+for i in arr: print i,
+""")
+
+pp("readlines()")
+eep("""
+##read file into list
+with  open("/etc/hosts") as f: print f.readlines()
+print open("/etc/hosts").readlines()
+""")
+
+pp("ord and chr")
+eep("""
+print ord.__doc__
+print chr.__doc__
+print ord('a'), chr(ord('a'))
+print ord('1'), chr(ord('a'))
+
+s = "Hello world!"
+print ":".join( str(ord(x)) for x in s)
+print ":".join( ('%0X' % ord(x) for x in s))
+print ":".join("{:02x}".format(ord(x)) for x in s)
+print ":".join( hex(ord(x)) for x in s)
+#a list of A-Z, use map
+l = map(lambda x: chr(x), xrange(ord('A'),ord('Z')+1)); print l
+#a list of a-z, use 'x for x in'
+print [ chr(x) for x in xrange(ord('a'), ord('z')+1)]
+#a generator of A-Z, use 'x for x in'
+g = ( chr(x) for x in xrange(ord('a'), ord('z')+1))
+print g
+print list(g)
+""")
+
+pp("OrderedDict")
+eep("""
+from collections import OrderedDict
+###class collections.OrderedDict([items])
+###  Ordered dictionaries are just like regular dictionaries but they remember the order that items were inserted.
+###  When iterating over an ordered dictionary, the items are returned in the order their keys were first added.
+print sorted.__doc__
+print OrderedDict.__doc__
+## regular unsorted dictionary
+d = {'banana': 3, 'apple': 4, 'pear': 1, 'orange': 2}
+## sort by key, return a list
+print sorted(d.items(), key=lambda t: t[0])
+
+## dictionary sorted by key
+print OrderedDict(sorted(d.items(), key=lambda t: t[0]))
+## dictionary sorted by value
+print OrderedDict(sorted(d.items(), key=lambda t: t[1]))
+## dictionary sorted by length of the key string
+print OrderedDict(sorted(d.items(), key=lambda t: len(t[0])))
+""")
+
+pp("os")
+eep("""
+###os.name is 'posix', 'nt', 'os2', 'ce' or 'riscos'
+###os.curdir is a string representing the current directory ('.' or ':')
+###os.pardir is a string representing the parent directory ('..' or '::')
+###os.sep is the (or a most common) pathname separator ('/' or ':' or '\\')
+
+###os.extsep is the extension separator ('.' or '/')
+###os.altsep is the alternate pathname separator (None or '/')
+###os.pathsep is the component separator used in $PATH etc
+###os.linesep is the line separator in text files ('\\r' or '\\n' or '\\r\\n')
+###os.defpath is the default search path for executables
+###os.devnull is the file path of the null device ('/dev/null', etc.)
+###difference between os.fchdir() and os.chdir()
+##1.os.fchdir(fd)
+# change the current working directory to the directory represented by the file descriptor fd. 
+# The descriptor must refer to an opened directory, not an open file.
+##2.os.chdir(str)
+# ...
+import os, sys
+## use chdir()
+# current working dir:
+print os.getcwd()
+# change current working dir to home dir:
+os.chdir(os.path.expanduser("~")); print os.getcwd()
+
+## use fchdir()
+fd = os.open( "/tmp", os.O_RDONLY )
+os.fchdir(fd); print os.getcwd()
+
+##get pid and parent pid
+print os.getpid(), os.getppid()
+
+##os data values
+print os.environ['HOME']
+print type(os.environ)
+print os.curdir
+print os.pardir
+print os.sep
+print os.pathsep
+print ">%s<"%os.linesep
+print os.defpath
+print os.devnull
+
+##directory 
+os.makedirs("/tmp/tmp1/tmp2"); print os.path.isdir("/tmp/tmp1/tmp2")
+os.removedirs("/tmp/tmp1/tmp2");print os.path.isdir("/tmp/tmp1")
+os.makedirs("/tmp/tmp1/tmp2"); print os.path.isdir("/tmp/tmp1/tmp2")
+os.rmdir("/tmp/tmp1/tmp2")
+os.rmdir("/tmp/tmp1")
+
+##document
+print os.remove.__doc__
+print os.rmdir.__doc__
+print os.removedirs.__doc__
+print os.rename.__doc__
+print os.stat.__doc__
+print os.unlink.__doc__
+print os.utime.__doc__
+print os.symlink.__doc__
+print os.link.__doc__
+print os.chown.__doc__
+""")
+
+pp("os.path")
+eep("""
+###1. os.path is not a submodule of os "package"
+###2. actually both os and os.path are modules
+
+##to verify, see below##
+print os; print os.path
+#note: posixpath for UNIX-style paths; ntpath for Windows paths
+print sys.modules['os']; print sys.modules['os.path']
+print type(sys.modules)
+
+##functions in os##
+fname = os.__file__; print fname
+print os.path.abspath(fname)
+print os.path.dirname(fname)
+print os.path.basename(fname)
+print os.path.split(fname)
+print os.path.splitext(os.path.basename(fname))
+print os.path.join('/full/path/to/dir','abc.txt')
+print os.path.join('/full/path/to/dir/','abc.txt')
+print os.path.join('/full/path/to/dir//','abc.txt')
+print os.path.join('/full/path/to/dir//','rpath/abc.txt')
+print os.path.expanduser('~')
+print os.path.expanduser('~root')
+p=os.path
+print p.exists(fname), p.isfile(fname), p.isdir(fname), p.islink(fname), p.ismount(fname)
+for i in ('$HOME', '$IFS', '$LANG', '$HISTFILE'):  
+    print os.path.expandvars(i)
+#cwd is where before you run the scripts
+print os.getcwd()
+print os.listdir(os.getcwd())
+print re.sub(r'(.*)\/.*', r'\1',fname, flags=re.M)
+
+##document##
+print os.path.abspath.__doc__
+print os.path.realpath.__doc__
+print os.path.dirname.__doc__
+print os.path.basename.__doc__
+print os.path.split.__doc__
+print os.path.isdir.__doc__
+print os.path.expanduser.__doc__
+print os.path.join.__doc__
+print os.path.splitext.__doc__
+print os.path.exists.__doc__
+print os.path.expandvars.__doc__
+print os.path.getmtime.__doc__
+print os.listdir.__doc__
+print os.getcwd.__doc__
+""")
+
+pp("os.walk")
+eep("""
+from os.path import expanduser
+home = expanduser("~")
+print "home dir: " + home
+##list root, the dirs in root, the files in root
+for root, dirs, files in os.walk(os.path.join(home, 'graduation/javascript/'), topdown=False):
+    print ('\\n----> root: ') + root
+    for name in files:
+        print('----> file: ' + os.path.join(root, name))
+    for name in dirs:
+        print('----> dir:  ' + os.path.join(root, name))
+
+##list the roots(directories), topdown is False
+for root, dirs, files in os.walk(os.path.join(home, 'graduation/javascript/'), topdown=False):
+    print ('----> root: ') + root
+
+##list the roots(directories), topdown is True
+for root, dirs, files in os.walk(os.path.join(home, 'graduation/javascript/')):
+    print ('----> root: ') + root
+""")
+
+pp("pickle")
+eep("""
+###called when being pickled: __getstate__
+###called when being unpickled: __setstate__
+##unless you need to override how a class is pickled or unpickled you shouldn't need to worry about it.
+
+import pickle
+class Foo(object):
+  def __init__(self, val=2):
+     self.val = val
+  def __getstate__(self):
+     print "I'm being pickled"
+     self.val *= 2
+     return self.__dict__
+  def __setstate__(self, d):
+     print "I'm being unpickled with these values:", d
+     self.__dict__ = d
+     self.val *= 3
+
+import pickle
+f = Foo(); print f.val
+f_string = pickle.dumps(f)
+print f_string
+f_new = pickle.loads(f_string); print f_new.val
+""")
+
+pp("random")
+eep("""
+import random
+print random.random()        # Random float x, 0.0 <= x < 1.0
+print random.uniform(1, 10)  # Random float x, 1.0 <= x < 10.0
+print random.randint(1, 10)  # Integer from 1 to 10, endpoints included
+print random.randrange(0, 101, 2)  # Even integer from 0 to 100
+print random.choice('abcdefghij')  # Choose a random element
+items = [1, 2, 3, 4, 5, 6, 7]; print random.shuffle(items); print items
+print random.sample([1, 2, 3, 4, 5],  3)  # Choose 3 elements
+print random.sample(xrange(10000000), 7)  # Choose 3 samples
+""")
+
+pp("raw_input")
+eep("""
+#                  return string     return as expression
+#python 2          raw_input()       input()
+#python 3          input()           eval(input())
+
+##In Python 2, raw_input() returns a string
+##In Python 2, input() tries to run the input as expression
+##In Python 3, input() returns a string
+##In Python 3, eval(input()) is similar to Python 2 input()
+
+##x=raw_input("Your name: ")
+#Your name:                  #put in "Evan"
+#print "Hello, " + x         #Hello, Evan
+""")
+
+pp("re")
+eep("""
+import re
+with open('/etc/passwd') as f: c = f.read()
+print c
+#test r'' and re.M
+print re.findall(r'^(\w+):',         c      )       #
+print re.findall(r'^(\w+):',         c, re.M)       #['root',                ..,  'puppet']
+print re.findall(r'^\w+(?=:)',      c, re.M)        #['root',                ..,  'puppet']  #lookahead
+print re.findall(r'^(\w+):.*:(.+)$', c, re.M)       #[('root', '/bin/bash'), .., ('puppet', '/bin/false')]
+
+#test match(), search, findall, finditer()
+print re.findall (r'^(\w+):.*:(.+)$', c, re.M)                                   #[('root', '/bin/bash'), .., ('puppet', '/bin/false')]
+print re.finditer(r'^(\w+):.*:(.+)$', c, re.M)                                   #<callable-iterator object at 0x7f8c69fb8390>
+print re.search  (r'^(\w+):.*:(.+)$', c, re.M)                                   #<_sre.SRE_Match object at 0x7f8c69eab250>
+print re.match   (r'^(\w+):.*:(.+)$', c, re.M)                                   #<_sre.SRE_Match object at 0x7f8c69eab0b8>
+
+for l in re.findall (r'^(\w+):.*:(.+)$', c, re.M): print l                       #('root', '/bin/bash'),..,('puppet', '/bin/false')
+for m in re.finditer(r'^(\w+):.*:(.+)$', c, re.M): print (m.group(1), m.group(2))#('root', '/bin/bash'),..,('puppet', '/bin/false')
+
+m =      re.search  (r'^(\w+):.*:(.+)$', c, re.M); print (m.group(1), m.group(2))  #('root', '/bin/bash')
+#m =      re.match   (r'^(\w+):.*:(.+)$', c, re.M); print (m.group(1), m.group(2))#('root', '/bin/bash')
+
+#test regex named group(P means placeholder),
+#myview named groups are for search() or match()
+#m = re.match   (r'(root):.*:(.+)$', c, re.M);                print(m.group(1), m.group(2))          #('root', '/bin/bash')
+m = re.search (r'^(root):.*:(.+)$', c, re.M);                print(m.group(1), m.group(2))          #('root', '/bin/bash')
+m = re.search (r'^(?P<id>root):.*:(?P<shell>.+)$', c, re.M); print(m.group('id'), m.group(2))       #('root', '/bin/bash')
+m = re.search (r'^(?P<id>root):.*:(?P<shell>.+)$', c, re.M); print(m.group('id'), m.group('shell')) #('root', '/bin/bash')
+l = re.findall(r'^(?P<id>root):.*:(?P<shell>.+)$', c, re.M); print l                                #[('root', '/bin/bash')]
+
+#re.I, (?i), (?imx)
+for m in re.finditer(r'.*(BASH|sh)$', c, re.M|re.I)     : print m.group(0)
+for m in re.finditer(r'(?im).*(BASH|sh)$', c)           : print m.group(0)
+
+#split into list in the boundary of \W+
+print re.findall(r'\w+'         , c, re.M) #same as
+print re.findall(r'\w+'         , c)       #same as
+print re.split(r'\W+'           , c)       #same as
+print re.split(r'[^a-zA-Z0-9_]+', c)       #['root', 'x', '0', '0', 'root', 'root',...,'']
+print re.split(r'\W+'           , c, 1)    #['root', 'x:0:0:root:/root...\\n]
+print re.split(r'\W+'           , c, 2)    #['root', 'x', '0:0:root:/root...\\n']
+print re.split(r'(\W+)'         , c, 2)    #['root', ':', 'x', ':', '0:0:root...\\n']
+
+""")
+
+
+pp("reduce")
+eep("""
+###The function reduce(func, seq) continually applies the function func() to the sequence seq. It returns a single value. 
+##reduce(func, seq)
+##reduce(func, [ s1, s2, s3, ... , sn ])
+##reduce(func(s1, s2), [ s3, s4, s5... , sn ])
+##reduce(func(func(s1, s2),s3), [s4, s5 ... ,  sn ])
+##.....
+
+##the largest number
+f = lambda a,b: a if (a > b) else b
+result=reduce(f, [47,11,42,102,13]); print result
+
+##1 + 2 + 3 ...+ 10
+result=reduce(lambda x, y: x+y, range(1,10)); print result
+
+##turn [1, 2, 3, 4, 5, 6, 7, 8] into 12345678
+result=reduce(lambda x, y: 10*x+y, range(1,9)); print result
+
+##turn [[1, 2, 3], [4, 5], [6, 7, 8]] into [1, 2, 3, 4, 5, 6, 7, 8]
+result=reduce(list.__add__,[[1, 2, 3], [4, 5], [6, 7, 8]]); print result
+""")
+
+
+pp("select.select()")
+eep("""
+##a select call is for input timout
+import sys, select
+print select.select.__doc__
+
+print "You have 1 seconds to say something!"
+i, o, e = select.select( [sys.stdin], [], [], 1 )
+print i
+print o
+print e
+if (i):
+    print "You said", sys.stdin.readline().strip()
+""")
+
+
+pp("sequence")
+eep("""
+##about the sequence slice
+#a[start:end] # items start through end-1
+#a[start:]    # items start through the rest of the array
+#a[:end]      # items from the beginning through end-1
+#a[:]         # a copy of the whole array
+#
+# +---+---+---+---+---+
+# | H | e | l | p | A |
+# +---+---+---+---+---+
+# 0   1   2   3   4   5
+#-5  -4  -3  -2  -1
+
+##"One way to remember how slices work is to think of the indices as pointing between characters, with the left edge of the first character numbered 0."
+#>>> seq[:]                # [seq[0],   seq[1],          ..., seq[-1]    ]
+#>>> seq[low:]             # [seq[low], seq[low+1],      ..., seq[-1]    ]
+#>>> seq[:high]            # [seq[0],   seq[1],          ..., seq[high-1]]
+#>>> seq[low:high]         # [seq[low], seq[low+1],      ..., seq[high-1]]
+#>>> seq[::stride]         # [seq[0],   seq[stride],     ..., seq[-1]    ]
+#>>> seq[low::stride]      # [seq[low], seq[low+stride], ..., seq[-1]    ]
+#>>> seq[:high:stride]     # [seq[0],   seq[stride],     ..., seq[high-1]]
+#>>> seq[low:high:stride]  # [seq[low], seq[low+stride], ..., seq[high-1]]
+
+###sequence supports the following operations
+##1. in, not in
+print "str" in "string"
+print "str" not in "string"
+print 2 in [0, 1, 2, 3]
+print 2 in [0, 1, 22, 3]
+##2. + 
+print [1,2,3] + [3,4]
+print "long live" + " and prosper"
+##3. * 
+print [1,2,3] *3 
+print "cloud" *3 
+##4. slicing: s[i], s[i:j], s[i:j:k]
+#s=[0,1,2,3,4,5,6,7,8,9]
+s=list("0123456789")
+print s[0:4]
+print s[3:5]
+print s[3:]
+print s[-1]
+print s[:-1]
+#reverse the order
+print s[::-1]         #s not changed
+s.reverse(); print s; #s changed
+#sort the order
+print sorted(s)          #s is not changed
+s.sort(); print s        #s is changed
+#remove 2 elements while insert 7 elements
+s[3:5] = [11]*7; print s
+#remove 7 elements
+s[3:3+7] = []; print s
+#insert back the 7 elements with insert()
+s.insert(3, 11); s.insert(3,11); print s
+#remove() will not remove the fist occurence
+s.remove(11); print s
+##5. len(s), min(s), max(s)
+s=(1,2,3); print len(s), min(s), max(s)
+##6. s.index(i), s.count(i), s.find(i)
+s="banana"; print s.index('an'), s.count('an'), s.find('an')
+s=(12,1,2,12); print s.index(2), s.count(2)
+##7. ==, is -->the below difference is caused by that str is immutable
+a=[1,2,3];c=b=[1,2,3]; print a==b, a is b, c is b
+a='12345';c=b='12345'; print a==b, a is b, c is b
+##8. del s[i] only works for mutable sequene 
+a=b=[1,2,3]; del a[0]; print a,b
+a=b=[1,2,3]; a.pop(0); print a,b
+print inspect.getmro(str)
+print inspect.getmro(tuple)
+print inspect.getmro(xrange)
+""")
+
+peep("set", """
+##get intersection of two sets
+set1 = set([0,2,4,6,8])
+set2 = set((0,3,6,9))
+print set1 & set2
+print set1.intersection(set2)
+
+##get difference of two sets
+set1 = set([0,2,4,6,8])
+set2 = set((0,3,6,9))
+print set1 - set2
+print set1.difference(set2)
+
+##get union of two sets
+set1 = set([0,2,4,6,8])
+set2 = set((0,3,6,9))
+print set1 | set2
+print set1.union(set2)
+##below not supported
+#print set1 + set2
+
+import copy
+##assignment will only create a pointer
+set1 = set([0,2,4]); set2 = set1;            set1.clear(); print set1, set2
+##copy() will do a shallow copy
+set1 = set([0,2,4]); set2 = set1.copy();     set1.clear(); print set1, set2
+set1 = set([0,2,4]); set2 = copy.copy(set1); set1.clear(); print set1, set2
+
+##two ways to define a Set
+set1 = set([0,2,4,6,8,2,6]); print set1, type(set1)
+set1 = {0,2,4,6,8,2,6};      print set1, type(set1)  # using curly braces
+
+""")
+
+peep("frozenset", """
+##add, remove, discard#
+print dir(set)
+print set.__doc__
+print set.__bases__
+set1 = set([0,2,4,6,8])
+set1.add(10);    print set1
+set1.remove(10); print set1
+#discard() is similar to remove(), butt it will not throw error if the 9 not a member of set1
+set1.discard(9); print set1
+
+##frozensets are sets immutable, 'set2.add(11)' will throw exception
+set2 = frozenset([1,3,5,7,9]); print set2
+
+""")
+
+peep("shutil", """
+import shutil
+#shutil.move('/root/lab/testtools/rhel664/dallas',             '/lab/testtools/rhel664/')
+#shutil.move('/root/lab/testtools/rhel664/otp/R15B01_halfword','/lab/testtools/rhel664/otp/')
+#shutil.copy2   ('/root/var/dallas/1419_973_emalavn_BS',       '/var/dallas/OP305_R10A72')
+#shutil.copytree('/root/var/dallas/1419_973_emalavn_BS',       '/var/dallas/OP305_R10A72')
+#shutil.rmtree  (deploy_to_data_dir, ignore_errors=True)
+#if not os.path.isdir(deploy_to_data_dir):
+#   shutil.copytree(base_data_dir, deploy_to_data_dir)
+#os.listdir('/lab/testtools/rhel664')
+""")
+
+pp("signal")
+ebrun("""
+import signal
+print signal.__doc__
+def signal_handler(signal, frame):
+    print 'signal -->', signal
+    print 'frame -->', frame
+    print dir(frame)
+    #print frame.f_globals
+    #print frame.f_locals
+    #print frame.f_trace
+    print('You pressed Ctrl+C!')
+    sys.exit(0)
+
+signal.signal(signal.SIGINT, signal_handler)
+print('Press Ctrl+C')
+print signal.pause.__doc__
+#signal.pause()
+""")
+
+peep("singleton", """
+## getinstance is same as Myclass,    they are class 
+## geinstance() is same as Myclass(), they are instance
+def singleton(class_):
+  instances = {}
+  def getinstance(*args, **kwargs):
+    if class_ not in instances:
+        instances[class_] = class_(*args, **kwargs)
+        print "-->instance created here with id: %s" % id(instances[class_]) 
+    return instances[class_]
+  print "-->class created here with id: %s" % id(getinstance)
+  return getinstance
+
+@singleton
+class Myclass(object):
+  pass
+
+c=Myclass
+a=Myclass(); print id(a)
+b=Myclass(); print id(b)
+""")
+
+peep("socket","""
+###python -c 'import socket; s=socket.socket(); s.bind(("", 0)); print(s.getsockname()[1]); s.close()'
+import socket
+s=socket.socket(); print s; print(s.getsockname())
+s.bind(("", 0));   print s; print(s.getsockname())
+s.close();         print s
+""")
+
+peep("str repr backtick", """
+#str(), repr(), `` are three ways to convert objects to str
+
+#str is a class, repr is a function
+#back tick is similar to str(), to trasform everything to string
+
+print str.__doc__
+#str(object='') -> string
+#Return a nice string representation of the object.
+#If the argument is a string, the return value is the same object.
+print repr.__doc__
+#repr(object) -> string
+#Return the canonical string representation of the object.
+#For most object types, eval(repr(object)) == object.
+
+print str.__class__               #<type 'type'>
+print repr.__class__              #<type 'builtin_function_or_method'>
+
+print "my mom is " + `29`              #my mom is 29
+print "my mom is " + repr(29)          #my mom is 29
+print "my mom is " + str(29)           #my mom is 29
+""")
+
+peep("StringIO", """
+##io.StringIO       is a class. It handles Unicode. It reflects the preferred Python 3 library structure.
+##StringIO.StringIO is a class. It handles strings. It reflects the legacy Python 2 library struct
+##cStringIO.StringIO  is faster version of StringIO.StringIO
+
+import timeit
+test_join='''a=[]
+for i in range(100):
+    a.append('a')
+'''
+
+test_StringIO='''from StringIO import StringIO
+a = StringIO()
+for i in range(100):
+    a.write('a')
+'''
+test_cStringIO='''from cStringIO import StringIO
+a = StringIO()
+for i in range(100):
+    a.write('a')
+'''
+print(timeit.timeit(test_join, number=1))
+print(timeit.timeit(test_StringIO, number=1))
+print(timeit.timeit(test_cStringIO, number=1))
+
+""")
+
+
+peep("sys", """
+#ImportError: No module named foo actually means the module foo.py or package foo/__init__.py could not be found in any of the directories in the search path (sys.path list).
+print sys.path
+sys.path.append('/path/to/the/example_file.py')
+print sys.path
+print sys.argv
+print sys.executable
+""")
+
+peep("tarfile", """
+#import tarfile
+#tar = tarfile.open("1.tar.gz")
+#tar.extractall()
+#tar.close()
 """)

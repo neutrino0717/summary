@@ -12,3 +12,4 @@ logger.warn ('the distance of nearby stars: %s ' % lightyear)
 logger.info ('the distance of nearby stars: %s ' % lightyear)
 logger.debug('the distance of nearby stars: %s ' % lightyear)
 with open('/tmp/stars.log', 'r') as f: print f.read()
+
