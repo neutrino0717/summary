@@ -50,6 +50,7 @@ void nl() {
 template <class T, class U>
 void pmap(const std::map<T, U>& m){
   for (const auto& i: m)  cout << i.first << " -> " << i.second << endl;
+  //for (const auto& i: m)  cout << typeid(i).name() << endl;
 }
 
 template<class T>
@@ -121,14 +122,13 @@ int main(){
   std::cout << Winter  << " " << arSeason[Winter]  << endl;
   std::cout <<"Winter" << " " << seasons["Winter"] << endl;
   std::cout << (Winter==Season(2)) << endl;
-
   pp("enum");     
   enum Season1       { Summer1, Fall1, Winter1, Spring1 };  //c++ 03: enum are basically integers
   enum Season2: char { Summer2, Fall2, Winter2, Spring2 };
   enum Season3: int  { Summer3, Fall3, Winter3, Spring3 };
   std::cout << Fall1 << std::endl;  //1
   std::cout << Fall2 << std::endl;  //1
-  std::cout << Fall1 << std::endl;  //1
+  std::cout << Fall3 << std::endl;  //1
   Season w1 = Winter;
   int    w2 = w1;           //2
 
@@ -138,10 +138,11 @@ int main(){
   orange og = orange::small;             //not 1
   //std::cout << ap == og << std::endl;    //compile fails because we haven't define "== (apple, orange)"
 
+  //exit(1);
   //three ways
   class MyClass {
       public:
-          MyClass(int a=0) : var(a){ std::cout << "a="<<a<<endl; }
+          MyClass(int a=0) : var(a){ std::cout << "a="<<a<<endl; printInfo(); }
           void printInfo() {
               std::cout <<         var <<endl;
               std::cout <<   this->var <<endl;
@@ -154,13 +155,16 @@ int main(){
   map<int, MyClass> m;
   m[7] = MyClass(999);
     //m[7] call default constructor
-    //C(1) call defined constructor
+    //MyClass(999) call defined constructor
     //=    call assign constructor
+  //exit(1);
 
   pp("use reference to avoid new object");
   MyClass a[2];              //call def constr
-  for (auto  x : a) { }//call copy constr, readonly access.
-  for (auto& x : a) { }//no new object,    changes the values in a by x
+  cout << "def constr called for two elements" << endl;
+  for (auto  x : a) { cout << " copy constr called " << endl; }//call copy constr, readonly access.
+  for (auto& x : a) { cout << " no new object " << endl; }//no new object,    changes the values in a by x
+  //exit(1);
 
   pp("c type array");
   int arr[5];
@@ -175,78 +179,99 @@ int main(){
   //void printArray(int arr[], int size) {   //--> note: nested function not supported in c++
   //   for(int x=0; x<size; x++) { cout <<arr[x]<< endl; }
   //}
-
+  //exit(1);
+  
   //name space
   using namespace first;
   func();//    // This calls function from first name space.  
 
   pp("1value and rvalue");
-  //lvalue occupy identifiable memory, rvalue not
-  int i2 = 0;
-  int x2 = i2 + 2; //x: rvalue, i+2: lvalue
-  // lvalue = 2  --> OK
-  // rvalue = 2   --> wrong
+  {
+    //lvalue occupy identifiable memory, rvalue not
+    int i2 = 0;
+    int x2 = i2 + 2; //x2: lvalue, i2+2: rvalue
+    // lvalue = 2  --> OK
+    // rvalue = 2   --> wrong
 
-  //lvalue create rvalue normally:
-  int x4 = i2 + 2;        //i2: lvalue --> i2+2: rvalue
-  //rvalue create lvalue sometimes:
-  int v[3]; *(v+2) = 4; //v+2: rvalue --> *(v+2): lvalue
+    //lvalue create rvalue normally:
+    int x4 = i2 + 2;        //i2: lvalue --> i2+2: rvalue
+    //rvalue create lvalue sometimes:
+    int v[3]; *(v+2) = 4;   //v+2: rvalue --> *(v+2): lvalue
 
-  //function or operator yields rvalue normally
-  int y = [](int x, int y){return x+y; }(33,44);
-  std::cout << y << endl;
+    //function or operator yields rvalue normally
+    int y = [](int x, int y){return x+y; }(33,44);
+    std::cout << y << endl;
 
-  //function or operator yields lvalue too
-  foo() = 50; //foo() yields lvalue
-  cout << myglobal << endl;
+    //function or operator yields lvalue too
+    foo() = 50; //foo() yields lvalue   
+    cout << myglobal << endl;
 
-  //operator [] always yields lvalue
-  arr1[1] = 50;
+    auto foo9 = [&]()->int&{return myglobal; };
+    foo9() = 60;
+    cout << myglobal << endl;
+
+    //operator [] always yields lvalue
+    arr1[1] = 50;
+    //exit(1);
+
+  }
 
   pp("1value and rvalue reference");
-  int& r2 = i2;       //r2 is lvalue reference.
-  r2      = 99;       //OK
-  //int& r3 = 3;     //error, lvalue reference can only refer to lvalue
-  const int& r3 = 2; //OK, this is a exception, constant lvalue can be assigned a rvalue
+  {
+    int i2;
+    int& r2 = i2;       //r2 is lvalue reference.
+    r2      = 99;       //OK
+    //int& r3 = 3;     //error, lvalue reference can only refer to lvalue
+    const int& r3 = 2; //OK, this is a exception, constant lvalue can be assigned a rvalue
 
-  int i=40;
-  //in square1(      int& x){return x*x;}; square1(i); square1(40);  //OK; error
-  //in square2(const int& x){return x*x;}; square2(i); square2(40);  //OK; OK
-  auto square1=[](      int& x){cout << x*x; nl();}; square1(i); //square1(40);  //OK; error
-  auto square2=[](const int& x){cout << x*x; nl();}; square2(i);   square2(40);  //OK; OK
+    int i=40;
+    //in square1(      int& x){return x*x;}; square1(i); square1(40);  //OK; error
+    //in square2(const int& x){return x*x;}; square2(i); square2(40);  //OK; OK
+    auto square1=[](      int& x){cout << x*x; nl();}; square1(i); //square1(40);  //OK; error
+    auto square2=[](const int& x){cout << x*x; nl();}; square2(i);   square2(40);  //OK; OK
 
-  int   a5 = 2;  //a is lvalue
-  int&  b5 = a5; //b is lvalue ref
-  int&& c5 = 7;  //c is rvalue ref
-  prt1(1);
-  //prt2(1);  //cannot bind non-const lvalue reference of type ‘int&’ to an rvalue of type ‘int’
-  prt3(1);
-  prt4(1);
-  prt1(a5);
-  prt2(a5);
-  prt3(a5);
-  //prt4(a5);    // cannot bind rvalue reference of type ‘int&&’ to lvalue of type ‘int’
-  prt1(b5);
-  prt2(b5);
-  prt3(b5);
-  //prt4(b5);   // cannot bind rvalue reference of type ‘int&&’ to lvalue of type ‘int’
-  prt1(c5);
-  prt2(c5);
-  prt3(c5);
-  //prt4(c5);  //cannot bind non-const lvalue reference of type ‘int&’ to an rvalue of type ‘int’
+    //reference
+    //void prt1(int        i){ std::cout << "value      " << i << std::endl; }
+    //void prt2(int&       i){ std::cout << "lvalue ref " << i << std::endl; }
+    //void prt3(const int& i){ std::cout << "const lvalue ref " << i << std::endl; }
+    //void prt4(int&&      i){ std::cout << "rvalue ref " << i << std::endl; }
+    int   a5 = 2;  //a is lvalue
+    int&  b5 = a5; //b is lvalue ref
+    int&& c5 = 7;  //c is rvalue ref
+    prt1(1);
+    //prt2(1);  //cannot bind non-const lvalue reference of type ‘int&’ to an rvalue of type ‘int’
+    prt3(1);
+    prt4(1);
+    prt1(a5);
+    prt2(a5);
+    prt3(a5);
+    //prt4(a5);    // cannot bind rvalue reference of type ‘int&&’ to lvalue of type ‘int’
+    prt1(b5);
+    prt2(b5);
+    prt3(b5);
+    //prt4(b5);    // cannot bind rvalue reference of type ‘int&&’ to lvalue of type ‘int’
+    prt1(c5);
+    prt2(c5);
+    prt3(c5);
+    //prt4(c5);    // cannot bind rvalue reference of type ‘int&&’ to lvalue of type ‘int’
+    //exit(1);
+  }
 
-  pp("int *ptr = NULL;");
+  pp("nullptr replace NULL in C++ 03");
   {
     int *ptr1 = NULL;
     cout << "The value of ptr1 is " << ptr1 << endl;  //NULL is 0 which cause issues
-    pp("nullptr replace NULL in C++ 03");
     int *ptr2 = nullptr;
     cout << "The value of ptr2 is " << ptr2 << endl;
 
-    pp("std::map.find()");
+  }
+
+  pp("std::map.find()");
+  {
     map<int, string>  dic = { {1, "one"}, {2, "two"} };
     bool exists1 = dic.find(2) != dic.end();// 1
     cout << exists1 << endl;
+    //exit(1);    
   }
 
   pp("std::set.find(), std::includes()");
@@ -257,105 +282,141 @@ int main(){
     cout << (chars.find('E') != chars.end()) << endl;  //0
     bool containAll = std::includes( chars.begin(), chars.end(), chars2.begin(), chars2.end());   //1
     cout << containAll << endl;
+    //exit(1);
   }
+
   pp("unordered_map::find");
-  std::unordered_map<std::string,double> mymap = {
-    {"mom",5.4},
-    {"dad",6.1},
-    {"bro",5.9},
-    {"bro",5.8} };
-  std::unordered_map<std::string,double>::const_iterator got = mymap.find ("dad");
-  if ( got != mymap.end() ) std::cout << "found" << endl; //found
-  {
-    std::cout << got->first << " is " << got->second << endl; //dad is 6.1
-    cout << mymap.count("bro") << endl;   //1   //1 if an element with a key equivalent to k is found, or zero otherwise.
-    cout << mymap.count("abc") << endl;   //0
-    cout << mymap.size() << endl;         //3
-    std::unordered_map<std::string,std::string>
-      first1 = {{"11","G. Lucas"},{"12","R. Scott"},{"13","J. Cameron"}},
-      second1  = {{"21","C. Nolan"},{"22","R. Kelly"}};
-    first1.swap(second1);
-    for (auto& x: first1)  std::cout << x.first << " (" << x.second << "), "; nl();//{{"21","C. Nolan"},{"22","R. Kelly"}};
-    for (auto& x: second1) std::cout << x.first << " (" << x.second << "), "; nl();//{{"11","G. Lucas"},{"12","R. Scott"},{"13","J. Cameron"}},
-  }
+  {{
+    std::unordered_map<std::string,double> mymap = {
+      {"mom",5.4},
+      {"dad",6.1},
+      {"bro",5.9},
+      {"bro",5.8} 
+    };
+    std::unordered_map<std::string,double>::const_iterator got = mymap.find ("dad");
+    if ( got != mymap.end() ) std::cout << "found" << endl; //found
+
+      std::cout << got->first << " is " << got->second << endl; //dad is 6.1
+      cout << mymap.count("bro") << endl;   //1   //1 if an element with a key equivalent to k is found, or zero otherwise.
+      cout << mymap.count("abc") << endl;   //0
+      cout << mymap.size() << endl;         //3
+      std::unordered_map<std::string,std::string>
+        first1 = {{"11","G. Lucas"},{"12","R. Scott"},{"13","J. Cameron"}},
+        second1  = {{"21","C. Nolan"},{"22","R. Kelly"}};
+      first1.swap(second1);
+      for (auto& x: first1)  std::cout << x.first << " (" << x.second << "), "; nl();//{{"21","C. Nolan"},{"22","R. Kelly"}};
+      for (auto& x: second1) std::cout << x.first << " (" << x.second << "), "; nl();//{{"11","G. Lucas"},{"12","R. Scott"},{"13","J. Cameron"}},
+    //exit(1);
+  }}
+
 
   pp("std::string::substr()");
   {
     string str = "one way ticket";
     cout << str.substr(4, 3) << endl;     //return "way"`,  str unchanged
+    //exit(1);
   }
 
   pp("std::string::{erase,find}");
-  string str = "This is an example"; str.erase(0, 5);
-  cout << str << endl;  //erase 0~5, return "is an example",
-  str = "This is an example"; str.erase(4);
-  cout << str << endl;  //erase 4~ , return "This",
-  str = "This is an example"; str.erase(str.find(' '));
-  cout << str << endl;  //erase 4~ , return "This",       s.find(' ') return 4
-  str = "This is an example"; str.erase(std::find(str.begin(), str.end(), ' ')); 
-  cout << str << endl;  //erase 4~5, return "Thisis an example" //std::find() return InputIt
-  
+  {
+    string str = "This is an example"; str.erase(0, 5);
+    cout << str << endl;  //erase 0~5, return "is an example",
+    str = "This is an example"; str.erase(4);
+    cout << str << endl;  //erase 4~$ , return "This",
+    str = "This is an example"; str.erase(str.find(' ')); //s.find(' ') return 4
+    cout << str << endl;                                  //erase 4~$ , return "This"
+    str = "This is an example"; str.erase(std::find(str.begin(), str.end(), ' ')); //std::find() return InputIt 
+    cout << str << endl;  //erase 4~5, return "Thisis an example" 
+    //exit(1);
+  }
+
   pp("std::string::{erase,remove}");
-  //remove all spaces https://stackoverflow.com/questions/83439/remove-spaces-from-stdstring-in-c
-  auto is_space = [](unsigned char x){return isspace(x);};
-  str = "This is an example";
-  str.erase(remove(str.begin(),   str.end(), ' '),      str.end());
-  cout << str << endl;
-  str.erase(remove_if(str.begin(), str.end(),is_space), str.end());
-  cout << str << endl;
-  //1 remove_if() change the string str to     "This is an example   "
-  //2 remove_if() return iterator pointing to  "This is an example   "
-  //                                                              ^
-  str = "This is an example";
-  remove_if(str.begin(), str.end(), is_space);
-  //cout << "-->" << str << "<--"<< endl;
-  //string str2=" aaa, bbb, ccc   ";
-  //cout << "-->" << str2 << "<--"<< endl;
+  {
+    //remove all spaces https://stackoverflow.com/questions/83439/remove-spaces-from-stdstring-in-c
+    auto is_space = [](unsigned char x){return isspace(x);};
+    string str = "This is an example";
+    string str2 = str;
+    if (str == str2) cout << "equal" << endl;
+    str.erase(remove(str.begin(),   str.end(), ' '),      str.end());
+    cout << str << endl;
+    cout << str2 << endl;
+
+    str = "This is an example";
+    str.erase(remove_if(str.begin(), str.end(), is_space), str.end());
+    cout << str << endl;
+    cout << str.length() <<endl;
+    //1 remove_if() change the string str to     "Thisisanexample   "
+    //2 remove_if() return iterator pointing to  "Thisisanexample   "   //? rreally?
+    //                                                           ^
+    str = "This is an example";
+    remove_if(str.begin(), str.end(), is_space);
+    cout << str.length() <<endl;
+    //cout << "-->" << str << "<--"<< endl;
+    //string str2=" aaa, bbb, ccc   ";
+    //cout << "-->" << str2 << "<--"<< endl;
+    //exit(1);
+  }
 
   pp("set: auto sort");
-  unordered_set<int> charu{'B', 'A', 'C', 'D'};
-  set<int>           charv{'B', 'A', 'C', 'D'};
-  for (int c:charu) cout << c << ":"; nl();           //68:67:65:66:
-  for (int c:charv) cout << c << ","; nl();           //65,66,67,68,
-  for (int c:charv) cout << string(1,c) << ";"; nl(); //A;B;C;D;
+  {
+    unordered_set<int> charu{'B', 'A', 'C', 'D'};
+    set<int>           charv{'B', 'A', 'C', 'D'};
+    for (int c:charu) cout << c << ":"; nl();           //68:67:65:66:
+    for (int c:charv) cout << c << ","; nl();           //65,66,67,68,
+    for (int c:charv) cout << string(1,c) << ";"; nl(); //A;B;C;D;
+    //exit(1);
+ }
 
   pp("all_of, any_of");
-  std::array<int,8> foo2 = {3,5,7,11,13,17,19,23};
-  cout << std::all_of (foo2.begin(), foo2.end(), [](int i){return i%2;}) << endl;  //1, all are odd
-  cout << std::none_of(foo2.begin(), foo2.end(), [](int i){return i%2 == 0;}) << endl;  //1, all are odd
-  std::array<int,7> foo3 = {0,1,-1,3,-3,5,-5};
-  cout << std::any_of(foo3.begin(), foo3.end(), [](int i){return i<0;}) << endl;//1, some are negative
+  {
+    std::array<int,8> foo2 = {3,5,7,11,13,17,19,23};
+    cout << std::all_of (foo2.begin(), foo2.end(), [](int i){return i%2;}) << endl;  //1, all are odd
+    cout << std::none_of(foo2.begin(), foo2.end(), [](int i){return i%2 == 0;}) << endl;  //1, all are odd
+    std::array<int,7> foo3 = {0,1,-1,3,-3,5,-5};
+    cout << std::any_of(foo3.begin(), foo3.end(), [](int i){return i<0;}) << endl;//1, some are negative
+    //exit(1);
+  }
 
   pp("pair");
-  pair<int, string> p1 = make_pair(23, "hello");
-  pair<int, string> p2 =          {23, "hello"};
-  pair<int, string> p3            {23, "hello"};
-  cout << p1.first << " "  << p1.second << "\n";
-  cout << p2.first << " "  << p2.second << "\n";
-  cout << p3.first << " "  << p3.second << "\n";
-
+  {
+    pair<string, int> p1 = make_pair("moon", 17);
+    pair<string, int> p2 =          {"moon", 17};
+    pair<string, int> p3            {"moon", 17};
+    cout << p1.first << " "  << p1.second << "\n";
+    cout << p2.first << " "  << p2.second << "\n";
+    cout << p3.first << " "  << p3.second << "\n";
+    //exit(1);
+  }
   pp("tuple is for one-time usage");
-  //tuple for one-time usage, struct for readability
-  struct Person{ string name; int age; } p = {"mars", 11};
-  tuple<string, int> t = {"moon", 17};
-  cout << p.name    << " " << p.age     << endl;
-  cout << get<0>(t) << " " << get<1>(t) << endl;
+  {
+    //tuple for one-time usage, struct for readability
+    struct Person{ string name; int age; } p = {"moon", 11};
+    cout << p.name    << " " << p.age     << endl;
+    tuple<string, int> t = {"moon", 7};
+    cout << get<0>(t) << " " << get<1>(t) << endl;
+    //exit(1);
+  }
 
   pp("tuple get<>() returns reference");
-  tuple<int, string, char> t1(21, "hello", 'a');
-  get<1>(t1) = "bye"; //get<>() returns reference
-  string& s = get<1>(t1);
-  s = "changed";       //s is reference
-  cout << get<0>(t1) << " " <<  get<1>(t1) << " " << get<2>(t1) << endl;   //23 changed a
+  {
+    tuple<string, int, char> t1("moon", 99, 'a');
+    cout << get<0>(t1) << " " <<  get<1>(t1) << " " << get<2>(t1) << endl;   //23 hel`1lo a
+    get<0>(t1) = "bye"; //get<>() returns reference
+    cout << get<0>(t1) << " " <<  get<1>(t1) << " " << get<2>(t1) << endl;   //23 bye a
+    string& s = get<0>(t1);
+    s = "changed";       //s is reference
+    cout << get<0>(t1) << " " <<  get<1>(t1) << " " << get<2>(t1) << endl;   //23 changed a
 
-  tuple<int, string, char> t2; //default constructor
-  tuple<int, string, char> t3 = {23, "hello", 'a'};  //or
-  auto                     t4 = tuple<int, string, char>(24, "hello", 'a');
-  auto                     t5 = make_tuple(25, "hello", 'a'); //the same, make things easier
-  cout << get<0>(t2) << "_" <<  get<1>(t2) << "_" << get<2>(t2) << endl;
-  cout << get<0>(t3) << " " <<  get<1>(t3) << " " << get<2>(t3) << endl;
-  cout << get<0>(t4) << " " <<  get<1>(t4) << " " << get<2>(t4) << endl;
-  cout << get<0>(t5) << " " <<  get<1>(t5) << " " << get<2>(t5) << endl;
+    tuple<string, int, char> t2; //default constructor
+    tuple<string, int, char> t3 = {"moon", 3, 'a'};  //or
+    auto                     t4 = tuple<string, int, char>("moon", 4, 'a');
+    auto                     t5 = make_tuple("moon", 5, 'a'); //the same, make things easier
+    cout << get<0>(t2) << "_" <<  get<1>(t2) << "_" << get<2>(t2) << endl;
+    cout << get<0>(t3) << " " <<  get<1>(t3) << " " << get<2>(t3) << endl;
+    cout << get<0>(t4) << " " <<  get<1>(t4) << " " << get<2>(t4) << endl;
+    cout << get<0>(t5) << " " <<  get<1>(t5) << " " << get<2>(t5) << endl;
+    //exit(1);
+  }
 
   pp("tuple can store references");
   //None of the stl container can store reference, they always use copy/move
@@ -368,64 +429,89 @@ int main(){
   //cout << st << endl;  //changed4
 
   pp("tuple can store references 2");
-  t2 = tuple<int, string, char>(27, "hello", 'b');
-  int ax; string ay; char az;
-  //make_tuple(ax, ay, az) = t2;
-  make_tuple(ref(ax), ref(ay), ref(az)) = t2;
-  cout << ax << " " << ay << " " << az << endl;  //27 hello b
+  {
+    auto t2 = tuple<int, string, char>(27, "hello", 'b');
 
-  int bx; string by; char bz;
-  std::tie(bx, std::ignore, bz) = t2;           //same as above, ignore y
-  cout << bx << " " << by << " " << bz << endl;  //27  b
-  std::tie(bx, by, bz) = t2;                    //
-  cout << bx << " " << by << " " << bz << endl;  //27 hello b
+    int ax; string ay; char az;
+    //make_tuple(ax, ay, az) = t2;
+    make_tuple(ref(ax), ref(ay), ref(az)) = t2;
+    cout << ax << " " << ay << " " << az << endl;  //27 hello b
+
+    int bx; string by; char bz;
+    std::tie(bx, std::ignore, bz) = t2;           //same as above, ignore y
+    cout << bx << " " << by << " " << bz << endl;  //27  b
+    std::tie(bx, by, bz) = t2;                    //
+    cout << bx << " " << by << " " << bz << endl;  //27 hello b
+    //exit(1);
+  }
 
   pp("tuple catenate");
-  auto t8 = tuple_cat(t2, t3);  //suport cat
-  cout << tuple_size<decltype(t8)>::value << endl; //type traits, 6
+  {
+    tuple<string, int, char> t2; //default constructor
+    tuple<string, int, char> t3 = {"moon", 3, 'a'};  //or
+    auto t8 = tuple_cat(t2, t3);  //suport cat
+    cout << tuple_size<decltype(t8)>::value << endl; //type traits, 6
+    //exit(1);
+  }
+
   pp("tuple swap");
-  int sa=1, sb=2, sc=3;
-  tie(sb, sc, sa) = make_tuple(sa, sb, sc);
-  cout << sa << sb << sc << endl;
+  {
+    int sa=1, sb=2, sc=3;
+    tie(sb, sc, sa) = make_tuple(sa, sb, sc);
+    cout << sa << sb << sc << endl;
+    //exit(1);
+  }
 
   pp("multi index map");
-  map<tuple<int, char, float>, string> mt;
-  mt[make_tuple(2,'a',2.3)] = "test it";
-  cout <<  mt[make_tuple(2,'a',2.3)] << endl;
+  {
+    map<tuple<int, char, float>, string> mt;
+    mt[make_tuple(2,'a',2.3)] = "test it";
+    cout <<  mt[make_tuple(2,'a',2.3)] << endl;
+    //exit(1);    
+  }
 
   pp("std::transform");
-  str = "Lower and upper";
-  std::transform(str.begin(), str.end(), str.begin(), ::tolower); //::tolower global namespace, which is tolower of C lauguage. str is "lower and upper"
-  cout << str << endl;
-  std::transform(str.begin(), str.end(), str.begin(), ::toupper); //str is "LOWER AND UPPER"
-  cout << str << endl;
+  {
+    string str = "Lower and upper";
+    std::transform(str.begin(), str.end(), str.begin(), ::tolower); //::tolower global namespace, which is tolower of C lauguage. str is "lower and upper"
+    cout << str << endl;
+    std::transform(str.begin(), str.end(), str.begin(), ::toupper); //str is "LOWER AND UPPER"
+    cout << str << endl;
+    //exit(1);
+  }
 
   pp("std::set::{insert,erase,clear}");
-  set<char> set1{ 'A', 'B', 'C' };
-  set1.insert('D'); //{ 'A', 'B', 'C', 'D' }
-  set1.erase('A');  //{ 'B', 'C', 'D' }
-  for(const char &c: set1) cout << c << ";"; nl();//B;C;D;
-  set1.clear();     //{ }
-  for(const char &c: set1) cout << c << ";"; nl();
+  {
+    set<char> set1{ 'A', 'B', 'C' };
+    set1.insert('D'); //{ 'A', 'B', 'C', 'D' }
+    set1.erase('A');  //{ 'B', 'C', 'D' }
+    for(const char &c: set1) cout << c << ";"; nl();//B;C;D;
+    set1.clear();     //{ }
+    for(const char &c: set1) cout << c << ";"; nl();
+    //exit(1);
+  }
 
   pp("std::{set_union,intersection,set_difference,equal}");
-  set<int> sss1{ 1, 2, 3, 4 };
-  set<int> sss2{ 3, 4, 5 };
-  set<int> sss3, sss4, sss5;
-  insert_iterator<set<int>> iterator3(sss3, sss3.begin());
-  insert_iterator<set<int>> iterator4(sss4, sss4.begin());
-  insert_iterator<set<int>> iterator5(sss5, sss5.begin());
+  {
+    set<int> sss1{ 1, 2, 3, 4 };
+    set<int> sss2{ 3, 4, 5 };
+    set<int> sss3, sss4, sss5;
+    vector <int> vthird;
+    insert_iterator<set<int>> iterator3(sss3, sss3.begin());
+    insert_iterator<set<int>> iterator4(sss4, sss4.begin());
+    insert_iterator<set<int>> iterator5(sss5, sss5.begin());    
   
-  set_union       (sss1.begin(), sss1.end(), sss2.begin(), sss2.end(), iterator3 );  //third is { 1, 2, 3, 4, 5 }
-  for (const int& i: sss3) cout << i; nl();
-  set_intersection(sss1.begin(), sss1.end(), sss2.begin(), sss2.end(), iterator4);   //third is { 3, 4 }
-  for (const int& i: sss4) cout << i; nl();
-  set_difference  (sss1.begin(), sss1.end(), sss2.begin(), sss2.end(), iterator5);   //third is { 1, 2 }
-  for (const int& i: sss5) cout << i; nl();
-  vector <int> vthird;
-  set_intersection(sss1.begin(), sss1.end(), sss2.begin(), sss2.end(), back_inserter(vthird)); //third is { 3, 4 }
-  for (const int& i: vthird) cout << i; nl();
-  cout << equal   (sss1.begin(), sss1.end(), sss2.begin(), sss2.end()) << endl;
+    set_union       (sss1.begin(), sss1.end(), sss2.begin(), sss2.end(), iterator3 );  //sss3 is { 1, 2, 3, 4, 5 }
+    set_intersection(sss1.begin(), sss1.end(), sss2.begin(), sss2.end(), iterator4);   //sss4 is { 3, 4 }
+    set_difference  (sss1.begin(), sss1.end(), sss2.begin(), sss2.end(), iterator5);   //sss5 is { 1, 2 }
+    set_intersection(sss1.begin(), sss1.end(), sss2.begin(), sss2.end(), back_inserter(vthird)); //third is { 3, 4 }
+    for (const int& i: sss3) cout << i; nl();
+    for (const int& i: sss4) cout << i; nl();
+    for (const int& i: sss5) cout << i; nl();
+    for (const int& i: vthird) cout << i; nl();
+    cout << equal   (sss1.begin(), sss1.end(), sss2.begin(), sss2.end()) << endl;
+    //exit(1);
+  }
 
   pp("std::map::{erase, find, end}");
   {
@@ -438,13 +524,15 @@ int main(){
     mymap2["China"] = "Beijing";
     mymap2["Germany"] = "Berlin";
     mymap2["Japan"] = "Tokyo";
-    cout << "sorted:\n";         pmap(mymap2);        
+
+    cout << "\n=>sorted:\n";         pmap(mymap2);        
     mymap2.erase ( mymap2.begin() );      // erasing by iterator, china removed
-    cout << "China removed:\n";  pmap(mymap2);
+    cout << "\n=>China removed:\n";  pmap(mymap2);
     mymap2.erase ("Germany");             // erasing by key, germany removed
-    cout << "Germany removed:\n";pmap(mymap2);
+    cout << "\n=>Germany removed:\n";pmap(mymap2);
     mymap2.erase ( mymap2.find("U.K."), mymap2.end() ); // erasing by range, all removed
-    cout << "U.K. U.S. removed:\n"; pmap(mymap2);
+    cout << "\n=>U.K. U.S. removed:\n"; pmap(mymap2);
+    //exit(1);
   }
 
   pp("Initializer list for struct");
@@ -453,7 +541,8 @@ int main(){
     Size size(10, 11);
     Point point(5, 6);
     Rectangle rect(size, point);
-    rect.pp();
+    rect.pp();//10,11,5,6
+    //exit(1);
   }
 
   {
@@ -461,35 +550,41 @@ int main(){
     Size size{1, 2};
     Point point{3, 4};
     Rectangle rect{size, point};  
-    rect.pp();
+    rect.pp();//1,2,3,4
+    //exit(1);
   }
 
   {
     //way3, Initializer_list
     Rectangle rect2 = {{5, 6}, {7, 8}};   
-    rect2.pp();
+    rect2.pp();//5,6,7,8
+    //exit(1);
   }
 
   pp("Initializer list for Array of integer/string");
   {
     int primeNumbers[] = { 2, 3, 5, 7, 11, 13, 17, 19 };
     string gameList[] { "soccer", "hockey", "basketball" }; //the same as above
+    //exit(1);
   }
 
   pp("use constructor for Array of objects");
   {
     Point point2[] { Point(1, 2), Point(3, 4) };
     Point point3[] { Point{1, 2}, Point{3, 4} };
+    //exit(1);
   }
 
   pp("Initializer list for map");
   {
     map<int, Point> point4 { {1, Point{11, 12}}, {2, Point{21, 22}} };
+    //exit(1);
   }
 
   pp("iostream");
   {
-  std::cout.put('P'); nl();         //low-level I/O
+    std::cout.put('P'); nl();         //low-level I/O
+    //exit(1);
   }
 
   pp("time -> time_t --localtime/gmtime----> tm -> string");
@@ -507,7 +602,8 @@ int main(){
     int dayOfWeek = tm1.tm_wday;
     cout << year << ":" << month  << ":" << day << ":" << hour << ":" << minute << ":" << second << endl; //1975:7:17:22:30:2
     //2019:8:25:22:21:26
-  }
+    //exit(1);
+}
 
   pp("time -> time_t --ctime--------> string");
   {
@@ -515,6 +611,7 @@ int main(){
     cout << now2 << endl;
     char* dt = ctime(&now2); // convert now to string form
     cout << "The local date and time is: " << dt << endl;//Sun Aug 25 22:25:08 2019
+    //exit(1);
   }
 
   pp("time -> time_t --gmtime-->tm --asctime---> string");
@@ -523,12 +620,14 @@ int main(){
     tm *gmtm2 = gmtime(&now2); // convert now to tm struct for UTC
     char* dt = asctime(gmtm2);
     cout << "The UTC date and time is:"<< dt << endl; //Sun Aug 25 14:25:08 2019
+    //exit(1);
   }
 
   pp("srand");
   {
     srand(time(0)); //time(0) will return the current second count
     for (int x = 1; x <= 7; x++) cout << 1 + (rand() % 6) << " ";  //4 5 3 6 5 1 2
+    //exit(1);
   }
 
   //#include <sstream>
@@ -539,13 +638,12 @@ int main(){
   {
     bool boolValue;
     int intValue;
-    std::istringstream("true") >> std::boolalpha >> boolValue;
+    std::istringstream("true") >> std::boolalpha >> boolValue;   //or use stringstream
     std::cout << boolValue << std::endl;   //1
     std::istringstream("10") >> std::hex >> intValue;
     std::cout << intValue << std::endl;    //1
-   
-
-    stringstream ss;
+    
+    ostringstream ss;   //or use stringstream
     ss << "hex of 89 is: " << hex << 89 << "\noct of 89 is: " << oct << 89;
     cout << ss.str() << endl; //hex of 89 is: 59. oct of 89 is: 131
 
@@ -559,9 +657,8 @@ int main(){
     // input one int + one char --> "1" + " " from ss2
     copy(istream_iterator<int, char>(ss2), istream_iterator<int, char>(), numbers); //numbers in {1, 2, 3, 4, 5}
     for(int &i: numbers) cout << i << ":"; cout << endl;
-
+    //exit(1);
   }
-
 
   /*
   #include <fstream>
@@ -582,6 +679,7 @@ int main(){
     string line; 
     while ( getline (MyFile, line) ) cout << line << '\n';   //This is awesome!
     MyFile.close();
+    //exit(1);
   }
 
   pp("ofstream and ifstream -> binary");   
@@ -589,14 +687,12 @@ int main(){
     std::ofstream ostrm("/tmp/Test.bin", std::ios::binary);
     double d = 3.14;
     ostrm.write(reinterpret_cast<char*>(&d), sizeof d); // binary output
-    ostrm << 123 << "abc" << '\n';                      // text output
+    ostrm << 123 << '\n';                      // text output
 
     std::ifstream istrm("/tmp/Test.bin", std::ios::binary);  // read back
     istrm.read(reinterpret_cast<char*>(&d), sizeof d);
-    int n2;
-    std::string s2;
-    istrm >> n2 >> s2;
-    std::cout << "read back: " << d << " " << n2 << " " << s2 << '\n'; //read back: 3.14 123 abc
+    std::cout << "read back: " << d  << '\n'; //read back: 3.14
+    //exit(1);
   }
 
   pp("std::thread");   
@@ -616,6 +712,7 @@ int main(){
     worker.join();
     std::cout << "Main thread id=" << std::this_thread::get_id() << std::endl;
     std::cout << "finished! \n";
+    //exit(1);
   }
 
 
@@ -632,6 +729,7 @@ int main(){
     string data = "Pi = 3.14, exponent = 2.718, done.";
     regex reg2(R"(\d+\.\d+)", regex::icase);
     cout << regex_replace(data, reg2, "<f>$0</f>") << endl; //Pi = <f>3.14</f>, exponent = <f>2.718</f>, done.
+    //exit(1);
   }
 
   pp("typeid");
@@ -644,14 +742,16 @@ int main(){
          << typeid(y).name() << endl        //d  double
          << typeid(ptrx).name() << endl     //Pi point_to_int
          << typeid(ptry).name() << endl;    //Pi point_to_int
+    //exit(1);
   }
 
   pp("decltype");
   {
 	  //decltype
-	  decltype(pp("hello")) x;//Data type of x is same as return type of pp()
+	  decltype(pp("hello")) x;//Data type of x is same as return type of pp(), which return 0
   	cout << typeid(x).name() << endl;   //i   int
     cout << typeid(decltype(pp("hello"))).name() << endl;
+    exit(1);
   }
 
   pp("std::sort vector");
@@ -672,7 +772,7 @@ int main(){
     //3. using object as comp
     std::sort (myvector.begin(), myvector.end(), myobject);     //(12 26 32 33 45 53 71 80)
     for(auto i: myvector) cout << i << " "; nl();
-
+    exit(1);
   }
 
   pp("std:sort array");
@@ -680,6 +780,7 @@ int main(){
     int container[] = {5,10,15,20,25,30,35,40,45,50};
     std::sort (container,container+10);   //5 10 15 20 25 30 35 40 45 50
     for(auto i: container) cout << i << " "; nl();
+    exit(1);
   }
 
   pp("const, const_cast, static_cast");
@@ -697,6 +798,7 @@ int main(){
     const_cast<int&>(i2) = 6;  //const_cast cast away the constness of i 
     int j;
     //static_cast<const int&>(j) = 7; //cast data into a const, then assign a valued which throws error
+    exit(1);
   }
 
   pp("static and run-time assert");
@@ -706,6 +808,7 @@ int main(){
     int* ptr = &i;
     static_assert(sizeof(int) == 4, "The code will not work if size of integer is not 4"); 
     assert(ptr != nullptr);          //abort exection if ptr==nullptr
+    exit(1);
   }
 
   pp("delecating constructor in c++ 11");

@@ -16,12 +16,12 @@ int main() {
     auto it = std::find_if(nums.begin(), nums.end(), [](int value){return value > 3;});
     std::cout << *it << std::endl;  //4
     ForEach1(nums, PrintValue);
-    ForEach1(nums, [](int value){ std::cout<<"Value: "<< value << std::endl;});
-    ForEach2(nums, [](int value){ std::cout<<"Value: "<< value << std::endl;});
+    ForEach1(nums, [](int value){ std::cout<<"Value1: "<< value << std::endl;});
+    ForEach2(nums, [](int value){ std::cout<<"Value2: "<< value << std::endl;});
     int a = 5;
-    ForEach2(nums, [&a](int value){ std::cout<<"Value: "<< value << a << std::endl;}); //caputre a by ref
-    ForEach2(nums, [a] (int value){ std::cout<<"Value: "<< value << a << std::endl;}); //caputre a by value
-    ForEach2(nums, [&] (int value){ std::cout<<"Value: "<< value << a << std::endl;}); //caputre all by ref
-    ForEach2(nums, [=] (int value){ std::cout<<"Value: "<< value << a << std::endl;}); //caputre all by value
+    ForEach2(nums, [&a](int value){ std::cout<<"Value3: "<< value << a << std::endl;}); //caputre a by ref
+    ForEach2(nums, [a] (int value){ std::cout<<"Value4: "<< value << a << std::endl;}); //caputre a by value
+    ForEach2(nums, [&] (int value){ std::cout<<"Value5: "<< value << a << std::endl;}); //caputre all by ref
+    ForEach2(nums, [=] (int value){ std::cout<<"Value6: "<< value << " " <<  a  << std::endl;}); //caputre all by value
 
 }
