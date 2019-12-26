@@ -109,81 +109,202 @@ extern "C" int xxx; //is just a declaration
 extern "C" { int yyy; } //is a definition
 
 int main(){
-  pp("bilatoral mapping");
-  enum Season { Summer, Fall, Winter, Spring };       
-  string arSeason[] = {"Summer", "Fall", "Winter", "Spring"};  //enum --> String //arSeason[Fall]
-  map<string, Season> seasons = {                              //String --> enum //seasons["Fall"]
-      {"Summer", Summer},
-      {"Fall", Fall},
-      {"Winter", Winter},
-      {"Spring", Spring}
-  };
 
-  std::cout << Winter  << " " << arSeason[Winter]  << endl;
-  std::cout <<"Winter" << " " << seasons["Winter"] << endl;
-  std::cout << (Winter==Season(2)) << endl;
-  pp("enum");     
-  enum Season1       { Summer1, Fall1, Winter1, Spring1 };  //c++ 03: enum are basically integers
-  enum Season2: char { Summer2, Fall2, Winter2, Spring2 };
-  enum Season3: int  { Summer3, Fall3, Winter3, Spring3 };
-  std::cout << Fall1 << std::endl;  //1
-  std::cout << Fall2 << std::endl;  //1
-  std::cout << Fall3 << std::endl;  //1
-  Season w1 = Winter;
-  int    w2 = w1;           //2
+  pp("typeid");
+  {
+    auto x = 4;
+    auto y = 3.37;
+    auto ptrx = &x;
+    auto ptry = &y;  
+    cout << typeid(x).name() << endl        //i  int
+         << typeid(y).name() << endl        //d  double
+         << typeid(ptrx).name() << endl     //Pi point_to_int
+         << typeid(ptry).name() << endl;    //Pi point_to_int
+    //exit(1);
+  }
 
-  enum class apple {green, red};                          //c++ 11: introduct enum class, more strong typed
-  enum class orange {big, small};                         //c++ 11: introduct enum class, more safe to use
-  apple ap = apple::red;                 //not 1
-  orange og = orange::small;             //not 1
-  //std::cout << ap == og << std::endl;    //compile fails because we haven't define "== (apple, orange)"
+  pp("decltype");
+  {
+	  //decltype
+	  decltype(pp("hello")) x;//Data type of x is same as return type of pp(), which return 0
+  	cout << typeid(x).name() << endl;   //i   int
+    cout << typeid(decltype(pp("hello"))).name() << endl;
+    //exit(1);
+  }
 
-  //exit(1);
+  pp("const, const_cast, static_cast");
+  {
+    //if const is on the left of *, data is const
+    int i = 7;
+    int const *p1 = &i;
+    const int *p2 = &i;
+    //if const is on the right of *, pointer is const
+    int* const p3 = &i;
+
+    //cast is bad, avoid them as much as possible
+    const int i2 = 9; 
+    //i2 = 6; //compile error
+    const_cast<int&>(i2) = 6;  //const_cast cast away the constness of i2 
+    int j;
+    //static_cast<const int&>(j) = 7; //cast data into a const, then assign a valued which throws error
+    //exit(1);
+  }
+
+  pp("assert(), static_assert()");
+  {
+    //include "assert.h"
+    int i = 10;
+    int* ptr = &i;
+    static_assert(sizeof(int) == 4, "The code will not work if size of integer is not 4");  //static assert
+    assert(ptr != nullptr);          //abort exection if ptr==nullptr                       //run-time assert
+    //exit(1);
+  }
+
+  pp("delegating constructor in c++ 11");
+  {
+    class dog{
+      int age = 9;//c++ 11 allow in-class class member initialization. so all constructors initialized age here.
+      dog(){ /*do something*/}
+      dog(int a): dog() { /*do something else*/}//limitation: dog() can only be invoked at the beginning of dog(int a) 
+    };
+    //exit(1);
+  }
+
+  pp("Initializer list for struct");
+  {
+    //way1. need constructor
+    Size size(10, 11);
+    Point point(5, 6);
+    Rectangle rect(size, point);
+    rect.pp();//10,11,5,6
+    //exit(1);
+  }
+
+  {
+    //way2, Initializer_list, no need for constructor
+    Size size{1, 2};
+    Point point{3, 4};
+    Rectangle rect{size, point};  
+    rect.pp();//1,2,3,4
+    //exit(1);
+  }
+
+  {
+    //way3, Initializer_list
+    Rectangle rect2 = {{5, 6}, {7, 8}};   
+    rect2.pp();//5,6,7,8
+    //exit(1);
+  }
+
+  pp("Initializer list for Array of integer/string");
+  {
+    int primeNumbers[] = { 2, 3, 5, 7, 11, 13, 17, 19 };
+    string gameList[] { "soccer", "hockey", "basketball" }; //the same as above
+    //exit(1);
+  }
+
+  pp("use constructor for Array of objects");
+  {
+    Point point2[] { Point(1, 2), Point(3, 4) };
+    Point point3[] { Point{1, 2}, Point{3, 4} };
+    //exit(1);
+  }
+
+  pp("Initializer list for map");
+  {
+    map<int, Point> point4 { {1, Point{11, 12}}, {2, Point{21, 22}} };
+    //exit(1);
+  }
+
+  pp("enum -- bilatoral mapping");
+  {
+    enum Season { Summer, Fall, Winter, Spring };       
+    string arSeason[] = {"Summer", "Fall", "Winter", "Spring"};  //enum --> String //arSeason[Fall]
+    map<string, Season> seasons = {                              //String --> enum //seasons["Fall"]
+        {"Summer", Summer},
+        {"Fall", Fall},
+        {"Winter", Winter},
+        {"Spring", Spring}
+    };
+    std::cout << Winter  << " " << arSeason[Winter]  << endl;
+    std::cout <<"Winter" << " " << seasons["Winter"] << endl;
+    std::cout << (Winter==Season(2)) << endl;
+  }
+
+  pp("enum");
+  {    
+    enum Season        { Summer, Fall, Winter, Spring };       
+    enum Season1       { Summer1, Fall1, Winter1, Spring1 };  //c++ 03: enum are basically integers
+    enum Season2: char { Summer2, Fall2, Winter2, Spring2 };
+    enum Season3: int  { Summer3, Fall3, Winter3, Spring3 };
+    std::cout << Fall1 << std::endl;  //1
+    std::cout << Fall2 << std::endl;  //1
+    std::cout << Fall3 << std::endl;  //1
+    Season w1 = Winter;
+    int    w2 = w1;           //2
+  }
+
+  pp("enum class");
+  {
+    enum class apple {green, red};                          //c++ 11: introduct enum class, more strong typed
+    enum class orange {big, small};                         //c++ 11: introduct enum class, more safe to use
+    apple ap = apple::red;                 //not 1
+    orange og = orange::small;             //not 1
+    //std::cout << ap == og << std::endl;    //compile fails because we haven't define "== (apple, orange)"
+    //exit(1);    
+  }
+
   //three ways
-  class MyClass {
-      public:
-          MyClass(int a=0) : var(a){ std::cout << "a="<<a<<endl; printInfo(); }
-          void printInfo() {
-              std::cout <<         var <<endl;
-              std::cout <<   this->var <<endl;
-              std::cout << (*this).var <<endl;
-          }
-      private:
-          int var;
-  };
-  //call constr 3 times
-  map<int, MyClass> m;
-  m[7] = MyClass(999);
-    //m[7] call default constructor
-    //MyClass(999) call defined constructor
-    //=    call assign constructor
-  //exit(1);
-
   pp("use reference to avoid new object");
-  MyClass a[2];              //call def constr
-  cout << "def constr called for two elements" << endl;
-  for (auto  x : a) { cout << " copy constr called " << endl; }//call copy constr, readonly access.
-  for (auto& x : a) { cout << " no new object " << endl; }//no new object,    changes the values in a by x
-  //exit(1);
+  {
+    class MyClass {
+        public:
+            MyClass(int a=0) : var(a){ std::cout << "a="<<a<<endl; printInfo(); }
+            void printInfo() {
+                std::cout <<         var <<endl;
+                std::cout <<   this->var <<endl;
+                std::cout << (*this).var <<endl;
+            }
+        private:
+            int var;
+    };
+    //call constr 3 times
+    map<int, MyClass> m;
+    m[7] = MyClass(999);
+      //m[7] call default constructor
+      //MyClass(999) call defined constructor
+      //=    call assign constructor
+    //exit(1);
+
+    MyClass a[2];              //call def constr
+    cout << "def constr called for two elements" << endl;
+    for (auto  x : a) { cout << "copy constr called " << endl; }//call copy constr, readonly access.
+    for (auto& x : a) { cout << "no new object " << endl; }//no new object,    changes the values in a by x
+    //exit(1);    
+  }
 
   pp("c type array");
-  int arr[5];
-  int arr1[]  = {11, 35, 62, 555, 989};
-  int arr2[5] = {11, 35, 62, 555, 989};
-  int x[2][3] = {{2, 3, 4}, {8, 9, 10}};
-  //c type array as function parameters
-  auto printArray = [](int arr[], int size) { 
-      for(int x=0; x<size; x++) { std::cout <<arr[x]<< " "; }; nl();
-  };
-  printArray(arr1, 5);
-  //void printArray(int arr[], int size) {   //--> note: nested function not supported in c++
-  //   for(int x=0; x<size; x++) { cout <<arr[x]<< endl; }
-  //}
-  //exit(1);
+  {
+    int arr[5];
+    int arr1[]  = {11, 35, 62, 555, 989};
+    int arr2[5] = {11, 35, 62, 555, 989};
+    int x[2][3] = {{2, 3, 4}, {8, 9, 10}};
+    //c type array as function parameters
+    auto printArray = [](int arr[], int size) { 
+        for(int x=0; x<size; x++) { std::cout <<arr[x]<< " "; }; nl();
+    };
+    printArray(arr1, 5);
+    //void printArray(int arr[], int size) {   //--> note: nested function not supported in c++
+    //   for(int x=0; x<size; x++) { cout <<arr[x]<< endl; }
+    //}
+    //exit(1);
+  }
   
-  //name space
-  using namespace first;
-  func();//    // This calls function from first name space.  
+  pp("name space");
+  {
+    using namespace first;
+    func();//    // This calls function from first name space.  
+  }
 
   pp("1value and rvalue");
   {
@@ -206,10 +327,11 @@ int main(){
     foo() = 50; //foo() yields lvalue   
     cout << myglobal << endl;
 
-    auto foo9 = [&]()->int&{return myglobal; };
+    auto foo9 = [&]()->int&{ return myglobal; };
     foo9() = 60;
     cout << myglobal << endl;
 
+    int arr1[]  = {11, 35, 62, 555, 989};
     //operator [] always yields lvalue
     arr1[1] = 50;
     //exit(1);
@@ -535,52 +657,6 @@ int main(){
     //exit(1);
   }
 
-  pp("Initializer list for struct");
-  {
-    //way1. need constructor
-    Size size(10, 11);
-    Point point(5, 6);
-    Rectangle rect(size, point);
-    rect.pp();//10,11,5,6
-    //exit(1);
-  }
-
-  {
-    //way2, Initializer_list, no need for constructor
-    Size size{1, 2};
-    Point point{3, 4};
-    Rectangle rect{size, point};  
-    rect.pp();//1,2,3,4
-    //exit(1);
-  }
-
-  {
-    //way3, Initializer_list
-    Rectangle rect2 = {{5, 6}, {7, 8}};   
-    rect2.pp();//5,6,7,8
-    //exit(1);
-  }
-
-  pp("Initializer list for Array of integer/string");
-  {
-    int primeNumbers[] = { 2, 3, 5, 7, 11, 13, 17, 19 };
-    string gameList[] { "soccer", "hockey", "basketball" }; //the same as above
-    //exit(1);
-  }
-
-  pp("use constructor for Array of objects");
-  {
-    Point point2[] { Point(1, 2), Point(3, 4) };
-    Point point3[] { Point{1, 2}, Point{3, 4} };
-    //exit(1);
-  }
-
-  pp("Initializer list for map");
-  {
-    map<int, Point> point4 { {1, Point{11, 12}}, {2, Point{21, 22}} };
-    //exit(1);
-  }
-
   pp("iostream");
   {
     std::cout.put('P'); nl();         //low-level I/O
@@ -722,8 +798,8 @@ int main(){
     string data2 = "aaaba";
     regex reg("a+b");
     smatch match;
-    cout << regex_match(data1, match, reg) << endl;  //1, match the whole string
-    cout << regex_match(data2, match, reg) << endl;  //0.
+    cout << std::regex_match(data1, match, reg) << endl;  //1, match the whole string
+    cout << std::regex_match(data2, match, reg) << endl;  //0.
 
     pp("regex_replace(string, regex, string)");
     string data = "Pi = 3.14, exponent = 2.718, done.";
@@ -732,29 +808,8 @@ int main(){
     //exit(1);
   }
 
-  pp("typeid");
-  {
-    auto x = 4;
-    auto y = 3.37;
-    auto ptrx = &x;
-    auto ptry = &y;  
-    cout << typeid(x).name() << endl        //i  int
-         << typeid(y).name() << endl        //d  double
-         << typeid(ptrx).name() << endl     //Pi point_to_int
-         << typeid(ptry).name() << endl;    //Pi point_to_int
-    //exit(1);
-  }
 
-  pp("decltype");
-  {
-	  //decltype
-	  decltype(pp("hello")) x;//Data type of x is same as return type of pp(), which return 0
-  	cout << typeid(x).name() << endl;   //i   int
-    cout << typeid(decltype(pp("hello"))).name() << endl;
-    exit(1);
-  }
-
-  pp("std::sort vector");
+  pp("std:sort(RandomAccessIt, RandomAccessIt, Compare) -- vector");
   {
     struct myclass { //how to understand: think struct as class
       bool operator() (int i,int j) { return (i<j);}
@@ -765,80 +820,45 @@ int main(){
     std::sort (myvector.begin(), myvector.begin()+4);           //(12 32 45 71)26 80 53 33
     for (std::vector<int>::iterator it=myvector.begin(); it!=myvector.end(); ++it) cout << *it << " "; nl();
 
-   //2. using function
+    //2. using function
     std::sort (myvector.begin()+4, myvector.end(), [](int x, int y){ return x<y;}); // 12 32 45 71(26 33 53 80)
     for(auto i: myvector) cout << i << " "; nl();
 
     //3. using object as comp
     std::sort (myvector.begin(), myvector.end(), myobject);     //(12 26 32 33 45 53 71 80)
     for(auto i: myvector) cout << i << " "; nl();
-    exit(1);
+    //exit(1);
   }
 
-  pp("std:sort array");
+  pp("std:sort(RandomAccessIt, RandomAccessIt) -- array");
   {
     int container[] = {5,10,15,20,25,30,35,40,45,50};
     std::sort (container,container+10);   //5 10 15 20 25 30 35 40 45 50
     for(auto i: container) cout << i << " "; nl();
-    exit(1);
+    //exit(1);
   }
 
-  pp("const, const_cast, static_cast");
-  {
-    //if const is on the left of *, data is const
-    int i = 7;
-    int const *p1 = &i;
-    const int *p2 = &i;
-    //if const is on the right of *, pointer is const
-    int* const p3 = &i;
 
-    //cast is bad, avoid them as much as possible
-    const int i2 = 9; 
-    //i2 = 6; //compile error
-    const_cast<int&>(i2) = 6;  //const_cast cast away the constness of i 
-    int j;
-    //static_cast<const int&>(j) = 7; //cast data into a const, then assign a valued which throws error
-    exit(1);
-  }
-
-  pp("static and run-time assert");
-  {
-    //include "assert.h"
-    int i = 10;
-    int* ptr = &i;
-    static_assert(sizeof(int) == 4, "The code will not work if size of integer is not 4"); 
-    assert(ptr != nullptr);          //abort exection if ptr==nullptr
-    exit(1);
-  }
-
-  pp("delecating constructor in c++ 11");
-  {
-    class dog{
-      int age = 9;//c++ 11 allow in-class class member initialization. so all constructors initialized age here.
-      dog(){ /*do something*/}
-      dog(int a): dog() { /*do something else*/}
-    };//limitation: dog() can only be invoked at the beginning of dog(int a) 
-
-  }
-
-  pp("std::swap");
+  pp("std::swap(a,b)");
   {
     int a = 5, b = 3;
     std::cout << a << ' ' << b << '\n';
     std::swap(a,b);
     std::cout << a << ' ' << b << '\n';
+    //exit(1);
   }
 
-  pp("std::partial_sum");
+  pp("std::partial_sum(InputIt_beg, InputIt_end, OutputIterator)");
   {
     //std::vector<int> v = {2, 2, 2, 2, 2, 2, 2};
-    std::vector<int> v(7, 2);
+    std::vector<int> v(7, 2); //or
     std::partial_sum(v.begin(), v.end(), std::ostream_iterator<int>(std::cout, " ")); nl();
     std::partial_sum(v.begin(), v.end(), v.begin(), std::multiplies<int>());
     pvector(v);
+    //exit(1);
   }
 
-  pp("std::to_string()");
+  pp("std::to_string(double|float|int)");
   {
     double f;
     f = 12.34; std::cout << f << " " << std::to_string(f) << endl;
@@ -846,9 +866,10 @@ int main(){
     f = 3e-5;  std::cout << f << " " << std::to_string(f) << endl;
     f = 12345; std::cout << f << " " << std::to_string(f) << endl;
     f = 12345678; std::cout << f << " " << std::to_string(f) << endl;
+    //exit(1);
   }
 
-  pp("std::advance()");
+  pp("std::advance(InputIt,Distance), prev(), next(), distance(InputIt,InputIt)");
   {
     //std::list<int> mylist;
     std::vector<int> mylist; //or
@@ -859,12 +880,12 @@ int main(){
     auto it3 = std::next(it, 2); cout << *it3 << endl;//70
     pp("std::for_each()");
     std::for_each(mylist.begin(), std::next(mylist.begin(), 3), [](int i){cout << i << " "; }); nl(); //0 10 20
+    std::for_each(mylist.begin(), mylist.begin() + 3,           [](int i){cout << i << " "; }); nl(); //0 10 20  //my way
     cout << std::distance(it2, it3) << endl;          //4
+    //exit(1);
   }
 
   //todo static_cast
-
-
 
 }
 
