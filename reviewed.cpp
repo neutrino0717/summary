@@ -24,6 +24,7 @@
 #include <assert.h>
 
 using namespace std;
+
 int  pp(std::string s) {
     int len = 80;
     int pad1 = (len - s.length()) / 2;
@@ -90,7 +91,13 @@ struct Rectangle {
     }
 };
 
+auto sum() { return 0; };
 
+template<typename H, typename... T>
+auto sum(H h, T... t)
+{
+  return h + sum(t...);
+}
 
 namespace first { void func(){ std::cout << "Inside the first namespace" << endl; } };
 namespace second{ void func(){ std::cout << "Inside the second namespace" << endl;} }
@@ -115,11 +122,20 @@ int main(){
     auto x = 4;
     auto y = 3.37;
     auto ptrx = &x;
-    auto ptry = &y;  
+    auto ptry = &y;
+    auto a = L"hello";
+    auto b = "hello";
+    auto c = string("hello");
+    auto d = {1,2,3};
+
     cout << typeid(x).name() << endl        //i  int
          << typeid(y).name() << endl        //d  double
          << typeid(ptrx).name() << endl     //Pi point_to_int
-         << typeid(ptry).name() << endl;    //Pi point_to_int
+         << typeid(ptry).name() << endl     //Pi point_to_int
+         << typeid(a).name() << endl     //PKw   point to wchar_t (2 bytes)
+         << typeid(b).name() << endl     //Pkc
+         << typeid(c).name() << endl     //NSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE
+         << typeid(d).name() << endl;    //St16initializer_listIiE  initializer_list
     //exit(1);
   }
 
@@ -250,6 +266,7 @@ int main(){
     enum class orange {big, small};                         //c++ 11: introduct enum class, more safe to use
     apple ap = apple::red;                 //not 1
     orange og = orange::small;             //not 1
+    //orange tt = small;                     //‘small’ was not declared in this scope
     //std::cout << ap == og << std::endl;    //compile fails because we haven't define "== (apple, orange)"
     //exit(1);    
   }
@@ -507,6 +524,9 @@ int main(){
     cout << p1.first << " "  << p1.second << "\n";
     cout << p2.first << " "  << p2.second << "\n";
     cout << p3.first << " "  << p3.second << "\n";
+    cout << get<0>(p3) << " " << get<1>(p3) << '\n';
+    string s; tie(s, ignore) = p3;
+    cout << s          << " "               << '\n';
     //exit(1);
   }
   pp("tuple is for one-time usage");
@@ -881,12 +901,67 @@ int main(){
     pp("std::for_each()");
     std::for_each(mylist.begin(), std::next(mylist.begin(), 3), [](int i){cout << i << " "; }); nl(); //0 10 20
     std::for_each(mylist.begin(), mylist.begin() + 3,           [](int i){cout << i << " "; }); nl(); //0 10 20  //my way
+    std::for_each(begin(mylist), end(mylist),                   [](int i){cout << i << " "; }); nl(); //0 10 20 30 40 50 60 70 80 90
     cout << std::distance(it2, it3) << endl;          //4
     //exit(1);
   }
 
-  //todo static_cast
+  pp("std::boolalpha");
+  {
+    bool b = true;
+    std::cout <<                   b << '\n';
+    std::cout << std::boolalpha << b << '\n';
+    std::cout << std::noboolalpha << b << '\n';
+  }
 
+  pp("lambda and std::function");
+  {
+
+    //void PrintValue(int value){ std::cout <<"Value: "<<value << std::endl; }
+    //void ForEach1(const std::vector<int>& values, void(*func)(int)){ for (int value: values) func(value); }
+    //void ForEach2(const std::vector<int>& values, const std::function<void(int)>& func){ for (int value: values) func(value); }
+    auto PrintValue = [](int value){ std::cout <<"Value: "<<value << std::endl; };
+    auto ForEach1 = [](const std::vector<int>& values, void(*func)(int))                    { for (int value: values) func(value); };
+    auto ForEach2 = [](const std::vector<int>& values, const std::function<void(int)>& func){ for (int value: values) func(value); };
+
+
+    std::vector<int> nums = {1, 4, 2, 3, 5};
+    auto it = std::find_if(nums.begin(), nums.end(), [](int value){return value > 3;});
+    std::cout << *it << std::endl;  //4
+    ForEach1(nums, PrintValue);
+    ForEach1(nums, [](int value){ std::cout<<"Value1: "<< value << std::endl;});
+    ForEach2(nums, [](int value){ std::cout<<"Value2: "<< value << std::endl;});
+    int a = 5;
+    ForEach2(nums, [&a](int value){ std::cout<<"Value3: "<< value << a << std::endl;}); //caputre a by ref
+    ForEach2(nums, [a] (int value){ std::cout<<"Value4: "<< value << a << std::endl;}); //caputre a by value
+    ForEach2(nums, [&] (int value){ std::cout<<"Value5: "<< value << a << std::endl;}); //caputre all by ref
+    ForEach2(nums, [=] (int value){ std::cout<<"Value6: "<< value << " " <<  a  << std::endl;}); //caputre all by value
+  }
+
+  pp("recursive lambda with auto will fail");
+  {
+     //auto fib = [&fib](int i){ return i < 2? 1: fib(i-1) + fib(i-2); };  //error: use of ‘fib’ before deduction of ‘auto’
+     std::function<int(int)> fib = [&fib](int i){ return i < 2? 1: fib(i-1) + fib(i-2); };     
+     cout << fib(2) << endl;
+  }
+
+  pp("is_integral<T>::value Checks whether T is an integral type");
+  {
+    class A {};
+    enum E : int {};   
+    std::cout << std::boolalpha;
+    std::cout << std::is_integral<A>::value << '\n';        //false
+    std::cout << std::is_integral<E>::value << '\n';        //false
+    std::cout << std::is_integral<float>::value << '\n';    //false
+    std::cout << std::is_integral<int>::value << '\n';      //true
+    std::cout << std::is_integral<bool>::value << '\n';     //true
+    static_assert(std::is_integral<int>::value, "Integral required.");
+    assert(std::is_integral<int>::value);
+  }
+
+  pp("template ...");
+  {
+    cout << sum(1, 2.5, 3.5) << endl;          //error: no matching function for call to ‘sum()’ if no sum() definition
+  }
 }
-
 //lib: -pthread
