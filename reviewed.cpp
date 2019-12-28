@@ -232,6 +232,25 @@ int main(){
     //exit(1);
   }
 
+  pp("vector initialization");
+  {
+
+    //vector initialization
+    std::string mystrs[] = {"the", "frogurt", "is", "also", "cursed"};
+    std::vector<std::string> words0(mystrs, mystrs+5);
+    std::vector<std::string> words1 {"the", "frogurt", "is", "also", "cursed"};
+    std::vector<std::string> words2(words1.begin(), words1.end());     // words2 == words1 
+    std::vector<std::string> words3(words1);      //words3 == words1
+    std::vector<std::string> words4(5, "Mo");     //{"Mo", "Mo", "Mo", "Mo", "Mo"}
+    //vector move and copy
+    std::vector<int> nums1 {3, 1, 4, 6, 5, 9};
+    std::vector<int> nums2; 
+    std::vector<int> nums3;
+    nums2 = nums1;            //copy assignment: copies data from nums1 to nums2
+    nums3 = std::move(nums1); //move assignment: moves data from nums1 to nums3, now nums1 empty; nums2=nums3 
+    //exit(1); 
+  }
+
   pp("enum -- bilatoral mapping");
   {
     enum Season { Summer, Fall, Winter, Spring };       
@@ -323,7 +342,19 @@ int main(){
     func();//    // This calls function from first name space.  
   }
 
-  pp("1value and rvalue");
+  pp("lvalue reference and rvalue reference");
+  {
+     auto getName = [](){ return "Dmitri"; };
+     string n1 = getName();        //OK
+     //string& n2 = getName(); //cannot bind non-const lvalue reference of type ‘std::__cxx11::string& {aka std::__cxx11::basic_string<char>&}’ to an rvalue of type ‘std::__cxx11
+     const string& n3 = getName(); //OK
+     //n3 = "NewValue";            //Wrong
+     string&& n4 = getName();      //OK
+     n4 = "NewValue";
+     exit(1);
+  }
+
+  pp("lvalue and rvalue");
   {
     //lvalue occupy identifiable memory, rvalue not
     int i2 = 0;
@@ -963,5 +994,76 @@ int main(){
   {
     cout << sum(1, 2.5, 3.5) << endl;          //error: no matching function for call to ‘sum()’ if no sum() definition
   }
+
+  pp("smartp_unique.cpp");
+  {
+    class Dog{
+      public:
+        string m_name;
+        void bark()     { cout << "Dog " << m_name << " rules!" << endl; }
+        Dog()           { cout <<"Nameless dog created"<< endl; m_name = "Nameless"; }
+        Dog(string name){ cout << "Named dog created" << endl; m_name = name; }
+        ~Dog()          { cout << "dog is destroyed: " << m_name << endl; }
+    };
+    {
+      ppp("bad way");
+      Dog* dg = new Dog("KeJi");
+      dg->bark();
+      delete dg;  
+    }
+    {
+      ppp("use unique pointer");
+      unique_ptr<Dog> dg(new Dog("ErHa"));
+      dg->bark();
+    }
+    {
+      ppp("release unique pointer");
+      unique_ptr<Dog> dg(new Dog());
+      dg->bark();
+      Dog* p = dg.release(); //return the raw point, and dg3 release the ownereship, dog object will not be deleted
+      if(!dg){ cout << "dg3 is empty\n"; };
+    }
+    {
+      ppp("reset to another dog");
+      unique_ptr<Dog> dg(new Dog("LaPuLaDuo"));
+      dg->bark();
+      dg.reset(new Dog("JinMao"));
+      if(!dg){cout << "dg is empty\n";}else{cout << "dg is not empty\n";}
+    }
+
+    {
+      ppp("assgin nullptr|reset without any parameters");
+      unique_ptr<Dog> dg1(new Dog("Fadou1"));
+      unique_ptr<Dog> dg2(new Dog("Fadou2"));
+      dg1->bark();
+      dg2->bark();
+      dg1 = nullptr;  //or
+      dg2.reset();    //reset without any parameters
+      if(!dg1){cout << "Fadou1 is empty\n";}else{cout << "Fadou1 is not empty\n";}
+      if(!dg2){cout << "Fadou2 is empty\n";}else{cout << "Fadou2 is not empty\n";}
+    }
+
+    {
+      ppp("transfer ownership to another unique ptr with move");
+      unique_ptr<Dog> dg6(new Dog("SaMoYe"));
+      unique_ptr<Dog> dg7(new Dog("ZangAo"));
+      dg7->bark();
+      dg7 = move(dg6);
+      //move:
+      //1. ZangAo destoryed
+      //2. dg6 becomes empty
+      //3. dg7 owns SaMoYe
+      dg7->bark();
+    }
+    {
+      ppp("function parametor");
+      //void f(unique_ptr<Dog> p){ p->bark(); };
+      auto f = [](unique_ptr<Dog> p) { p->bark(); };
+      unique_ptr<Dog> dg(new Dog("Tianyuan"));
+      f(move(dg));
+    }
+
+  }
+  
 }
 //lib: -pthread

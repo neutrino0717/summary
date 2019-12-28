@@ -31,48 +31,6 @@ foo(createBoVecotr()) //move constructor called now, OK
 //2. Perfect Forwarding
 
 
-
-
-/*
- * unique smart pointer
- */
-//bad way
-Dog* dg = new Dog("KeJi");
-delete dg;
-//use unique pointer
-{
-unique_ptr<Dog> dg2(new Dog("ErHa"));
-}
-//return the raw point, and dg3 release the ownereship. dog will not be deleted
-unique_ptr<Dog> dg3(new Dog());
-Dog* p = dg3.release();
-if(!dg3){cout << "dg3 is empty\n";} //dg->bark();
-//reset to another dog
-{
-unique_ptr<Dog> dg4(new Dog("LaPuLaDuo"));
-dg4.reset(new Dog("JinMao"));//dog is destroyed: LaPuLaDuo
-if(!dg4){cout << "dg4 is empty\n";}else{cout << "dg4 is not empty\n";}  //dg4 is not empty
-}                                                                       //dog is destroyed: JinMao
-//reset without any parameters\n";
-{
-unique_ptr<Dog> dg5(new Dog("Fadou"));
-//dg5 = nullptr; //or
-dg5.reset(); //dog is destroyed: Fadou
-if(!dg5){cout << "dg5 is empty\n";}else{cout << "dg5 is not empty\n";}  //dg5 is empty
-}
-//transfer ownership to another unique ptr with move
-{
-unique_ptr<Dog> dg6(new Dog("SaMoYe"));
-unique_ptr<Dog> dg7(new Dog("ZangAo"));
-dg7 = move(dg6);//1. ZangAo destoryed
-                //2. dg6 becomes empty
-                //3. dg7 owns SaMoYe 
-}
-void f(unique_ptr<Dog> p){ p->bark(); }
-cout << "\n:function parametor\n";
-unique_ptr<Dog> dg8(new Dog("Tianyuan"));
-f(move(dg8)); //Dog Tianyuan rules!
-              //dog is destroyed: Tianyuan
               
 //direct and copy initialization
 //basically the two are the same, however if "explicit" is used in constr, the  2nd is not ok
@@ -80,26 +38,6 @@ C c1(7)       //direct-initialization
 C c2 = 7     // called copy-initialization
  30 35 40 45 50
 
-//vector initialization
-//1
-std::vector<int> myvector = {32,71,12,45,26,80,53,33};
-//2
-int myints[] = {32,71,12,45,26,80,53,33};
-std::vector<int> myvector (myints, myints+8);
-//vector initialization
-std::vector<std::string> words1 {"the", "frogurt", "is", "also", "cursed"};
-std::vector<std::string> words2(words1.begin(), words1.end());     // words2 == words1 
-std::vector<std::string> words3(words1);      //words3 == words1
-std::vector<std::string> words4(5, "Mo");     //{"Mo", "Mo", "Mo", "Mo", "Mo"}
-std::string mystrs[] = {"the", "frogurt", "is", "also", "cursed"};
-std::vector<std::string> words5(mystrs, mystrs+5);
-//vector move and copy
-std::vector<int> nums1 {3, 1, 4, 6, 5, 9};
-std::vector<int> nums2; 
-std::vector<int> nums3;
-nums2 = nums1;    // copy assignment copies data from nums1 to nums2
-nums3 = std::move(nums1); //move assignment moves data from nums1 to nums3,
-//now nums1 empty; nums2=nums3
 
 
 //Prefix ++ operator overloading with return type    | //postfix ++ operator overloading: int inside barcket(int)
