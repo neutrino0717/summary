@@ -560,7 +560,7 @@ int main(){
     cout << s          << " "               << '\n';
     //exit(1);
   }
-  pp("tuple is for one-time usage");
+  pp("tuple is for one-time usage"); //tuple is extended pair
   {
     //tuple for one-time usage, struct for readability
     struct Person{ string name; int age; } p = {"moon", 11};
@@ -845,6 +845,8 @@ int main(){
 
   pp("regex_match(string, smatch, regex)");
   {
+    //regex_match match the whole string,
+    //regex_search match a substring
     string data1 = "aaab";
     string data2 = "aaaba";
     regex reg("a+b");

@@ -22,9 +22,10 @@ EOF
 '''
     print subprocess.check_output(str, shell=True)
 
-def peep(head, str):
+def peep(head, str, way=eep, run=True):
+    if not run: return
     pp(head)
-    eep(str)
+    way(str)
 
 
 pp("multilayer decorator")
@@ -117,21 +118,19 @@ from pprint import pprint
 
 class A:
     pass
-
+ep("pprint(A.__dict__)")
 
 class B(object):
     pass
-
-
-a = A();
-b = B()
-
 ep("pprint(dict(object.__dict__))")
-# epp("pprint(dict(A.__dict__))")
-# epp("print(B.__dict__)")
-# epp("print(B.__dict__['__dict__'])")
-# epp("pprint(a.__dict__)")
-# epp("pprint(b.__dict__)")
+ep("pprint(dict(B.__dict__))")
+
+
+a = A()
+b = B()
+ep("print(B.__dict__['__dict__'])")
+ep("pprint(a.__dict__)")
+ep("pprint(b.__dict__)")
 
 pp("object.__file__")
 ep("print [ i for i in dir(os) if '__' in i ]")
@@ -156,13 +155,9 @@ You are dealing with a package. The package structure you should have is:
     /mypackage             # This is not really a module - it's a package
         __init__.py         # loaded when you `import mypackage` or anything below it
         some.py             # import mypackage.some
-        implementation.py   # import mypackage.implementation
-        files.py            # import mypackage.files
         /submodule
             __init__.py       # loaded when you `import mypackage.submodule` or anything below it
             submodule_impl.py # import mypackage.submodule.submodule_impl
-            goes.py           # import mypackage.submodule.goes
-            here.py           # import mypackage.submodule.here
 2.1 suppose class CustomClass is defined in the submodule_impl.py module
 2.2  in __init__.py, add below
 from .submodule_impl import CustomClass
@@ -185,9 +180,10 @@ ep("print unittest")
 ep("print unittest.result")
 ep("print unittest.TestResult")
 
+
+############################ atexit, signal ####################################################################
 pp("atexit")
 import atexit
-
 ep('assert True, "it is True, so no output"')
 ep("assert 'tough' in 'toughtough'")
 
@@ -195,8 +191,8 @@ ep("assert 'tough' in 'toughtough'")
 # assert False, "the result is False."
 # print "this will not be executed"
 
+'''
 pp("atexit decorator")
-
 
 @atexit.register
 def goodbye():
@@ -206,9 +202,31 @@ def goodbye():
 print "before run sys.exit()"
 # sys.exit()        #uncomment this to test
 print "after run sys.exit()"
+'''
 
-pp("bitwise")
-ebrun('''
+peep("signal", """
+import signal
+print signal.__doc__
+def signal_handler(signal, frame):
+    print 'signal -->', signal
+    print 'frame -->', frame
+    print dir(frame)
+    #print frame.f_globals
+    #print frame.f_locals
+    #print frame.f_trace
+    print('You pressed Ctrl+C!')
+    sys.exit(0)
+
+signal.signal(signal.SIGINT, signal_handler)
+print('Press Ctrl+C')
+print signal.pause.__doc__
+signal.pause()
+""", ebrun, 0)
+#sys.exit()
+
+
+
+peep("bitwise", '''
 a = 60            # 60 = 0011 1100 
 b = 13            # 13 = 0000 1101 
 c = 0
@@ -225,10 +243,10 @@ print 888 & 1
 
 aa = 123
 if aa & 1: print "it is odd"
-''')
+''', ebrun, 0)
+#sys.exit()
 
-pp("True is 1, False is 0")
-ebrun("""
+peep("True is 1, False is 0", """
 print "true" if 1 else "false"
 print "true" if 0 else "false"
 print "true" if '' else "false"
@@ -242,7 +260,8 @@ print True + False
 print True == 1, True == 0, True == 2
 print False ==1, False ==0, False ==2
 
-""")
+""", ebrun, 0)
+#sys.exit()
 
 pp("tenary")
 ebrun('''
@@ -267,8 +286,7 @@ print type(cal)
 print calendar.calendar(1975,2,1,6,3)
 ''')
 
-pp(
-    "callable() function. The function checks if an object is a callable object. Or in other words, if an object is a function. ")
+pp("callable() function. The function checks if an object is a callable object. Or in other words, if an object is a function. ")
 ebrun('''
 print callable.__doc__
 class Car:
@@ -371,6 +389,149 @@ print aa, bb, cc
 #dict deep copy
 ''')
 
+################################ collections ##################################################################################
+
+peep("collections.OrderedDict", """
+from collections import OrderedDict
+###class collections.OrderedDict([items])
+###  Ordered dictionaries are just like regular dictionaries but they remember the order that items were inserted.
+###  When iterating over an ordered dictionary, the items are returned in the order their keys were first added.
+print sorted.__doc__
+print OrderedDict.__doc__
+## regular unsorted dictionary
+d = {'banana': 3, 'apple': 4, 'pear': 1, 'orange': 2}
+## sort by key, return a list
+print sorted(d.items(), key=lambda t: t[0])
+
+## dictionary sorted by key
+print OrderedDict(sorted(d.items(), key=lambda t: t[0]))
+## dictionary sorted by value
+print OrderedDict(sorted(d.items(), key=lambda t: t[1]))
+## dictionary sorted by length of the key string
+print OrderedDict(sorted(d.items(), key=lambda t: len(t[0])))
+""", eep, 0)
+#sys.exit()
+
+
+##Usually, a Python dictionary throws a KeyError if you try to get an item with a key that is not currently in the dictionary.
+##The defaultdict in contrast will simply create any items that you try to access (provided of course they do not exist yet).
+##
+##To create such a "default" item, it calls the function object that you pass in the constructor (more precisely, it's an arbitrary "callable" object, which includes function and type objects).
+##
+##1.
+##For the first example, default items are created using int(), which will return the integer object 0.
+##
+##2.
+##For the second example, default items are created using list(), which returns a new empty list object.
+# defaultdict is just a subclass of the standard dict type
+peep("defaultdict for int, list, dict", '''
+from collections import defaultdict
+import inspect
+print inspect.getmro(defaultdict)
+print int()
+print list()
+print dict()
+s = 'mississippi'
+
+#default items are created using int(), which will return the integer object 0.
+d = defaultdict(int)
+print d
+for k in s:
+    d[k] += 1  #int() will be called when d[k], and assign d[k] = int()
+print d
+print d.items()
+
+#default items are created using list(), which returns a new empty list object.
+s = [('yellow', 1), ('blue', 2), ('yellow', 3), ('blue', 4), ('red', 1)]
+d = defaultdict(list)
+print d
+
+###list() will be called whtn d[k], and assgin d[k]=list()
+for k, v in s:
+    d[k].append(v)   
+print d
+
+#default items are created using dict(), which returns a new empty dict object
+data=defaultdict(dict)
+for n in xrange(7):
+    data[n]["rnc"] = "RNC" + str(n)
+    data[n]["lac"] = "LAC" + str(n)
+print data
+for n in xrange(7):
+    print str(n) + '--> ' + str(data[n])
+''', ebrun, 0)
+#sys.exit()
+
+pp("collections.deque")
+
+ebrun('''
+###Deques support thread-safe, memory efficient appends and pops from either side of the deque
+###Deques are a generalization of stacks and queues the name is pronounced "deck" and is short for "double-ended queue"
+
+from collections import deque
+
+##deque([iterable[, maxlen]]) --> deque object
+d = deque('lo');
+print d
+##extend(iterable), extendleft(iterable)
+d.extend('ves');
+print d
+##append(x), apend on both sides
+d.append('physics')
+d.appendleft('Evan')
+print d
+##iterate over the deque's elements
+for elem in d:
+    print elem.upper(),
+##pop() on both sides
+d.pop();
+print d
+d.popleft();
+print d
+##reverse
+print reversed(d)
+print deque(reversed(d))
+print list(reversed(d))
+##rotate
+d.rotate(1);
+print d
+d.rotate(-1);
+print d
+##slice just as list
+print d[0], d[-1]
+print 'o' in d
+##clear
+d.clear();
+print d
+''')
+#sys.exit()
+
+pp("collections.namedtuple")
+ebrun("""
+from collections import namedtuple
+###Named tuples assign meaning to each position in a tuple and allow for more readable, self-documenting code. 
+###they add the ability to access fields by name instead of position index.
+
+###      namedtuple(typename, field_names[, verbose=False][, rename=False])
+#Point = namedtuple('Point',  ['x', 'y'],   verbose=True)
+Point  = namedtuple('Point',  ['x', 'y'])
+## instantiate with positional or keyword arguments
+p = Point(11, y=22)     
+
+## by index like the plain tuple (11, 22)
+print p[0] + p[1]       
+## by name new feature
+print p.x + p.y               
+
+## readable __repr__ with a name=value style
+print p                       
+##others
+x, y = p; print x, y
+
+""")
+#sys.exit()
+
+
 pp("collections.Counter")
 ebrun('''
 from collections import Counter
@@ -410,76 +571,57 @@ print c - d                       # subtract (keeping only positive counts)
 print c & d                       # intersection:  min(c[x], d[x])
 print c | d                       # union:  max(c[x], d[x])
 ''')
+#sys.exit()
 
+############################ StringIO ######################################################
 ###when you need to build a huge string, please use cStringIO
 ###myview: cStringIO is similiar to StringBuffer in Java
-pp("cStringIO")
+peep("cStringIO", '''
 import cStringIO
 
 output = cStringIO.StringIO()
-output.write('First line.\n')
-# add the \n automatically
+output.write('First line.\\n')
+# add the \\n automatically
 print >> output, 'Second line.'
-output.write('Third line.\n')
+output.write('Third line.\\n')
 
 # Retrieve file contents -- this will be
-# 'First line.\nSecond line.\n'
+# 'First line.\\nSecond line.\\nThird line.\\n'
 contents = output.getvalue()
 print contents
 # Close object and discard memory buffer, .getvalue() will now raise an exception.
-output.close()
+output.close()''', ebrun, 0)
+#sys.exit()
 
-##Usually, a Python dictionary throws a KeyError if you try to get an item with a key that is not currently in the dictionary.
-##The defaultdict in contrast will simply create any items that you try to access (provided of course they do not exist yet).
-##
-##To create such a "default" item, it calls the function object that you pass in the constructor (more precisely, it's an arbitrary "callable" object, which includes function and type objects).
-##
-##1.
-##For the first example, default items are created using int(), which will return the integer object 0.
-##
-##2.
-##For the second example, default items are created using list(), which returns a new empty list object.
-from collections import defaultdict
-import inspect
+peep("StringIO", """
+##io.StringIO       is a class. It handles Unicode. It reflects the preferred Python 3 library structure.
+##StringIO.StringIO is a class. It handles strings. It reflects the legacy Python 2 library struct
+##cStringIO.StringIO  is faster version of StringIO.StringIO
 
-# defaultdict is just a subclass of the standard dict type
-pp("defaultdict for int, list, dict")
-ebrun('''
-from collections import defaultdict
-print inspect.getmro(defaultdict)
-print int()
-print list()
-print dict()
-s = 'mississippi'
+import timeit
+test_join='''a=[]
+for i in range(100):
+    a.append('a')
+'''
 
-#default items are created using int(), which will return the integer object 0.
-d = defaultdict(int)
-print d
-for k in s:
-    d[k] += 1  #int() will be called when d[k], and assign d[k] = int()
-print d
-print d.items()
+test_StringIO='''from StringIO import StringIO
+a = StringIO()
+for i in range(100):
+    a.write('a')
+'''
+test_cStringIO='''from cStringIO import StringIO
+a = StringIO()
+for i in range(100):
+    a.write('a')
+'''
+print(timeit.timeit(test_join, number=1))
+print(timeit.timeit(test_StringIO, number=1))
+print(timeit.timeit(test_cStringIO, number=1))
 
-#default items are created using list(), which returns a new empty list object.
-s = [('yellow', 1), ('blue', 2), ('yellow', 3), ('blue', 4), ('red', 1)]
-d = defaultdict(list)
-print d
+""", eep, 0)
+#sys.exit()
 
-###list() will be called whtn d[k], and assgin d[k]=list()
-for k, v in s:
-    d[k].append(v)   
-print d
-
-#default items are created using dict(), which returns a new empty dict object
-data=defaultdict(dict)
-for n in xrange(7):
-    data[n]["rnc"] = "RNC" + str(n)
-    data[n]["lac"] = "LAC" + str(n)
-print data
-for n in xrange(7):
-    print str(n) + '--> ' + str(data[n])
-''')
-
+##################################### dict ############################################################################
 pp("use dict to store list")
 ebrun('''
 ### if elements in dict are list, how to give default value '[]' 
@@ -532,6 +674,7 @@ pp("make dict with two list")
 ebrun('''
 keys = ['a', 'b', 'c']
 values = [1, 2, 3]
+print zip(keys, values)
 dd = dict(zip(keys, values))
 print dd
 #reverse dict
@@ -545,49 +688,7 @@ print dict(zip(*(zip(*dd.items())[::-1])))
 #the 3rd way
 print dict(zip(dd.values(), dd.keys()))
 ''')
-
-pp("deque")
-
-ebrun('''
-###Deques support thread-safe, memory efficient appends and pops from either side of the deque
-###Deques are a generalization of stacks and queues the name is pronounced "deck" and is short for "double-ended queue"
-
-from collections import deque
-
-##deque([iterable[, maxlen]]) --> deque object
-d = deque('lo');
-print d
-##extend(iterable), extendleft(iterable)
-d.extend('ves');
-print d
-##append(x), apend on both sides
-d.append('physics')
-d.appendleft('Evan')
-print d
-##iterate over the deque's elements
-for elem in d:
-    print elem.upper(),
-##pop() on both sides
-d.pop();
-print d
-d.popleft();
-print d
-##reverse
-print reversed(d)
-print deque(reversed(d))
-print list(reversed(d))
-##rotate
-d.rotate(1);
-print d
-d.rotate(-1);
-print d
-##slice just as list
-print d[0], d[-1]
-print 'o' in d
-##clear
-d.clear();
-print d
-''')
+#sys.exit()
 
 
 pp("dir")
@@ -605,11 +706,11 @@ global a
 a=Foo(); 
 print type(Foo), dir(Foo)
 print type(a),   dir(a)
-print a; print a.__class__.__name__
+print a; print a.__class__; print a.__class__.__name__
 print type(1),   dir(1)
 print type(int), dir(int)
-
 ''')
+#sys.exit()
 
 pp("__dict__")
 ebrun('''
@@ -725,9 +826,8 @@ except NameError:
     print 'An exception flew by!'
     #raise    #comment out the raise NameError
 """)
-
-pp("filter and map")
-ebrun("""
+################################### filter, map, reduce #######################################################
+peep("filter and map", """
 ##The function filter(function, list) offers an elegant way to print out all the elements of a list, that for which the function function returns True. 
 
 fib = [0,1,1,2,3,5,8,13,21,34,55]
@@ -740,15 +840,61 @@ print filter(lambda x: x[0:1] == 'h', f)
 print filter(lambda x: x.startswith('h'), f)
 
 import os
+#current dir
 dir1 =  os.path.dirname(os.path.abspath(os.getcwd())); print dir1
 dir2 = os.path.dirname(dir1);                          print dir2
 flst = os.listdir(dir1);                               print flst
 ##print files starting with 'c'
 flt1 = filter(lambda x: x.startswith('c'), flst);      print flt1
+
 ##removing the '.py' extension
 flt2 = map(lambda x: x.rstrip('.py'), flst);           print flt2
-""")
+""", ebrun, 0)
+#sys.exit()
 
+
+peep("map", """
+##map(function, iterable, ...)
+##Apply function to every item of iterable and return a list of the results
+print map(lambda x: x*x, [1,2,3])
+
+##map with two iterables for input
+a = [1, 2, 3, 4]
+b = [2, 3, 4, 5]
+print map(lambda x, y: x*y, a, b)
+
+#check if items in a list exits in a string
+alist = ["scala", "akka", "play framework", "sbt", "typesafe"]
+print map(lambda x: x in "This is an example tweet talking about scala and sbt.".split(), alist)
+print [ x in "This is an example tweet talking about scala and sbt.".split() for x in alist ]          #[True, False, False, False, False]
+""", ebrun, 1)
+#sys.exit()
+
+
+peep("reduce", """
+###The function reduce(func, seq) continually applies the function func() to the sequence seq. It returns a single value. 
+##reduce(func, seq)
+##reduce(func, [ s1, s2, s3, ... , sn ])
+##reduce(func(s1, s2), [ s3, s4, s5... , sn ])
+##reduce(func(func(s1, s2),s3), [s4, s5 ... ,  sn ])
+##.....
+
+##the largest number
+f = lambda a,b: a if (a > b) else b
+result=reduce(f, [47,11,42,102,13]); print result
+
+##1 + 2 + 3 ...+ 10
+result=reduce(lambda x, y: x+y, range(1,10)); print result
+
+##turn [1, 2, 3, 4, 5, 6, 7, 8] into 12345678
+result=reduce(lambda x, y: 10*x+y, range(1,9)); print result
+
+##turn [[1, 2, 3], [4, 5], [6, 7, 8]] into [1, 2, 3, 4, 5, 6, 7, 8]
+result=reduce(list.__add__,[[1, 2, 3], [4, 5], [6, 7, 8]]); print result
+""", ebrun, 0)
+#sys.exit()
+
+########################### arguments ####################################################
 pp("positional arguments and named arguments")
 ebrun("""
 ##use individual parameters
@@ -839,39 +985,6 @@ for sfile in glob.glob("/etc/r*.conf"):
     print sfile
 """)
 
-pp("hasattr")
-ebrun("""
-##The hasattr() function checks if an object has an attribute. The getattr() function returns the contents of an attribute if there are some.
-
-##class attributes:
-class Foo:
-    def __init__(self):
-        self.a = "bar"
-        self.b = 4711
-    def bar(): pass
-foo=Foo()
-
-#object
-print object.__dict__
-print dir(object)
-for i in dir(object): print "class object has attribute", i,":", hasattr(object, i)
-#Foo
-print Foo.__dict__
-print dir(Foo)
-for i in dir(Foo): print "class Foo has attribute", i,":", hasattr(Foo, i)
-#foo
-print foo.__dict__
-print dir(foo)
-for i in dir(foo): print "instance foo has attribute", i,":", hasattr(foo, i)
-for i in dir(foo): print "instance foo's  attribute", i,":", getattr(foo, i)
-
-##function attributes:
-def fun(): pass
-print fun.__dict__
-print dir(fun)
-for i in dir(fun): print "function fun() has attribute", i,":", hasattr(fun, i)
-#for i in dir(fun): print "function fun()'s attribute", i,":", getattr(fun, i)
-""")
 
 pp("dec and hex");
 ebrun("""
@@ -904,22 +1017,57 @@ print    [ chr(x) for x in xrange(ord('A'), ord('E')+1)]     #['A', 'B', 'C', 'D
 print    ( chr(x) for x in xrange(ord('a'), ord('z')+1))     #<generator object <genexpr> at 0x7f16f2c915f0>
 """)
 
-pp("id")
-ebrun("""
+
+############################################ inspect ###########################################
+peep("id", """
 ##Return the identity of an object. This is an integer (or long integer) which is guaranteed to be unique and constant for this object during its lifetime.
 ##
 ##id() (or its equivalent) is used in the is operator.
 ##
 import copy
 foo = 1; bar = foo; print id(foo), id(bar)
-list = [1,2,3]; print id(list)
-print id(list[0]), id(list[1]), id(list[2])
+list = [1,2,3]; print id(list), id(list[0]), id(list[1]), id(list[2])
 for i in list: print id(i), 
-print
+
 #for imutable, copy.copy() don't really copy
 list2 = copy.copy(list); print id(list2)
 for i in list2: print id(i),
-""")
+""", ebrun, 0)
+#sys.exit()
+
+peep("hasattr", """
+##The hasattr() function checks if an object has an attribute. The getattr() function returns the contents of an attribute if there are some.
+
+##class attributes:
+class Foo:
+    def __init__(self):
+        self.a = "bar"
+        self.b = 4711
+    def bar(): pass
+foo=Foo()
+
+#object
+print object.__dict__
+print dir(object)
+for i in dir(object): print "class object has attribute", i,":", hasattr(object, i)
+#Foo
+print Foo.__dict__
+print dir(Foo)
+for i in dir(Foo): print "class Foo has attribute", i,":", hasattr(Foo, i)
+#foo
+print foo.__dict__
+print dir(foo)
+for i in dir(foo): print "instance foo has attribute", i,":", hasattr(foo, i)
+for i in dir(foo): print "instance foo's  attribute", i,":", getattr(foo, i)
+
+##function attributes:
+def fun(): pass
+print fun.__dict__
+print dir(fun)
+for i in dir(fun): print "function fun() has attribute", i,":", hasattr(fun, i)
+#for i in dir(fun): print "function fun()'s attribute", i,":", getattr(fun, i)
+""", ebrun, 0)
+#sys.exit()
 
 pp("inspect.getcallargs()")
 ebrun("""
@@ -990,7 +1138,9 @@ print issubclass(Wall, MyObject)
 print issubclass(Wall, Wall)
 
 """)
+#sys.exit()
 
+############################## iterator, generator ############################################################
 pp("iterator")
 ebrun("""
 ##what is iterable: 
@@ -1057,7 +1207,9 @@ with open("/etc/hosts") as f:
     print type(f) 
     for line in f: print line,
 """)
+#sys.exit()
 
+########################################## itertools ###########################################
 pp("itertools.chain(),count(),repeat(),cycle()")
 ebrun("""
 import itertools
@@ -1073,6 +1225,11 @@ def chain(*iterables):
             yield element
 
 ##2. itertools.count(start=0, step=1: once for each integer, Infinite!
+for num in xrange(10008):
+    if num < 10000: continue
+    print num,
+
+#same as below
 for num in itertools.count():
     if num < 10000: continue
     if num > 10007: break
@@ -1087,6 +1244,7 @@ for count, num in enumerate(seq):
     if count > 20: break
     print num,
 """)
+#sys.exit()
 
 pp("join")
 ebrun("""
@@ -1283,24 +1441,6 @@ print repr(e2)           #__repr__ called
 print e1 + e2            #__add__ called
 """)
 
-pp("map")
-ebrun("""
-##map(function, iterable, ...)
-##Apply function to every item of iterable and return a list of the results
-print map(lambda x: x*x, [1,2,3])
-
-##map with two iterables for input
-a = [1, 2, 3, 4]
-b = [2, 3, 4, 5]
-print map(lambda x, y: x*y, a, b)
-""")
-
-ebrun("""
-#check if items in a list exits in a string
-alist = ["scala", "akka", "play framework", "sbt", "typesafe"]
-print map(lambda x: x in "This is an example tweet talking about scala and sbt.".split(), alist)
-print [ x in "This is an example tweet talking about scala and sbt.".split() for x in alist ]          #[True, False, False, False, False]
-""")
 
 pp("math")
 ebrun("""
@@ -1318,30 +1458,7 @@ for i in dir(math):
     print
 """)
 
-pp("namedtuple")
-ebrun("""
-from collections import namedtuple
-###Named tuples assign meaning to each position in a tuple and allow for more readable, self-documenting code. 
-###they add the ability to access fields by name instead of position index.
-
-###      namedtuple(typename, field_names[, verbose=False][, rename=False])
-#Point = namedtuple('Point',  ['x', 'y'],   verbose=True)
-Point  = namedtuple('Point',  ['x', 'y'])
-## instantiate with positional or keyword arguments
-p = Point(11, y=22)     
-
-## by index like the plain tuple (11, 22)
-print p[0] + p[1]       
-## by name new feature
-print p.x + p.y               
-
-## readable __repr__ with a name=value style
-print p                       
-##others
-x, y = p; print x, y
-
-""")
-
+###################################### subprocess ############################################
 pp("os and subprocess")
 ebrun("""
 ###           errorcode                                output
@@ -1377,7 +1494,116 @@ errorcode=subprocess.call('uname -a', shell=True);      print errorcode
 errorcode=subprocess.call(['uname', '-a']);             print errorcode
 """)
 
+####################################### threading ######################################
 
+peep("threading: inherent, no lock, no semaphore", """
+import time
+import threading
+from random import randint
+class AsyncPrint(threading.Thread):
+    def __init__(self, text):
+        threading.Thread.__init__(self)
+        self.text = text
+    def run(self):
+        for i in range(1,10):
+            time.sleep(randint(0,2))
+            print self.text,
+        print "Finished Background", self.text
+
+background1 = AsyncPrint("#")
+background2 = AsyncPrint("$")
+background3 = AsyncPrint("^")
+background1.start()
+background2.start()
+background3.start()
+for i in range(1,5):
+    time.sleep(randint(0,2))
+    print "-",
+print "Finished Main"
+""", ebrun, 0)
+
+peep("threading: no lock, no semaphore", """
+#global tLock
+#tLock = threading.Lock()
+def timer(name, delay, repeat):
+    c=colors.YELLOW
+    if name=="Test2": c=colors.RED
+    print c + 'timer: ' + name + " Started"+colors.ENDC
+    #tLock.acquire(); print(c + name + " has acquired lock to some codes")
+    while repeat > 0:
+        time.sleep(delay)
+        print c + 'timer: ' + name +": " + str(time.ctime(time.time())) + colors.ENDC
+        repeat -= 1
+    #tLock.release(); print(c + name + " released lock to the codes")
+    print c + "Timer: " + name + " Completed"+colors.ENDC
+
+threading.Thread(target=timer, args=("Test1", 1, 5)).start()
+threading.Thread(target=timer, args=("Test2", 2, 5)).start()
+print "Main Complete"
+""", ebrun, 0)
+
+
+#global not supported by ebrun
+'''
+pp("threading: lock")
+global tLock
+tLock = threading.Lock()
+def timer(name, delay, repeat):
+    c=colors.YELLOW
+    if name=="Test2": c=colors.RED
+    print c + 'timer: ' + name + " Started"+colors.ENDC
+    tLock.acquire(); print(c + name + " has acquired lock to some codes")
+    while repeat > 0:
+        time.sleep(delay)
+        print c + 'timer: ' + name +": " + str(time.ctime(time.time())) + colors.ENDC
+        repeat -= 1
+    tLock.release(); print(c + name + " released lock to the codes")
+    print c + "Timer: " + name + " Completed"+colors.ENDC
+
+threading.Thread(target=timer, args=("Test1", 1, 5)).start()
+threading.Thread(target=timer, args=("Test2", 2, 5)).start()
+print "Main Complete"
+'''
+
+peep("threading: inherent", """
+import threading
+import re
+import urllib
+import time
+class WebpageThread(threading.Thread):
+    def __init__(self, site):
+        #super(WebpageThread,self).__init__()
+        threading.Thread.__init__(self)
+        self.site=site
+        self.total=0
+    def run(self):
+        t1=time.time()
+        #print "--> accessing to %s ..." % self.site
+        u=urllib.urlopen("http://"+ self.site)
+        text = u.read()
+        #print "--> done with %s " % self.site
+        self.total = time.time() - t1
+
+sites = 'baidu.com|163.com|qq.com'.split('|')
+#sites = 'google.com|facebook.com|linuxfromscratch.org'.split('|')
+threadlst = []
+t1=time.time()
+for i in xrange(0,len(sites)):
+    threadlst.append(WebpageThread(sites[i]))
+for i in xrange(0,len(sites)):
+    threadlst[i].start()
+for i in xrange(0,len(sites)):
+    threadlst[i].join()
+total=0
+for i in xrange(0,len(sites)):
+    print "%-15s --> %-15s seconds" % (threadlst[i].site, threadlst[i].total)
+    total += threadlst[i].total
+actual = time.time() - t1
+print "total time used: %d" % total
+print "actual time used: %d" % actual
+""", ebrun, 0)
+
+########################################## multiprocessing #################################
 pp("multiprocessing.Queue")
 eep("""
 # multiprocessing.Queue, a near clone of Queue.Queue, thread and process safe
@@ -1390,6 +1616,7 @@ p.start()
 print q.get()                        #[42, None, 'hello'], #data retrieved from the subprocess by queue.
 p.join()
 """)
+#sys.exit()
 
 pp("multiprocessing.Pipe")
 ebrun("""
@@ -1404,9 +1631,18 @@ p.start()
 print parent_conn.recv()            #[42, None, 'hello'],  #data retrieved from the subprocess by pipe.
 p.join()
 """)
+#sys.exit()
 
-pp("Process vs. Pool")
+pp("multiprocessing.Pool")  
 eep("""
+#start multiple new processes
+##return value from all the processes will be in a list as Pool.map() function's return value
+import multiprocessing
+def f1(x): 
+    return x*x
+print multiprocessing.Pool(processes=4).map(f1,range(1,11))
+
+#start multiple new processes
 from multiprocessing import Process
 from multiprocessing import Pool
 def f(title):
@@ -1418,13 +1654,15 @@ def f(title):
     return title
 print os.getpid()          ###current process, 43003
 f('function all')          #not start a new process, parent process: 60652, process id: 43003
-p  = Process(target=f, args=('function all with process',)) 
+p  = Process(target=f, args=('function all with process',))
 p.start()
 p.join()                   #    start a new process, parent process: 43003, process id: 43004
 p2 = Pool(5)               #    start multiple new processes ....
 result = p2.map(f, ['function call {} in pool'.format(x) for x in xrange(7)])
 print result
+
 """)
+#sys.exit()
 
 pp("multiprocessing.Lock")
 eep("""
@@ -1437,14 +1675,11 @@ def timer(tLock, name, delay, repeat):
 multiprocessing.Process(target=timer, args=(l, "Test1", 1, 5)).start()
 multiprocessing.Process(target=timer, args=(l, "Test2", 2, 4)).start()
 
-#multiprocessing.Pool
-##return value from all the processes will be in a list as Pool.map() function's return value
-def f1(x): 
-    return x*x
-print multiprocessing.Pool(processes=4).map(f1,range(1,11))
 """)
+#sys.exit()
 
 
+######################### file #######################################################
 pp("open")
 
 eep("""
@@ -1510,26 +1745,6 @@ print g
 print list(g)
 """)
 
-pp("OrderedDict")
-eep("""
-from collections import OrderedDict
-###class collections.OrderedDict([items])
-###  Ordered dictionaries are just like regular dictionaries but they remember the order that items were inserted.
-###  When iterating over an ordered dictionary, the items are returned in the order their keys were first added.
-print sorted.__doc__
-print OrderedDict.__doc__
-## regular unsorted dictionary
-d = {'banana': 3, 'apple': 4, 'pear': 1, 'orange': 2}
-## sort by key, return a list
-print sorted(d.items(), key=lambda t: t[0])
-
-## dictionary sorted by key
-print OrderedDict(sorted(d.items(), key=lambda t: t[0]))
-## dictionary sorted by value
-print OrderedDict(sorted(d.items(), key=lambda t: t[1]))
-## dictionary sorted by length of the key string
-print OrderedDict(sorted(d.items(), key=lambda t: len(t[0])))
-""")
 
 pp("os")
 eep("""
@@ -1769,29 +1984,6 @@ print re.split(r'(\W+)'         , c, 2)    #['root', ':', 'x', ':', '0:0:root...
 """)
 
 
-pp("reduce")
-eep("""
-###The function reduce(func, seq) continually applies the function func() to the sequence seq. It returns a single value. 
-##reduce(func, seq)
-##reduce(func, [ s1, s2, s3, ... , sn ])
-##reduce(func(s1, s2), [ s3, s4, s5... , sn ])
-##reduce(func(func(s1, s2),s3), [s4, s5 ... ,  sn ])
-##.....
-
-##the largest number
-f = lambda a,b: a if (a > b) else b
-result=reduce(f, [47,11,42,102,13]); print result
-
-##1 + 2 + 3 ...+ 10
-result=reduce(lambda x, y: x+y, range(1,10)); print result
-
-##turn [1, 2, 3, 4, 5, 6, 7, 8] into 12345678
-result=reduce(lambda x, y: 10*x+y, range(1,9)); print result
-
-##turn [[1, 2, 3], [4, 5], [6, 7, 8]] into [1, 2, 3, 4, 5, 6, 7, 8]
-result=reduce(list.__add__,[[1, 2, 3], [4, 5], [6, 7, 8]]); print result
-""")
-
 
 pp("select.select()")
 eep("""
@@ -1945,25 +2137,6 @@ import shutil
 #os.listdir('/lab/testtools/rhel664')
 """)
 
-pp("signal")
-ebrun("""
-import signal
-print signal.__doc__
-def signal_handler(signal, frame):
-    print 'signal -->', signal
-    print 'frame -->', frame
-    print dir(frame)
-    #print frame.f_globals
-    #print frame.f_locals
-    #print frame.f_trace
-    print('You pressed Ctrl+C!')
-    sys.exit(0)
-
-signal.signal(signal.SIGINT, signal_handler)
-print('Press Ctrl+C')
-print signal.pause.__doc__
-#signal.pause()
-""")
 
 peep("singleton", """
 ## getinstance is same as Myclass,    they are class 
@@ -1994,6 +2167,7 @@ s=socket.socket(); print s; print(s.getsockname())
 s.bind(("", 0));   print s; print(s.getsockname())
 s.close();         print s
 """)
+#sys.exit()
 
 peep("str repr backtick", """
 #str(), repr(), `` are three ways to convert objects to str
@@ -2017,34 +2191,7 @@ print "my mom is " + `29`              #my mom is 29
 print "my mom is " + repr(29)          #my mom is 29
 print "my mom is " + str(29)           #my mom is 29
 """)
-
-peep("StringIO", """
-##io.StringIO       is a class. It handles Unicode. It reflects the preferred Python 3 library structure.
-##StringIO.StringIO is a class. It handles strings. It reflects the legacy Python 2 library struct
-##cStringIO.StringIO  is faster version of StringIO.StringIO
-
-import timeit
-test_join='''a=[]
-for i in range(100):
-    a.append('a')
-'''
-
-test_StringIO='''from StringIO import StringIO
-a = StringIO()
-for i in range(100):
-    a.write('a')
-'''
-test_cStringIO='''from cStringIO import StringIO
-a = StringIO()
-for i in range(100):
-    a.write('a')
-'''
-print(timeit.timeit(test_join, number=1))
-print(timeit.timeit(test_StringIO, number=1))
-print(timeit.timeit(test_cStringIO, number=1))
-
-""")
-
+#sys.exit()
 
 peep("sys", """
 #ImportError: No module named foo actually means the module foo.py or package foo/__init__.py could not be found in any of the directories in the search path (sys.path list).
@@ -2061,3 +2208,37 @@ peep("tarfile", """
 #tar.extractall()
 #tar.close()
 """)
+
+######################################### time ################################
+peep("time, datetime", """
+import time
+mytuple=(1975,7,11,22,59,59,0,0,0)
+print                             time.mktime(mytuple)   #174322799.0
+print time.asctime(time.localtime(time.mktime(mytuple))) #Fri Jul 11 22:59:59 1975
+print                             time.time()            #1493094303.6  #num of ticks since 1970/1/1/12:00 
+print              time.localtime(time.time())           #time.struct_time() #local time in tuple
+print time.asctime(time.localtime(time.time()))          #Tue Apr 25 12:25:05 2017  #convert tuple to local formatted string
+
+import datetime
+print datetime.timedelta                    #<type 'datetime.timedelta'>
+print datetime.date                         #<type 'datetime.date'>  #class for date only
+print datetime.time                         #<type 'datetime.time'>  #class for time only
+print datetime.datetime                     #<type 'datetime.datetime'> #class for both date and time
+print datetime.datetime(2016, 10, 1, 19, 30, 59, 99999)   #2016-10-01 19:30:59.099999
+print datetime.datetime.today()             #2017-04-25 12:51:08.911752
+print datetime.datetime.today().date()      #2017-04-25     #local date
+print datetime.datetime.today().time()      #12:52:05.980688
+print datetime.datetime.utcnow()            #2017-04-25 04:58:29.998501
+print datetime.datetime.now()               #2017-04-25 12:58:47.785288
+print datetime.datetime.now()  .date()      #2017-04-25     #local date
+print datetime.datetime.now()  .time()      #12:46:52.723122
+print datetime.date.today()                 #2017-04-25
+print datetime.date.today().weekday()       #1              #0 for Mon, 6 for Sun
+print datetime.date(1975,7,17)              #1975-07-17
+print datetime.date.today()-datetime.date(1975,7,11)        #15264 days, 0:00:00 #how many days have I lived
+print datetime.date.today()+datetime.timedelta(days=10000)  #2044-09-10  #after 10000 days
+
+print datetime.timedelta(hours=1)                           #1:00:00
+print datetime.timedelta(hours=25,days=1,seconds=1)         #2 days, 1:00:01
+
+""", ebrun, 0)
