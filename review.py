@@ -27,7 +27,7 @@ def peep(head, str, way=eep, run=True):
     pp(head)
     way(str)
 
-
+####################################### decorator #####################################################
 pp("multilayer decorator")
 def strong_decorate(func):  # get_text = strong_decorate(get_text)
     def func_wrapper(name):
@@ -91,6 +91,7 @@ def get_text(name):
 print(get_text("John"))
 # <div><p><strong>Hello John</strong></p></div>
 
+########################### namemangle ################################
 pp("namemangle to prevent accidental access")
 
 
@@ -225,7 +226,7 @@ signal.pause()
 #sys.exit()
 
 
-
+########################### syntax ######################################################
 peep("bitwise", '''
 a = 60            # 60 = 0011 1100 
 b = 13            # 13 = 0000 1101 
@@ -272,33 +273,7 @@ y = 1        and "SH" or "not SH";  print y; #SH
 y = 0        and "SH" or "not SH";  print y; #not SH
 ''')
 
-pp("calendar")
-ebrun('''
-import calendar
-cal = calendar.month(2016, 4)
-print cal
-print type(cal)
-#Returns a 3-column calendar for an entire year as a multi-line string using the formatyear() of the TextCalendar class.
-#w  The width between two columns. Default value is 2.
-#l  Blank line between two rows. Default value is 1. 
-#c  Space between two months (Column wise). Default value is 6. 
-#m  Number of months in a row. Default value is 3.  
-print calendar.calendar(1975,2,1,6,3)
-''')
 
-pp("callable() function. The function checks if an object is a callable object. Or in other words, if an object is a function. ")
-ebrun('''
-print callable.__doc__
-class Car:
-    def setName(self, name):
-        self.name = name
-
-c = Car(); print callable(c.setName)
-def fun(): pass
-print callable(fun)
-print callable([])
-print callable(1)
-''')
 
 pp("cmp")
 ebrun('''
@@ -740,43 +715,6 @@ print dir(t)
 ''')
 
 
-pp("enumerate")
-
-##enumerate(sequence, start=0)
-#Return an enumerate object. sequence must be a sequence, an iterator, or some other object which supports iteration. The next() method of the iterator returned by enumerate() returns a tuple containing a count (from start which defaults to 0) and the values obtained from iterating over sequence:
-#
-##my_enumerate() below is similar to enmerate(), however
-#The real enumerate function returns an iterator, not an generator. You can see this if you call help(x) after doing creating an enumerate object:
-#
-#In Python, generators are basically a specific type of iterator that's implemented by using a yield to return data from a function.
-#However, enumerate is actually implemented in C, not pure Python, so there's no yield involved. You can find the source here: http://hg.python.org/cpython/file/2.7/Objects/enumobject.c
-#
-
-ebrun('''
-def my_enumerate(sequence, start=0):
-    n = start
-    for elem in sequence:
-        yield n, elem
-        n += 1
-# 1
-e=enumerate    (["spring", "summer","fall" ,"winter"], 1)
-##enumerate return an iterator(enumerate is iterator)
-print type(e), dir(e)
-print list(e)
-import inspect; print inspect.getmro(enumerate)
-
-# 2 
-##my_enumerate return a generator
-e=my_enumerate (["spring", "summer","fall" ,"winter"], 1)
-print type(e), dir(e)
-print list(e)
-
-## use for loop
-e=enumerate    (["spring", "summer","fall" ,"winter"])
-for i in e: print i
-e=my_enumerate (["spring", "summer","fall" ,"winter"])
-for i in e: print i
-''')
 
 pp("eval and exec")
 ebrun('''
@@ -940,83 +878,6 @@ profile('bucky', 'roberts', 1,2,3,4,5, bacon=4, saus=64)
 
 """)
 
-pp("generator")
-ebrun("""
-#myview:
-#1. creating a function with yield statement in it
-#2. then the function would return a generator object
-#3. generator object is a iterator object, support next() method
-#
-#myview:
-#1. generator function is a function with yield statement inside
-#2. generator function return generator object
-#3. generator object is iterator
-
-#Every generator is an iterator, but not vice versa. A generator is built by calling a function that has one or more yield 
-def city_generator():
-    yield("Konstanz")
-    yield("Zurich")
-    yield("Schaffhausen")
-    yield("Stuttgart")
-
-x=city_generator()
-#import inspect; inspect.getmro(x)
-print type(x), type(type(x))
-print x
-print x.next()
-print x.next()
-print x.next()
-print x.next()
-
-#'i for i in list if' syntax will return a generator
-g=(x for x in os.listdir('/etc') if '.conf' in x)
-print g
-print g.next()
-print g.next()
-print g.next()
-g2=[x for x in glob.glob('/etc/*.conf')]
-print g2
-""")
-
-pp("glob")
-ebrun("""
-import glob
-for sfile in glob.glob("/etc/r*.conf"):
-    print sfile
-""")
-
-
-pp("dec and hex");
-ebrun("""
-#dec to hex
-print hex(16)           #0x10
-print "%X"     % 16     #10
-print "%x"     % 16     #10
-print "0x%x"   % 16     #0x10
-print "0x%x"   % 1616   #0x650
-print "0x%2x"  % 1616   #0x650
-print "0x%17x" % 1616   #0x              650
-
-print ord.__doc__
-print chr.__doc__
-
-print ord('a'), chr(ord('a'))  #97 a
-print ord('1'), chr(ord('a'))  #49 a
-
-s = "Hello world!"
-print ":".join(            str(ord(x))for x in s)  #72:101:108:108:111:32:119:111:114:108:100:33
-print ":".join(  '%d'  %       ord(x) for x in s)  #72:101:108:108:111:32:119:111:114:108:100:33
-print ":".join(  '%x'  %       ord(x) for x in s)  #48:65:6c:6c:6f:20:77:6f:72:6c:64:21
-print ":".join( '%0X'  %       ord(x)  for x in s) #48:65:6C:6C:6F:20:77:6F:72:6C:64:21
-print ":".join("{:02x}".format(ord(x)) for x in s) #48:65:6c:6c:6f:20:77:6f:72:6c:64:21
-print ":".join(            hex(ord(x)) for x in s) #0x48:0x65:0x6c:0x6c:0x6f:0x20:0x77:0x6f:0x72:0x6c:0x64:0x21
-
-#a list of A-E
-print map(lambda x: chr(x), xrange(ord('A'),ord('E')+1))     #['A', 'B', 'C', 'D', 'E']
-print    [ chr(x) for x in xrange(ord('A'), ord('E')+1)]     #['A', 'B', 'C', 'D', 'E']
-print    ( chr(x) for x in xrange(ord('a'), ord('z')+1))     #<generator object <genexpr> at 0x7f16f2c915f0>
-""")
-
 
 ############################################ inspect ###########################################
 peep("id", """
@@ -1034,6 +895,62 @@ list2 = copy.copy(list); print id(list2)
 for i in list2: print id(i),
 """, ebrun, 0)
 #sys.exit()
+
+
+pp("locals(), vars(), globals()")
+ebrun("""
+##globals() returns the dictionary of the module namespace
+##          global variables can be accessed inside functions, but cann't be modified inside functions
+##locals()  returns a dictionary of the current namespace
+##vars()    returns either a dictionary of the current namespace (if called with no argument) or the dictionary of the argument.
+
+map_l=locals(); print map_l
+map_l=locals(); print type(map_l)
+map_l=locals(); print map_l.get("name")
+map_l=locals(); name=""; print map_l
+print globals()["__name__"]
+print vars()
+
+ages={'dad':42,'mom':48,'me':7}
+ages.clear()          # remove all entries in dict
+print ages if 'ages' in locals() else "ages not defined"
+
+ages={'dad':42,'mom':48,'me':7}
+del ages              # delete all entries
+print ages if 'ages' in locals() else "ages not defined"
+
+age = "16"
+name = "Evan"
+print "hello %(name)s you are %(age)s years old" % locals()
+
+
+a_string="this is a global variable"
+def foo():
+    a_string = "this is local variable"
+    print '''-->locals() variabls '''
+    print locals()
+    print '''-->vars() variabls '''
+    print vars()
+
+foo()
+print '''-->global variabls '''
+print globals()
+
+""")
+
+pp("callable() function. The function checks if an object is a callable object. Or in other words, if an object is a function. ")
+ebrun('''
+print callable.__doc__
+class Car:
+    def setName(self, name):
+        self.name = name
+
+c = Car(); print callable(c.setName)
+def fun(): pass
+print callable(fun)
+print callable([])
+print callable(1)
+''')
 
 peep("hasattr", """
 ##The hasattr() function checks if an object has an attribute. The getattr() function returns the contents of an attribute if there are some.
@@ -1069,8 +986,7 @@ for i in dir(fun): print "function fun() has attribute", i,":", hasattr(fun, i)
 """, ebrun, 0)
 #sys.exit()
 
-pp("inspect.getcallargs()")
-ebrun("""
+peep("inspect.getcallargs()", """
 import inspect
 def f(a, b=1, *pos, **named):
     pass
@@ -1079,18 +995,19 @@ print inspect.getcallargs(f,7,2)
 print inspect.getcallargs(f,7,2,'a','b','c')
 m={'d':'dd', 'e':'ee'}
 print inspect.getcallargs(f,7,2,'a','b','c',**m)
-""")
+""", ebrun, 0)
 
-pp("inspect.getmembers()")
-ebrun("""
+peep("inspect.getmembers()", """
+import pprint
 ##All functions of the module re:
-print inspect.getmembers(re, inspect.isfunction)
+pprint.pprint(inspect.getmembers(os, inspect.isfunction))
+pprint.pprint(inspect.getmembers(re, inspect.isfunction))
 #or:
 print dir(re); print type(re)
-""")
+""", ebrun, 0)
 
-pp("inspect.getmro()")
-ebrun("""
+
+peep("inspect.getmro()", """
 ##inspect.getmro(cls)
 ##mro --> method resolution order
 ##Return a tuple of class cls's base classes, including cls, in method resolution order. No class appears more than once in this tuple. Note that the method resolution order depends on cls type. Unless a very peculiar user-defined metatype is in use, cls will be the first element of the tuple.
@@ -1104,7 +1021,8 @@ print inspect.getmro(B)
 print B.__base__
 print B.__base__.__base__
 print B.__base__.__base__.__base__
-""")
+""", ebrun, 1)
+#sys.exit()
 
 pp("isinstance()")
 ebrun("""
@@ -1136,11 +1054,40 @@ print issubclass(MyObject, MyObject)
 print issubclass(MyObject, Wall)
 print issubclass(Wall, MyObject)
 print issubclass(Wall, Wall)
-
 """)
 #sys.exit()
 
-############################## iterator, generator ############################################################
+pp("inspect.currentframe().f_code.co_name, magic")
+ebrun("""
+#e1 = Employee('evan' 'liu',10000)
+#
+#str(e1)     --> call e1.__str__()
+#repr(e1)    --> call e1.__repr__()
+
+#e1+e2       --> call e1.__add__(e2)
+#'a'+'b'     --> call str.__add__('a','b')
+#1+2         --> call int.__add__(1,2)
+
+#'ls'>'la'   --> call 'ls'.__ge__('la')
+#            --> call str.__ge__('ls','la')
+
+#len('ls')   --> call 'ls'.__len__()
+import inspect
+class Employee:
+    def __str__(self):
+        return inspect.stack()[0][3] + " called"
+    def __repr__(self):
+        return inspect.currentframe().f_code.co_name + " called"
+    def __add__(self, n):
+        return inspect.currentframe().f_code.co_name + " called"
+e1 = Employee()
+e2 = Employee()
+print str(e1)            #__str__ called
+print repr(e2)           #__repr__ called
+print e1 + e2            #__add__ called
+""")
+#sys.exit()
+############################## iterator, generator, enumerate #####################################################
 pp("iterator")
 ebrun("""
 ##what is iterable: 
@@ -1209,6 +1156,85 @@ with open("/etc/hosts") as f:
 """)
 #sys.exit()
 
+
+pp("enumerate")
+
+##enumerate(sequence, start=0)
+#Return an enumerate object. sequence must be a sequence, an iterator, or some other object which supports iteration. The next() method of the iterator returned by enumerate() returns a tuple containing a count (from start which defaults to 0) and the values obtained from iterating over sequence:
+#
+##my_enumerate() below is similar to enmerate(), however
+#The real enumerate function returns an iterator, not an generator. You can see this if you call help(x) after doing creating an enumerate object:
+#
+#In Python, generators are basically a specific type of iterator that's implemented by using a yield to return data from a function.
+#However, enumerate is actually implemented in C, not pure Python, so there's no yield involved. You can find the source here: http://hg.python.org/cpython/file/2.7/Objects/enumobject.c
+#
+
+ebrun('''
+def my_enumerate(sequence, start=0):
+    n = start
+    for elem in sequence:
+        yield n, elem
+        n += 1
+# 1
+e=enumerate    (["spring", "summer","fall" ,"winter"], 1)
+##enumerate return an iterator(enumerate is iterator)
+print type(e), dir(e)
+print list(e)
+import inspect; print inspect.getmro(enumerate)
+
+# 2 
+##my_enumerate return a generator
+e=my_enumerate (["spring", "summer","fall" ,"winter"], 1)
+print type(e), dir(e)
+print list(e)
+
+## use for loop
+e=enumerate    (["spring", "summer","fall" ,"winter"])
+for i in e: print i
+e=my_enumerate (["spring", "summer","fall" ,"winter"])
+for i in e: print i
+''')
+
+pp("generator")
+ebrun("""
+#myview:
+#1. creating a function with yield statement in it
+#2. then the function would return a generator object
+#3. generator object is a iterator object, support next() method
+#
+#myview:
+#1. generator function is a function with yield statement inside
+#2. generator function return generator object
+#3. generator object is iterator
+
+#Every generator is an iterator, but not vice versa. A generator is built by calling a function that has one or more yield 
+def city_generator():
+    yield("Konstanz")
+    yield("Zurich")
+    yield("Schaffhausen")
+    yield("Stuttgart")
+
+x=city_generator()
+#import inspect; inspect.getmro(x)
+print type(x), type(type(x))
+print x
+print x.next()
+print x.next()
+print x.next()
+print x.next()
+
+#'i for i in list if' syntax will return a generator
+g=(x for x in os.listdir('/etc') if '.conf' in x)
+print g
+print g.next()
+print g.next()
+print g.next()
+g2=[x for x in glob.glob('/etc/*.conf')]
+print g2
+""")
+
+
+
 ########################################## itertools ###########################################
 pp("itertools.chain(),count(),repeat(),cycle()")
 ebrun("""
@@ -1243,6 +1269,80 @@ print seq
 for count, num in enumerate(seq):
     if count > 20: break
     print num,
+""")
+#sys.exit()
+
+
+################################# text ####################################
+
+pp("re")
+eep("""
+import re
+with open('/etc/passwd') as f: c = f.read()
+print c
+#test r'' and re.M
+print re.findall(r'^(\w+):',         c      )       #
+print re.findall(r'^(\w+):',         c, re.M)       #['root',                ..,  'puppet']
+print re.findall(r'^\w+(?=:)',      c, re.M)        #['root',                ..,  'puppet']  #lookahead
+print re.findall(r'^(\w+):.*:(.+)$', c, re.M)       #[('root', '/bin/bash'), .., ('puppet', '/bin/false')]
+
+#test match(), search, findall, finditer()
+print re.findall (r'^(\w+):.*:(.+)$', c, re.M)                                   #[('root', '/bin/bash'), .., ('puppet', '/bin/false')]
+print re.finditer(r'^(\w+):.*:(.+)$', c, re.M)                                   #<callable-iterator object at 0x7f8c69fb8390>
+print re.search  (r'^(\w+):.*:(.+)$', c, re.M)                                   #<_sre.SRE_Match object at 0x7f8c69eab250>
+print re.match   (r'^(\w+):.*:(.+)$', c, re.M)                                   #<_sre.SRE_Match object at 0x7f8c69eab0b8>
+
+for l in re.findall (r'^(\w+):.*:(.+)$', c, re.M): print l                       #('root', '/bin/bash'),..,('puppet', '/bin/false')
+for m in re.finditer(r'^(\w+):.*:(.+)$', c, re.M): print (m.group(1), m.group(2))#('root', '/bin/bash'),..,('puppet', '/bin/false')
+
+m =      re.search  (r'^(\w+):.*:(.+)$', c, re.M); print (m.group(1), m.group(2))  #('root', '/bin/bash')
+#m =      re.match   (r'^(\w+):.*:(.+)$', c, re.M); print (m.group(1), m.group(2))#('root', '/bin/bash')
+
+#test regex named group(P means placeholder),
+#myview named groups are for search() or match()
+#m = re.match   (r'(root):.*:(.+)$', c, re.M);                print(m.group(1), m.group(2))          #('root', '/bin/bash')
+m = re.search (r'^(root):.*:(.+)$', c, re.M);                print(m.group(1), m.group(2))          #('root', '/bin/bash')
+m = re.search (r'^(?P<id>root):.*:(?P<shell>.+)$', c, re.M); print(m.group('id'), m.group(2))       #('root', '/bin/bash')
+m = re.search (r'^(?P<id>root):.*:(?P<shell>.+)$', c, re.M); print(m.group('id'), m.group('shell')) #('root', '/bin/bash')
+l = re.findall(r'^(?P<id>root):.*:(?P<shell>.+)$', c, re.M); print l                                #[('root', '/bin/bash')]
+
+#re.I, (?i), (?imx)
+for m in re.finditer(r'.*(BASH|sh)$', c, re.M|re.I)     : print m.group(0)
+for m in re.finditer(r'(?im).*(BASH|sh)$', c)           : print m.group(0)
+
+#split into list in the boundary of \W+
+print re.findall(r'\w+'         , c, re.M) #same as
+print re.findall(r'\w+'         , c)       #same as
+print re.split(r'\W+'           , c)       #same as
+print re.split(r'[^a-zA-Z0-9_]+', c)       #['root', 'x', '0', '0', 'root', 'root',...,'']
+print re.split(r'\W+'           , c, 1)    #['root', 'x:0:0:root:/root...\\n]
+print re.split(r'\W+'           , c, 2)    #['root', 'x', '0:0:root:/root...\\n']
+print re.split(r'(\W+)'         , c, 2)    #['root', ':', 'x', ':', '0:0:root...\\n']
+
+""")
+
+
+peep("str repr backtick", """
+#str(), repr(), `` are three ways to convert objects to str
+
+#str is a class, repr is a function
+#back tick is similar to str(), to trasform everything to string
+
+print str.__doc__
+#str(object='') -> string
+#Return a nice string representation of the object.
+#If the argument is a string, the return value is the same object.
+print repr.__doc__
+#repr(object) -> string
+#Return the canonical string representation of the object.
+#For most object types, eval(repr(object)) == object.
+
+print str.__class__               #<type 'type'>
+print repr.__class__              #<type 'builtin_function_or_method'>
+
+print "my mom is " + `29`              #my mom is 29
+print "my mom is " + repr(29)          #my mom is 29
+print "my mom is " + str(29)           #my mom is 29
 """)
 #sys.exit()
 
@@ -1316,60 +1416,7 @@ print aaa(A)
 
 """)
 
-pp("list")
-ebrun("""
-x = [ 1, 2 ,3 ]; print id(x), x  #140714377773496 [1, 2, 3]
-x.append(4);     print id(x), x  #140714377773496 [1, 2, 3, 4]
-x.append([4,5]); print id(x), x  #140714377773496 [1, 2, 3, 4, [4, 5]]
-x.extend([4,5]); print id(x), x  #140714377773496 [1, 2, 3, 4, [4, 5], 4, 5]
-x = x + [4, 5 ]; print id(x), x  #140714377754240 [1, 2, 3, 4, [4, 5], 4, 5, 4, 5]
 
-list1=['1', '2', '3']; 
-print      ''.join(list1)        #123
-print list(''.join(list1))       #['1', '2', '3']
-
-""")
-
-pp("locals(), vars(), globals()")
-ebrun("""
-##globals() returns the dictionary of the module namespace
-##          global variables can be accessed inside functions, but cann't be modified inside functions
-##locals()  returns a dictionary of the current namespace
-##vars()    returns either a dictionary of the current namespace (if called with no argument) or the dictionary of the argument.
-
-map_l=locals(); print map_l
-map_l=locals(); print type(map_l)
-map_l=locals(); print map_l.get("name")
-map_l=locals(); name=""; print map_l
-print globals()["__name__"]
-print vars()
-
-ages={'dad':42,'mom':48,'me':7}
-ages.clear()          # remove all entries in dict
-print ages if 'ages' in locals() else "ages not defined"
-
-ages={'dad':42,'mom':48,'me':7}
-del ages              # delete all entries
-print ages if 'ages' in locals() else "ages not defined"
-
-age = "16"
-name = "Evan"
-print "hello %(name)s you are %(age)s years old" % locals()
-
-
-a_string="this is a global variable"
-def foo():
-    a_string = "this is local variable"
-    print '''-->locals() variabls '''
-    print locals()
-    print '''-->vars() variabls '''
-    print vars()
-
-foo()
-print '''-->global variabls '''
-print globals()
-
-""")
 
 pp("logging stream=sys.stdout")
 ebrun("""
@@ -1411,34 +1458,60 @@ logger.debug('the distance of nearby stars: %s ' % lightyear)
 with open('/tmp/stars2.log', 'r') as f: print f.read()
 """)
 
-pp("magic *****")
+############################ math ##########################
+pp("ord and chr")
+eep("""
+print ord.__doc__
+print chr.__doc__
+print ord('a'), chr(ord('a'))
+print ord('1'), chr(ord('a'))
+
+s = "Hello world!"
+print ":".join( str(ord(x)) for x in s)
+print ":".join( ('%0X' % ord(x) for x in s))
+print ":".join("{:02x}".format(ord(x)) for x in s)
+print ":".join( hex(ord(x)) for x in s)
+#a list of A-Z, use map
+l = map(lambda x: chr(x), xrange(ord('A'),ord('Z')+1)); print l
+#a list of a-z, use 'x for x in'
+print [ chr(x) for x in xrange(ord('a'), ord('z')+1)]
+#a generator of A-Z, use 'x for x in'
+g = ( chr(x) for x in xrange(ord('a'), ord('z')+1))
+print g
+print list(g)
+""")
+
+
+
+pp("dec and hex");
 ebrun("""
-#e1 = Employee('evan' 'liu',10000)
-#
-#str(e1)     --> call e1.__str__()
-#repr(e1)    --> call e1.__repr__()
+#dec to hex
+print hex(16)           #0x10
+print "%X"     % 16     #10
+print "%x"     % 16     #10
+print "0x%x"   % 16     #0x10
+print "0x%x"   % 1616   #0x650
+print "0x%2x"  % 1616   #0x650
+print "0x%17x" % 1616   #0x              650
 
-#e1+e2       --> call e1.__add__(e2)
-#'a'+'b'     --> call str.__add__('a','b')
-#1+2         --> call int.__add__(1,2)
+print ord.__doc__
+print chr.__doc__
 
-#'ls'>'la'   --> call 'ls'.__ge__('la')
-#            --> call str.__ge__('ls','la')
+print ord('a'), chr(ord('a'))  #97 a
+print ord('1'), chr(ord('a'))  #49 a
 
-#len('ls')   --> call 'ls'.__len__()
-import inspect
-class Employee:
-    def __str__(self):
-        return inspect.stack()[0][3] + " called"
-    def __repr__(self):
-        return inspect.currentframe().f_code.co_name + " called"
-    def __add__(self, n):
-        return inspect.currentframe().f_code.co_name + " called"
-e1 = Employee()
-e2 = Employee()
-print str(e1)            #__str__ called
-print repr(e2)           #__repr__ called
-print e1 + e2            #__add__ called
+s = "Hello world!"
+print ":".join(            str(ord(x))for x in s)  #72:101:108:108:111:32:119:111:114:108:100:33
+print ":".join(  '%d'  %       ord(x) for x in s)  #72:101:108:108:111:32:119:111:114:108:100:33
+print ":".join(  '%x'  %       ord(x) for x in s)  #48:65:6c:6c:6f:20:77:6f:72:6c:64:21
+print ":".join( '%0X'  %       ord(x)  for x in s) #48:65:6C:6C:6F:20:77:6F:72:6C:64:21
+print ":".join("{:02x}".format(ord(x)) for x in s) #48:65:6c:6c:6f:20:77:6f:72:6c:64:21
+print ":".join(            hex(ord(x)) for x in s) #0x48:0x65:0x6c:0x6c:0x6f:0x20:0x77:0x6f:0x72:0x6c:0x64:0x21
+
+#a list of A-E
+print map(lambda x: chr(x), xrange(ord('A'),ord('E')+1))     #['A', 'B', 'C', 'D', 'E']
+print    [ chr(x) for x in xrange(ord('A'), ord('E')+1)]     #['A', 'B', 'C', 'D', 'E']
+print    ( chr(x) for x in xrange(ord('a'), ord('z')+1))     #<generator object <genexpr> at 0x7f16f2c915f0>
 """)
 
 
@@ -1680,8 +1753,32 @@ multiprocessing.Process(target=timer, args=(l, "Test2", 2, 4)).start()
 
 
 ######################### file #######################################################
-pp("open")
+peep("sys", """
+#ImportError: No module named foo actually means the module foo.py or package foo/__init__.py could not be found in any of the directories in the search path (sys.path list).
+print sys.path
+sys.path.append('/path/to/the/example_file.py')
+print sys.path
+print sys.argv
+print sys.executable
+""", ebrun, 0)
 
+peep("tarfile", """
+#import tarfile
+#tar = tarfile.open("1.tar.gz")
+#tar.extractall()
+#tar.close()
+""", ebrun, 0)
+
+
+peep("glob", """
+import glob
+for sfile in glob.glob("/etc/r*.conf"):
+    print sfile
+""", ebrun, 0)
+
+#sys.exit()
+
+pp("open")
 eep("""
 #mode can be 
 #'r'     when the file will only be read,it's default with omitted
@@ -1723,27 +1820,6 @@ with  open("/etc/hosts") as f: print f.readlines()
 print open("/etc/hosts").readlines()
 """)
 
-pp("ord and chr")
-eep("""
-print ord.__doc__
-print chr.__doc__
-print ord('a'), chr(ord('a'))
-print ord('1'), chr(ord('a'))
-
-s = "Hello world!"
-print ":".join( str(ord(x)) for x in s)
-print ":".join( ('%0X' % ord(x) for x in s))
-print ":".join("{:02x}".format(ord(x)) for x in s)
-print ":".join( hex(ord(x)) for x in s)
-#a list of A-Z, use map
-l = map(lambda x: chr(x), xrange(ord('A'),ord('Z')+1)); print l
-#a list of a-z, use 'x for x in'
-print [ chr(x) for x in xrange(ord('a'), ord('z')+1)]
-#a generator of A-Z, use 'x for x in'
-g = ( chr(x) for x in xrange(ord('a'), ord('z')+1))
-print g
-print list(g)
-""")
 
 
 pp("os")
@@ -1921,8 +1997,9 @@ print random.sample([1, 2, 3, 4, 5],  3)  # Choose 3 elements
 print random.sample(xrange(10000000), 7)  # Choose 3 samples
 """)
 
-pp("raw_input")
-eep("""
+
+##################### input #############################
+peep('raw_input', """
 #                  return string     return as expression
 #python 2          raw_input()       input()
 #python 3          input()           eval(input())
@@ -1935,58 +2012,11 @@ eep("""
 ##x=raw_input("Your name: ")
 #Your name:                  #put in "Evan"
 #print "Hello, " + x         #Hello, Evan
-""")
-
-pp("re")
-eep("""
-import re
-with open('/etc/passwd') as f: c = f.read()
-print c
-#test r'' and re.M
-print re.findall(r'^(\w+):',         c      )       #
-print re.findall(r'^(\w+):',         c, re.M)       #['root',                ..,  'puppet']
-print re.findall(r'^\w+(?=:)',      c, re.M)        #['root',                ..,  'puppet']  #lookahead
-print re.findall(r'^(\w+):.*:(.+)$', c, re.M)       #[('root', '/bin/bash'), .., ('puppet', '/bin/false')]
-
-#test match(), search, findall, finditer()
-print re.findall (r'^(\w+):.*:(.+)$', c, re.M)                                   #[('root', '/bin/bash'), .., ('puppet', '/bin/false')]
-print re.finditer(r'^(\w+):.*:(.+)$', c, re.M)                                   #<callable-iterator object at 0x7f8c69fb8390>
-print re.search  (r'^(\w+):.*:(.+)$', c, re.M)                                   #<_sre.SRE_Match object at 0x7f8c69eab250>
-print re.match   (r'^(\w+):.*:(.+)$', c, re.M)                                   #<_sre.SRE_Match object at 0x7f8c69eab0b8>
-
-for l in re.findall (r'^(\w+):.*:(.+)$', c, re.M): print l                       #('root', '/bin/bash'),..,('puppet', '/bin/false')
-for m in re.finditer(r'^(\w+):.*:(.+)$', c, re.M): print (m.group(1), m.group(2))#('root', '/bin/bash'),..,('puppet', '/bin/false')
-
-m =      re.search  (r'^(\w+):.*:(.+)$', c, re.M); print (m.group(1), m.group(2))  #('root', '/bin/bash')
-#m =      re.match   (r'^(\w+):.*:(.+)$', c, re.M); print (m.group(1), m.group(2))#('root', '/bin/bash')
-
-#test regex named group(P means placeholder),
-#myview named groups are for search() or match()
-#m = re.match   (r'(root):.*:(.+)$', c, re.M);                print(m.group(1), m.group(2))          #('root', '/bin/bash')
-m = re.search (r'^(root):.*:(.+)$', c, re.M);                print(m.group(1), m.group(2))          #('root', '/bin/bash')
-m = re.search (r'^(?P<id>root):.*:(?P<shell>.+)$', c, re.M); print(m.group('id'), m.group(2))       #('root', '/bin/bash')
-m = re.search (r'^(?P<id>root):.*:(?P<shell>.+)$', c, re.M); print(m.group('id'), m.group('shell')) #('root', '/bin/bash')
-l = re.findall(r'^(?P<id>root):.*:(?P<shell>.+)$', c, re.M); print l                                #[('root', '/bin/bash')]
-
-#re.I, (?i), (?imx)
-for m in re.finditer(r'.*(BASH|sh)$', c, re.M|re.I)     : print m.group(0)
-for m in re.finditer(r'(?im).*(BASH|sh)$', c)           : print m.group(0)
-
-#split into list in the boundary of \W+
-print re.findall(r'\w+'         , c, re.M) #same as
-print re.findall(r'\w+'         , c)       #same as
-print re.split(r'\W+'           , c)       #same as
-print re.split(r'[^a-zA-Z0-9_]+', c)       #['root', 'x', '0', '0', 'root', 'root',...,'']
-print re.split(r'\W+'           , c, 1)    #['root', 'x:0:0:root:/root...\\n]
-print re.split(r'\W+'           , c, 2)    #['root', 'x', '0:0:root:/root...\\n']
-print re.split(r'(\W+)'         , c, 2)    #['root', ':', 'x', ':', '0:0:root...\\n']
-
-""")
+""", ebrun, 0)
 
 
 
-pp("select.select()")
-eep("""
+peep('select.select()', """
 ##a select call is for input timout
 import sys, select
 print select.select.__doc__
@@ -1998,11 +2028,22 @@ print o
 print e
 if (i):
     print "You said", sys.stdin.readline().strip()
-""")
+""", ebrun, 1)
 
+################################ sequence #############################
+peep('list',"""
+x = [ 1, 2 ,3 ]; print id(x), x  #140714377773496 [1, 2, 3]
+x.append(4);     print id(x), x  #140714377773496 [1, 2, 3, 4]
+x.append([4,5]); print id(x), x  #140714377773496 [1, 2, 3, 4, [4, 5]]
+x.extend([4,5]); print id(x), x  #140714377773496 [1, 2, 3, 4, [4, 5], 4, 5]
+x = x + [4, 5 ]; print id(x), x  #140714377754240 [1, 2, 3, 4, [4, 5], 4, 5, 4, 5]
 
-pp("sequence")
-eep("""
+list1=['1', '2', '3']; 
+print      ''.join(list1)        #123
+print list(''.join(list1))       #['1', '2', '3']
+""", ebrun, 0)
+
+peep("sequence","""
 ##about the sequence slice
 #a[start:end] # items start through end-1
 #a[start:]    # items start through the rest of the array
@@ -2073,8 +2114,9 @@ a=b=[1,2,3]; a.pop(0); print a,b
 print inspect.getmro(str)
 print inspect.getmro(tuple)
 print inspect.getmro(xrange)
-""")
+""", ebrun, 0)
 
+################################## set #####################################
 peep("set", """
 ##get intersection of two sets
 set1 = set([0,2,4,6,8])
@@ -2107,7 +2149,7 @@ set1 = set([0,2,4]); set2 = copy.copy(set1); set1.clear(); print set1, set2
 set1 = set([0,2,4,6,8,2,6]); print set1, type(set1)
 set1 = {0,2,4,6,8,2,6};      print set1, type(set1)  # using curly braces
 
-""")
+""", ebrun, 0)
 
 peep("frozenset", """
 ##add, remove, discard#
@@ -2123,7 +2165,7 @@ set1.discard(9); print set1
 ##frozensets are sets immutable, 'set2.add(11)' will throw exception
 set2 = frozenset([1,3,5,7,9]); print set2
 
-""")
+""", ebrun, 0)
 
 peep("shutil", """
 import shutil
@@ -2135,30 +2177,10 @@ import shutil
 #if not os.path.isdir(deploy_to_data_dir):
 #   shutil.copytree(base_data_dir, deploy_to_data_dir)
 #os.listdir('/lab/testtools/rhel664')
-""")
+""", ebrun, 0)
 
 
-peep("singleton", """
-## getinstance is same as Myclass,    they are class 
-## geinstance() is same as Myclass(), they are instance
-def singleton(class_):
-  instances = {}
-  def getinstance(*args, **kwargs):
-    if class_ not in instances:
-        instances[class_] = class_(*args, **kwargs)
-        print "-->instance created here with id: %s" % id(instances[class_]) 
-    return instances[class_]
-  print "-->class created here with id: %s" % id(getinstance)
-  return getinstance
 
-@singleton
-class Myclass(object):
-  pass
-
-c=Myclass
-a=Myclass(); print id(a)
-b=Myclass(); print id(b)
-""")
 
 peep("socket","""
 ###python -c 'import socket; s=socket.socket(); s.bind(("", 0)); print(s.getsockname()[1]); s.close()'
@@ -2166,50 +2188,12 @@ import socket
 s=socket.socket(); print s; print(s.getsockname())
 s.bind(("", 0));   print s; print(s.getsockname())
 s.close();         print s
-""")
+""", ebrun, 0)
 #sys.exit()
 
-peep("str repr backtick", """
-#str(), repr(), `` are three ways to convert objects to str
 
-#str is a class, repr is a function
-#back tick is similar to str(), to trasform everything to string
 
-print str.__doc__
-#str(object='') -> string
-#Return a nice string representation of the object.
-#If the argument is a string, the return value is the same object.
-print repr.__doc__
-#repr(object) -> string
-#Return the canonical string representation of the object.
-#For most object types, eval(repr(object)) == object.
-
-print str.__class__               #<type 'type'>
-print repr.__class__              #<type 'builtin_function_or_method'>
-
-print "my mom is " + `29`              #my mom is 29
-print "my mom is " + repr(29)          #my mom is 29
-print "my mom is " + str(29)           #my mom is 29
-""")
-#sys.exit()
-
-peep("sys", """
-#ImportError: No module named foo actually means the module foo.py or package foo/__init__.py could not be found in any of the directories in the search path (sys.path list).
-print sys.path
-sys.path.append('/path/to/the/example_file.py')
-print sys.path
-print sys.argv
-print sys.executable
-""")
-
-peep("tarfile", """
-#import tarfile
-#tar = tarfile.open("1.tar.gz")
-#tar.extractall()
-#tar.close()
-""")
-
-######################################### time ################################
+######################################### time,  calendar ################################
 peep("time, datetime", """
 import time
 mytuple=(1975,7,11,22,59,59,0,0,0)
@@ -2242,3 +2226,188 @@ print datetime.timedelta(hours=1)                           #1:00:00
 print datetime.timedelta(hours=25,days=1,seconds=1)         #2 days, 1:00:01
 
 """, ebrun, 0)
+
+peep("calendar", '''
+import calendar
+cal = calendar.month(2016, 4)
+print cal
+print type(cal)
+#Returns a 3-column calendar for an entire year as a multi-line string using the formatyear() of the TextCalendar class.
+#w  The width between two columns. Default value is 2.
+#l  Blank line between two rows. Default value is 1. 
+#c  Space between two months (Column wise). Default value is 6. 
+#m  Number of months in a row. Default value is 3.  
+print calendar.calendar(1975,2,1,6,3)
+''', ebrun, 0)
+########################### class ########################################
+peep("multiple parents", """
+##multiple parents class
+class Mom(object):
+    def __init__(self):
+        print "in Mom __init__, but self argument is child!!!", self
+        self.var1="hey im mom"
+        self.name="linda"
+
+class Dad(object):
+    var2="hey im dad"
+    name="peter"
+
+class Child(Mom,Dad):
+    var3="hey im new"
+    name="vina"
+    def change(self, v="hey im mother"):
+        print "in change:", self.var1
+        self.var1 = v
+        print "in change:", self.var1
+    
+childObj=Child()
+childObj.change()
+print childObj.var1
+print childObj.var2
+print childObj.var3
+print childObj.name
+""", ebrun, 1)
+
+peep("__init__(), __new__()", """
+##__new__ has to create the instance first, so __init__ can initialize it
+#
+##__new__ 
+#  when you need to control the creation of a new instance.
+#  it's the first step --> return a new instance of your class
+#  static class method
+#  #do not override __new__ unless you're subclassing an immutable type like str, int, unicode or tuple.
+
+##__init__ 
+#  when you need to control initialization of a new instance.
+#  it's the second step --> doesn't return anything, only initiallizing the instance the __new__ returned
+#  instance method
+#  __init__ takes self as parameter
+
+class A(object): pass
+class B(): pass
+print hasattr(A, "__new__"), hasattr(A, "__init__")
+print hasattr(B, "__new__"), hasattr(B, "__init__")
+""", ebrun, 0)
+
+peep("@classmethod, @staticmethod", '''
+##Difference between @staticmethod and @classmethod in Python:
+#
+#classmethods, 
+#    the class of the object instance is implicitly passed as the first argument instead of self.
+#staticmethods, 
+#    neither self (the object instance) nor cls (the class) is implicitly passed as the first argument. 
+#    They behave like plain functions except that you can call them from an instance or the class:
+#
+##in short term
+#    an instance method knows its instance (and from that, its class)
+#    a class method     knows its class
+#    a static method    doesn't know its class or instance
+
+import dis
+class A(object):
+    def foo(self,x):                                  #self --> <__main__.A object at 0xffd7ea8c>
+        print "instane method's first argument self is: %s" % (self)
+    @classmethod
+    def class_foo(cls,x):                             #cls ---> <class '__main__.A'>
+        print "class   method's first argument cls  is: %s" % (cls)
+    @staticmethod
+    def static_foo(x):
+        print "static  method has no self or cls as first argument"
+a=A()
+a.foo(1)
+a.class_foo(1)
+A.class_foo(1)
+a.static_foo(1)
+A.static_foo(1)
+dis.dis(A)
+''', ebrun, 0)
+
+########################### metaclass #########################################
+peep("singleton", """
+## getinstance is same as Myclass,    they are class 
+## geinstance() is same as Myclass(), they are instance
+def singleton(class_):
+  instances = {}
+  def getinstance(*args, **kwargs):
+    if class_ not in instances:
+        instances[class_] = class_(*args, **kwargs)
+        print "-->instance created here with id: %s" % id(instances[class_]) 
+    return instances[class_]
+  print "-->class created here with id: %s" % id(getinstance)
+  return getinstance
+
+@singleton
+class Myclass(object):
+  pass
+
+c=Myclass
+a=Myclass(); print id(a)
+b=Myclass(); print id(b)
+""", ebrun, 0)
+
+peep("type: two ways to make a class", """
+## metaclass: 
+#  metaclass is the class of a class
+#    #[].__class__    -->   <type 'list'>
+#    #list.__class__  -->   <type 'type'>
+#    so 'type' is a metaclass
+#  Any class whose instances are themselves classes
+#    list is type's instance
+#    list is a class
+#    so 'type' is a metaclass
+
+##two ways to create a class
+#1. Class1 defined
+class Class1(object):
+    foo = 2
+    bar = 4
+a1 = Class1
+print a1, a1.foo, a1.bar
+b1 = a1()
+print b1, b1.foo, b1.bar
+print b1.__class__
+print a1.__class__
+print Class1.__class__
+
+#2. Class2 created at runtime
+def make_a_class(**attrs):
+    return type('Class2', (object,), dict(**attrs))
+###              ^^^^^^\  ^^^^^^^^^^\ ^^^^^^^^^^^^^^-class attributes in a dict
+###                     \            \-class parents
+###                      \-class name
+a2 = Class2 = make_a_class(foo=2, bar=4)
+print a2, a2.foo, a2.bar
+b2 = a2()
+print b2, b2.foo, b2.bar
+print b2.__class__
+print a2.__class__
+print Class2.__class__
+""", ebrun, 0)
+
+peep("metaclass is the class of a class", """
+#metaclass is the class of a class
+#metaclass is a instance's class's class
+print type('1'), type(type('1'))
+#or
+print '1'.__class__, '1'.__class__.__class__
+""", ebrun, 0)
+
+
+
+peep("define_metaclass-__new__-__init__-__call__", """
+## 1.How do we determine the metaclass of a class
+#  if a class or its base has a __metaclass__ attribute, it's taken as the metaclass.
+#  Otherwise, type is the metaclass.
+## 2.How to define a class that has a metaclass other than 'type'
+#  class Class1(object):
+#      __metaclass__ = MyMeta
+## 3.How to create a class that has a metaclass other then 'type'
+#  a1 = MyMeta(Class1, bases, dict)
+## 4.Metaclass's __new__ and __init__
+#  __new__ should be implemented when you want to control the creation of a new class
+#           __new__() will return class1 , aka the instance of MyMeta
+#  __init__ should be implemented when you want to control the initialization of the new object after it has been created
+#  __call__ is called when the already-created class is "called" to instantiate a new object.
+#           x.__call__(...) <==> x(...), 
+#           __call__() will return the instance of class1
+""", ebrun ,1)

@@ -1,0 +1,9 @@
+pygmentize -g <<"EOF"
+systemctl list-units --type service -all #service --status-all
+                                         #chkconfig --list
+systemctl status  sshd.service            #service sshd status
+                                          #chkconfig --list mysqld
+systemctl restart sshd.service            #service sshd restart
+systemctl enable  named.service           #chkconfig named on
+systemctl disable named.service           #chkconfig named off
+EOF
