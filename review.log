@@ -1,0 +1,3706 @@
+
+[91m========= multilayer decorator =========[0m
+[0;33m[0m
+[0;33mdef strong_decorate(func):  # get_text = strong_decorate(get_text)[0m
+[0;33m    def func_wrapper(name):[0m
+[0;33m        return "<strong>{0}</strong>".format(func(name))[0m
+[0;33m    return func_wrapper[0m
+[0;33m[0m
+[0;33mdef p_decorate(func):[0m
+[0;33m    def func_wrapper(name):[0m
+[0;33m        return "<p>{0}</p>".format(func(name))[0m
+[0;33m    return func_wrapper[0m
+[0;33m[0m
+[0;33mdef div_decorate(func):[0m
+[0;33m    def func_wrapper(name):[0m
+[0;33m        return "<div>{0}</div>".format(func(name))[0m
+[0;33m    return func_wrapper[0m
+[0;33m[0m
+[0;36m# get_text = strong_decorate(get_text)[0m
+[0;36m# get_text = p_decorate(get_text)[0m
+[0;36m# get_text = div_decorate(get_text)[0m
+[0;33m@div_decorate[0m
+[0;33m@p_decorate[0m
+[0;33m@strong_decorate[0m
+[0;33mdef get_text(name):[0m
+[0;33m    return "Hello " + name[0m
+[0;33m[0m
+[0;33mprint(get_text("John"))     ## <div><p><strong>Hello John</strong></p></div>[0m
+<div><p><strong>Hello John</strong></p></div>
+[0;33m[0m
+
+
+[91m========= Passing arguments to decorators =========[0m
+[0;33m[0m
+[0;36m# from functools import wraps[0m
+[0;33mdef tags(tag_name):[0m
+[0;33m    def tags_decorator(func):[0m
+[0;36m        # @wraps(func)       #--> get_text.__name__, get_text.__doc__, get_text.__module__ will return correct values[0m
+[0;33m        def func_wrapper(name):[0m
+[0;33m            return "<{1}>{0}</{1}>".format(func(name), tag_name)[0m
+[0;33m        return func_wrapper[0m
+[0;33m    return tags_decorator[0m
+[0;33m[0m
+[0;33m@tags("div")[0m
+[0;33m@tags("p")[0m
+[0;33m@tags("strong")[0m
+[0;33mdef get_text(name):[0m
+[0;33m    return "Hello " + name[0m
+[0;33m[0m
+[0;36m# get_text = tags("strong")(get_text)[0m
+[0;36m# get_text = tags("p")(get_text)[0m
+[0;36m# get_text = tags("div")(get_text)[0m
+[0;33mprint(get_text("John"))  ## <div><p><strong>Hello John</strong></p></div>[0m
+<div><p><strong>Hello John</strong></p></div>
+[0;33m[0m
+
+
+[91m========= namemangle to prevent accidental access =========[0m
+[0;33m[0m
+[0;36m# _var, _func():       semiprivate and meant just for convention[0m
+[0;36m# __var, __func():     namemangle to prevent accidental access,[0m
+[0;36m#                     __var changed to _cls__var by interpreter to ensure that the name will not overlap[0m
+[0;36m#                     with a similar name in another class[0m
+[0;36m# __var__, __func__(): reserved for builtin methods/variables[0m
+[0;33mclass Test(object):[0m
+[0;33m    def __init__(self):[0m
+[0;33m        self._a = 'a'[0m
+[0;33m        self.__b = 'b'[0m
+[0;33m        self.__c__ = 'c'[0m
+[0;33mt = Test()[0m
+[0;33mprint t._a  # a  ## _a is a private variable[0m
+a
+[0;33mprint t.__c__  # c  ## __c__ is a private variable, and in my view only for buildin, but it's OK if you use it[0m
+c
+[0;36m# print t.__b         ## __b not exist namemangling, use _Test__b instead[0m
+[0;33mprint t._Test__b  # b[0m
+b
+[0;33m[0m
+
+
+[91m========= object.__dict__ =========[0m
+[92mfrom pprint import pprint[0m
+[92mimport logging[0m
+[92mclass A:
+    a1 = 1
+    def __init__(self):
+        self.a2 = 2[0m
+[92mpprint(A.__dict__)[0m
+{'__doc__': None,
+ '__init__': <function __init__ at 0x7f12d3f29850>,
+ '__module__': 'color',
+ 'a1': 1}
+[92m[0m
+[92mclass B(object):
+    pass[0m
+[92mpprint(dict(object.__dict__))[0m
+{'__class__': <attribute '__class__' of 'object' objects>,
+ '__delattr__': <slot wrapper '__delattr__' of 'object' objects>,
+ '__doc__': 'The most base type',
+ '__format__': <method '__format__' of 'object' objects>,
+ '__getattribute__': <slot wrapper '__getattribute__' of 'object' objects>,
+ '__hash__': <slot wrapper '__hash__' of 'object' objects>,
+ '__init__': <slot wrapper '__init__' of 'object' objects>,
+ '__new__': <built-in method __new__ of type object at 0x7f12d671b980>,
+ '__reduce__': <method '__reduce__' of 'object' objects>,
+ '__reduce_ex__': <method '__reduce_ex__' of 'object' objects>,
+ '__repr__': <slot wrapper '__repr__' of 'object' objects>,
+ '__setattr__': <slot wrapper '__setattr__' of 'object' objects>,
+ '__sizeof__': <method '__sizeof__' of 'object' objects>,
+ '__str__': <slot wrapper '__str__' of 'object' objects>,
+ '__subclasshook__': <method '__subclasshook__' of 'object' objects>}
+[92mpprint(dict(B.__dict__))[0m
+{'__dict__': <attribute '__dict__' of 'B' objects>,
+ '__doc__': None,
+ '__module__': 'color',
+ '__weakref__': <attribute '__weakref__' of 'B' objects>}
+[92ma = A()[0m
+[92mb = B()[0m
+[92mprint(B.__dict__['__dict__'])[0m
+<attribute '__dict__' of 'B' objects>
+[92mpprint(a.__dict__)[0m
+{'a2': 2}
+[92mpprint(b.__dict__)[0m
+{}
+[92m[0m
+[92mprint [ i for i in dir(os) if '__' in i ][0m
+['__all__', '__builtins__', '__doc__', '__file__', '__name__', '__package__']
+[92mprint os.__file__, os.__name__, __name__[0m
+/usr/lib/python2.7/os.pyc os color
+[92mprint re.__file__[0m
+/usr/lib/python2.7/re.pyc
+[92mprint logging.__file__[0m
+/usr/lib/python2.7/logging/__init__.pyc
+
+
+[91m========= __init__.py =========[0m
+[0;33m[0m
+[0;36m# for example below:[0m
+[0;36m# 1. import unitest will run __init__.py automaticaly[0m
+[0;36m# 2. in __init__.py, result.py is importted[0m
+[0;36m# 3. as a result all classes in result.py can be used now[0m
+[0;33mimport unittest[0m
+[0;33m[0m
+[0;33mprint unittest.__file__[0m
+/usr/lib/python2.7/unittest/__init__.pyc
+[0;33mprint [x for x in open(unittest.__file__[0:-1]) if 'from .result' in x][0m
+['from .result import TestResult\n']
+[0;33mprint next(x for x in open(unittest.__file__[0:-1]) if 'from .result' in x)[0m
+from .result import TestResult
+
+[0;33mprint unittest[0m
+<module 'unittest' from '/usr/lib/python2.7/unittest/__init__.pyc'>
+[0;33mprint unittest.result[0m
+<module 'unittest.result' from '/usr/lib/python2.7/unittest/result.pyc'>
+[0;33mprint unittest.TestResult[0m
+<class 'unittest.result.TestResult'>
+[0;33m[0m
+
+
+[91m========= atexit, decorator =========[0m
+[0;33m[0m
+[0;33mimport atexit[0m
+[0;36m# Below will throw out AssertionError exception, and exit[0m
+[0;36m# assert False, "the result is False."[0m
+[0;36m# print "this will not be executed"[0m
+[0;33m[0m
+[0;33m@atexit.register[0m
+[0;33mdef goodbye():[0m
+[0;33m    print 'Goodbye, no more message will be displayed'[0m
+[0;33m[0m
+[0;33mprint "before run sys.exit()"[0m
+before run sys.exit()
+[0;36m#sys.exit()        #uncomment this to test[0m
+[0;33mprint "after run sys.exit()"[0m
+after run sys.exit()
+[0;33m[0m
+Goodbye, no more message will be displayed
+
+
+[91m========= signal =========[0m
+[92mimport signal[0m
+[92mprint signal.__doc__[0m
+This module provides mechanisms to use signal handlers in Python.
+
+Functions:
+
+alarm() -- cause SIGALRM after a specified time [Unix only]
+setitimer() -- cause a signal (described below) after a specified
+               float time and the timer may restart then [Unix only]
+getitimer() -- get current value of timer [Unix only]
+signal() -- set the action for a given signal
+getsignal() -- get the signal action for a given signal
+pause() -- wait until a signal arrives [Unix only]
+default_int_handler() -- default SIGINT handler
+
+signal constants:
+SIG_DFL -- used to refer to the system default handler
+SIG_IGN -- used to ignore the signal
+NSIG -- number of defined signals
+SIGINT, SIGTERM, etc. -- signal numbers
+
+itimer constants:
+ITIMER_REAL -- decrements in real time, and delivers SIGALRM upon
+               expiration
+ITIMER_VIRTUAL -- decrements only when the process is executing,
+               and delivers SIGVTALRM upon expiration
+ITIMER_PROF -- decrements both when the process is executing and
+               when the system is executing on behalf of the process.
+               Coupled with ITIMER_VIRTUAL, this timer is usually
+               used to profile the time spent by the application
+               in user and kernel space. SIGPROF is delivered upon
+               expiration.
+
+
+*** IMPORTANT NOTICE ***
+A signal handler function is called with two arguments:
+the first is the signal number, the second is the interrupted stack frame.
+[92mdef signal_handler(signal, frame):
+    print 'signal -->', signal
+    print 'frame -->', frame
+    print dir(frame)
+    #print frame.f_globals
+    #print frame.f_locals
+    #print frame.f_trace
+    print('You pressed Ctrl+C!')
+    sys.exit(0)[0m
+[92m[0m
+[92msignal.signal(signal.SIGINT, signal_handler)[0m
+[92mprint('Press Ctrl+C')[0m
+Press Ctrl+C
+[92mprint signal.pause.__doc__[0m
+pause()
+
+Wait until a signal arrives.
+[94m#uncomment this line to test[0m
+[94m#signal.pause()[0m
+
+
+[91m========= bitwise =========[0m
+[92ma = 60            # 60 = 0011 1100 [0m
+[92mb = 13            # 13 = 0000 1101 [0m
+[92mc = 0[0m
+[92mprint a & b;        # 12 = 0000 1100[0m
+12
+[92mprint a | b;        # 61 = 0011 1101 [0m
+61
+[92mprint a ^ b;        # 49 = 0011 0001[0m
+49
+[92mprint ~a;           # -61 = 1100 0011[0m
+-61
+[92mprint a << 2;       # 240 = 1111 0000[0m
+240
+[92mprint a >> 2;       # 15 = 0000 1111[0m
+15
+[92m[0m
+[94m#use bitwise to check if even or odd[0m
+[92mprint 383 & 1[0m
+1
+[92mprint 888 & 1[0m
+0
+[92m[0m
+[92maa = 123[0m
+[92mif aa & 1: print "it is odd"[0m
+it is odd
+
+
+[91m========= True is 1, False is 0 =========[0m
+[92mprint "true" if 1 else "false"[0m
+true
+[92mprint "true" if 0 else "false"[0m
+false
+[92mprint "true" if '' else "false"[0m
+false
+[92mprint "true" if [] else "false"[0m
+false
+[92mprint "true" if False else "false"[0m
+false
+[92mprint "true" if None else "false"[0m
+false
+[92m[0m
+[92mprint True + True[0m
+2
+[92mprint False + False[0m
+0
+[92mprint True + False[0m
+1
+[92mprint True == 1, True == 0, True == 2[0m
+True False False
+[92mprint False ==1, False ==0, False ==2[0m
+False True False
+
+
+[91m========= tenary =========[0m
+[0;33m[0m
+[0;33mx='021'; y =(x=='021' and "SH" or "not SH"); print y; #SH[0m
+SH
+[0;33mx='021'; y = x=='021' and "SH" or "not SH";  print y; #SH[0m
+SH
+[0;33mx='010'; y = x=='021' and "SH" or "not SH";  print y; #not SH[0m
+not SH
+[0;33my = 1        and "SH" or "not SH";  print y; #SH[0m
+SH
+[0;33my = 0        and "SH" or "not SH";  print y; #not SH[0m
+not SH
+[0;33m[0m
+
+
+[91m========= cmp =========[0m
+[0;33m[0m
+[0;33mprint dir(cmp)[0m
+['__call__', '__class__', '__cmp__', '__delattr__', '__doc__', '__eq__', '__format__', '__ge__', '__getattribute__', '__gt__', '__hash__', '__init__', '__le__', '__lt__', '__module__', '__name__', '__ne__', '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__self__', '__setattr__', '__sizeof__', '__str__', '__subclasshook__']
+[0;33mprint cmp.__doc__[0m
+cmp(x, y) -> integer
+
+Return negative if x<y, zero if x==y, positive if x>y.
+[0;33mprint cmp.__class__[0m
+<type 'builtin_function_or_method'>
+[0;33mprint cmp(5,10)[0m
+-1
+[0;33mprint cmp(10,10)[0m
+0
+[0;33mprint cmp(10,5)[0m
+1
+[0;33m[0m
+
+
+[91m========= for break continue else =========[0m
+[0;33m[0m
+[0;33mdef func(p1):[0m
+[0;33m    for i in xrange(p1+1):[0m
+[0;33m        if i==7: print "break out!"; break[0m
+[0;33m        if i==2: print "two",; continue[0m
+[0;33m        print i,[0m
+[0;33m    else:[0m
+[0;33m        print "done!"[0m
+[0;33mfunc(10)[0m
+0 1 two 3 4 5 6 break out!
+[0;33mfunc(5)[0m
+0 1 two 3 4 5 done!
+[0;33m[0m
+
+
+[91m========= try except else =========[0m
+[0;33m[0m
+[0;33mdef func(*a_list):[0m
+[0;33m    try:[0m
+[0;33m        print 'the list is:', a_list[0m
+[0;33m        print 'third element:', a_list[2][0m
+[0;33m    except IndexError:[0m
+[0;33m        print 'raised IndexError'[0m
+[0;33m    else:[0m
+[0;33m        print 'no error in try-block'[0m
+[0;33mfunc()[0m
+the list is: ()
+third element: raised IndexError
+[0;33mfunc(1,2,3)[0m
+the list is: (1, 2, 3)
+third element: 3
+no error in try-block
+[0;33m[0m
+
+
+[91m========= while else =========[0m
+[92mi = 0
+while i < 2:
+    print 'in while: ', i
+    i += 1
+else:
+    print 'in else: ', i[0m
+in while:  0
+in while:  1
+in else:  2
+
+
+[91m========= for else =========[0m
+[92mfor i in range(2):
+    print 'in while: ', i
+else:
+    print 'in else: ', i
+#[0m
+in while:  0
+in while:  1
+in else:  1
+
+
+[91m========= deepcopy =========[0m
+[0;33m[0m
+[0;33ma = [[1,2,3],[4,5,6]][0m
+[0;33mb = a[0m
+[0;33ma.append(7); print a; print b           #make change to a; b also changed[0m
+[[1, 2, 3], [4, 5, 6], 7]
+[[1, 2, 3], [4, 5, 6], 7]
+[0;33m[0m
+[0;32m##shallow copy[0m
+[0;33mimport copy[0m
+[0;33ma = [[1,2,3],[4,5,6]][0m
+[0;33mb = copy.copy(a)[0m
+[0;33ma.append(7); print a; print b           #make change to a; b not changed because of copy [0m
+[[1, 2, 3], [4, 5, 6], 7]
+[[1, 2, 3], [4, 5, 6]]
+[0;33ma[0][0] = 0; print a; print b           #make change to a; b also changed because of shallow copy only[0m
+[[0, 2, 3], [4, 5, 6], 7]
+[[0, 2, 3], [4, 5, 6]]
+[0;33m[0m
+[0;32m##deep copy[0m
+[0;33mimport copy[0m
+[0;33ma = [[1,2,3],[4,5,6]][0m
+[0;33mb = copy.deepcopy(a)[0m
+[0;33ma.append(7); print a; print b  [0m
+[[1, 2, 3], [4, 5, 6], 7]
+[[1, 2, 3], [4, 5, 6]]
+[0;33ma[0][0] = 0; print a; print b  [0m
+[[0, 2, 3], [4, 5, 6], 7]
+[[1, 2, 3], [4, 5, 6]]
+[0;33m[0m
+[0;33m[0m
+[0;33maa = [3, 2, 1][0m
+[0;33mbb = aa[0m
+[0;36m#an interesting way to do deep copy[0m
+[0;33mcc = aa[:][0m
+[0;33mprint id(aa), id(bb), id(cc)[0m
+139945703418208 139945703418208 139945703709264
+[0;33maa.append(4)[0m
+[0;33mprint aa, bb, cc[0m
+[3, 2, 1, 4] [3, 2, 1, 4] [3, 2, 1]
+[0;36m#dict deep copy[0m
+[0;33m[0m
+
+
+[91m========= collections.OrderedDict =========[0m
+[0;33m[0m
+[0;33mfrom collections import OrderedDict[0m
+[31m###class collections.OrderedDict([items])[0m
+[31m###  Ordered dictionaries are just like regular dictionaries but they remember the order that items were inserted.[0m
+[31m###  When iterating over an ordered dictionary, the items are returned in the order their keys were first added.[0m
+[0;33mprint sorted.__doc__[0m
+sorted(iterable, cmp=None, key=None, reverse=False) --> new sorted list
+[0;33mprint OrderedDict.__doc__[0m
+Dictionary that remembers insertion order
+[0;32m## regular unsorted dictionary[0m
+[0;33md = {'banana': 3, 'apple': 4, 'pear': 1, 'orange': 2}[0m
+[0;32m## sort by key, return a list[0m
+[0;33mprint sorted(d.items(), key=lambda t: t[0])[0m
+[('apple', 4), ('banana', 3), ('orange', 2), ('pear', 1)]
+[0;33m[0m
+[0;32m## dictionary sorted by key[0m
+[0;33mprint OrderedDict(sorted(d.items(), key=lambda t: t[0]))[0m
+OrderedDict([('apple', 4), ('banana', 3), ('orange', 2), ('pear', 1)])
+[0;32m## dictionary sorted by value[0m
+[0;33mprint OrderedDict(sorted(d.items(), key=lambda t: t[1]))[0m
+OrderedDict([('pear', 1), ('orange', 2), ('banana', 3), ('apple', 4)])
+[0;32m## dictionary sorted by length of the key string[0m
+[0;33mprint OrderedDict(sorted(d.items(), key=lambda t: len(t[0])))[0m
+OrderedDict([('pear', 1), ('apple', 4), ('orange', 2), ('banana', 3)])
+[0;33m[0m
+
+
+[91m========= defaultdict for int, list, dict =========[0m
+[92mfrom collections import defaultdict[0m
+[92mimport inspect[0m
+[92mprint inspect.getmro(defaultdict)[0m
+(<type 'collections.defaultdict'>, <type 'dict'>, <type 'object'>)
+[92mprint int()[0m
+0
+[92mprint list()[0m
+[]
+[92mprint dict()[0m
+{}
+[92ms = 'mississippi'[0m
+[92m[0m
+[94m#default items are created using int(), which will return the integer object 0.[0m
+[92md = defaultdict(int)[0m
+[92mprint d[0m
+defaultdict(<type 'int'>, {})
+[92mfor k in s:
+    d[k] += 1  #int() will be called when d[k], and assign d[k] = int()[0m
+[92mprint d[0m
+defaultdict(<type 'int'>, {'i': 4, 'p': 2, 's': 4, 'm': 1})
+[92mprint d.items()[0m
+[('i', 4), ('p', 2), ('s', 4), ('m', 1)]
+[92m[0m
+[94m#default items are created using list(), which returns a new empty list object.[0m
+[92ms = [('yellow', 1), ('blue', 2), ('yellow', 3), ('blue', 4), ('red', 1)][0m
+[92md = defaultdict(list)[0m
+[92mprint d[0m
+defaultdict(<type 'list'>, {})
+[92m[0m
+[92m###list() will be called whtn d[k], and assgin d[k]=list()[0m
+[92mfor k, v in s:
+    d[k].append(v)   [0m
+[92mprint d[0m
+defaultdict(<type 'list'>, {'blue': [2, 4], 'red': [1], 'yellow': [1, 3]})
+[92m[0m
+[94m#default items are created using dict(), which returns a new empty dict object[0m
+[92mdata=defaultdict(dict)[0m
+[92mfor n in xrange(7):
+    data[n]["rnc"] = "RNC" + str(n)
+    data[n]["lac"] = "LAC" + str(n)[0m
+[92mprint data[0m
+defaultdict(<type 'dict'>, {0: {'rnc': 'RNC0', 'lac': 'LAC0'}, 1: {'rnc': 'RNC1', 'lac': 'LAC1'}, 2: {'rnc': 'RNC2', 'lac': 'LAC2'}, 3: {'rnc': 'RNC3', 'lac': 'LAC3'}, 4: {'rnc': 'RNC4', 'lac': 'LAC4'}, 5: {'rnc': 'RNC5', 'lac': 'LAC5'}, 6: {'rnc': 'RNC6', 'lac': 'LAC6'}})
+[92mfor n in xrange(7):
+    print str(n) + '--> ' + str(data[n])[0m
+0--> {'rnc': 'RNC0', 'lac': 'LAC0'}
+1--> {'rnc': 'RNC1', 'lac': 'LAC1'}
+2--> {'rnc': 'RNC2', 'lac': 'LAC2'}
+3--> {'rnc': 'RNC3', 'lac': 'LAC3'}
+4--> {'rnc': 'RNC4', 'lac': 'LAC4'}
+5--> {'rnc': 'RNC5', 'lac': 'LAC5'}
+6--> {'rnc': 'RNC6', 'lac': 'LAC6'}
+
+
+[91m========= collections.deque as stack or queue =========[0m
+[92m###Deques support thread-safe, memory efficient appends and pops from either side of the deque[0m
+[92m###Deques are a generalization of stacks and queues the name is pronounced "deck" and is short for "double-ended queue"[0m
+[92m[0m
+[92mfrom collections import deque[0m
+[92m[0m
+[92m##deque([iterable[, maxlen]]) --> deque object[0m
+[92md = deque('lo');[0m
+[92mprint d[0m
+deque(['l', 'o'])
+[92m##extend(iterable), extendleft(iterable)[0m
+[92md.extend('ves');[0m
+[92mprint d[0m
+deque(['l', 'o', 'v', 'e', 's'])
+[92m##append(x), apend on both sides[0m
+[92md.append('physics')[0m
+[92md.appendleft('Evan')[0m
+[92mprint d[0m
+deque(['Evan', 'l', 'o', 'v', 'e', 's', 'physics'])
+[92m##iterate over the deque's elements[0m
+[92mfor elem in d:
+    print elem.upper(),[0m
+EVAN L O V E S PHYSICS [92m##pop() on both sides[0m
+[92md.pop();[0m
+[92mprint d[0m
+deque(['Evan', 'l', 'o', 'v', 'e', 's'])
+[92md.popleft();[0m
+[92mprint d[0m
+deque(['l', 'o', 'v', 'e', 's'])
+[92m##reverse[0m
+[92mprint reversed(d)[0m
+<deque_reverse_iterator object at 0x7f12d3f1cfb0>
+[92mprint deque(reversed(d))[0m
+deque(['s', 'e', 'v', 'o', 'l'])
+[92mprint list(reversed(d))[0m
+['s', 'e', 'v', 'o', 'l']
+[92m##rotate[0m
+[92md.rotate(1);[0m
+[92mprint d[0m
+deque(['s', 'l', 'o', 'v', 'e'])
+[92md.rotate(-1);[0m
+[92mprint d[0m
+deque(['l', 'o', 'v', 'e', 's'])
+[92m##slice just as list[0m
+[92mprint d[0], d[-1][0m
+l s
+[92mprint 'o' in d[0m
+True
+[92m##clear[0m
+[92md.clear();[0m
+[92mprint d[0m
+deque([])
+
+
+[91m========= collections.namedtuple =========[0m
+[92mfrom collections import namedtuple[0m
+[92m###Named tuples assign meaning to each position in a tuple and allow for more readable, self-documenting code. [0m
+[92m###they add the ability to access fields by name instead of position index.[0m
+[92m[0m
+[92m###      namedtuple(typename, field_names[, verbose=False][, rename=False])[0m
+[94m#Point = namedtuple('Point',  ['x', 'y'],   verbose=True)[0m
+[92mPoint  = namedtuple('Point',  ['x', 'y'])[0m
+[92m## instantiate with positional or keyword arguments[0m
+[92mp = Point(11, y=22)     [0m
+[92m[0m
+[92m## by index like the plain tuple (11, 22)[0m
+[92mprint p[0] + p[1]       [0m
+33
+[92m## by name new feature[0m
+[92mprint p.x + p.y               [0m
+33
+[92m[0m
+[92m## readable __repr__ with a name=value style[0m
+[92mprint p                       [0m
+Point(x=11, y=22)
+[92m##others[0m
+[92mx, y = p; print x, y[0m
+11 22
+
+
+[91m========= collections.Counter =========[0m
+[92mfrom collections import Counter[0m
+[92mimport inspect[0m
+[92m[0m
+[92m##A Counter is a dict subclass for counting hashable objects.[0m
+[92mprint inspect.getmro(Counter)[0m
+(<class 'collections.Counter'>, <type 'dict'>, <type 'object'>)
+[92m[0m
+[92m##class collections.Counter([iterable-or-mapping])[0m
+[92mc = Counter();                      print c[0m
+Counter()
+[92mc = Counter({'red': 4, 'blue': 2}); print c[0m
+Counter({'red': 4, 'blue': 2})
+[92mc = Counter(['eggs', 'ham']);       print c[0m
+Counter({'eggs': 1, 'ham': 1})
+[92mc = Counter('gallahad');            print c[0m
+Counter({'a': 3, 'l': 2, 'h': 1, 'g': 1, 'd': 1})
+[92mc = Counter(cats=4, dogs=8);        print c[0m
+Counter({'dogs': 8, 'cats': 4})
+[92m[0m
+[92m##for missing items return 0, instead of raising a KeyError[0m
+[92mc = Counter(['eggs', 'ham']);       print c, c['hello'], c.get('hello')[0m
+Counter({'eggs': 1, 'ham': 1}) 0 None
+[92m[0m
+[92m## elements() return an iterator over elements repeating each as many times as its count[0m
+[92mc = Counter(a=4, b=2, c=0, d=-2);   print c.elements(); print list(c.elements())[0m
+<itertools.chain object at 0x7f12d5f6df10>
+['a', 'a', 'a', 'a', 'b', 'b']
+[92m[0m
+[92m## most_common([n]) Return a list of the n most common elements and their counts from the most common to the least[0m
+[92mprint Counter('abracadabra').most_common(3)[0m
+[('a', 5), ('r', 2), ('b', 2)]
+[92m[0m
+[92m## subtract([iterable-or-mapping]) Elements are subtracted from an iterable or from another mapping (or counter).[0m
+[92mc = Counter(a=4, b=2, c=0, d=-2)[0m
+[92md = Counter(a=1, b=2, c=3, d=4)[0m
+[92mc.subtract(d); print c[0m
+Counter({'a': 3, 'b': 0, 'c': -3, 'd': -6})
+[92mprint sum(c.values())            # total of all counts, aka, 3 + 0 + (-3) + (-6)[0m
+-6
+[92mc+=Counter();  print c           # remove zero and negative counts[0m
+Counter({'a': 3})
+[92m[0m
+[92m##[0m
+[92mc = Counter(a=3, b=1)[0m
+[92md = Counter(a=1, b=2)[0m
+[92mprint c + d                       # add two counters together:  c[x] + d[x][0m
+Counter({'a': 4, 'b': 3})
+[92mprint c - d                       # subtract (keeping only positive counts)[0m
+Counter({'a': 2})
+[92mprint c & d                       # intersection:  min(c[x], d[x])[0m
+Counter({'a': 1, 'b': 1})
+[92mprint c | d                       # union:  max(c[x], d[x])[0m
+Counter({'a': 3, 'b': 2})
+
+
+[91m========= cStringIO =========[0m
+[92mimport cStringIO[0m
+[92m[0m
+[92moutput = cStringIO.StringIO()[0m
+[92moutput.write('First line.\n')[0m
+[94m# add the \n automatically[0m
+[92mprint >> output, 'Second line.'[0m
+[92moutput.write('Third line.\n')[0m
+[92m[0m
+[94m# Retrieve file contents -- this will be[0m
+[94m# 'First line.\nSecond line.\nThird line.\n'[0m
+[92mcontents = output.getvalue()[0m
+[92mprint contents[0m
+First line.
+Second line.
+Third line.
+
+[94m# Close object and discard memory buffer, .getvalue() will now raise an exception.[0m
+[92moutput.close()[0m
+
+
+[91m========= StringIO =========[0m
+[0;33m[0m
+[0;33mimport timeit[0m
+[0;33mtest_join='''a=[][0m
+[0;33mfor i in range(100):[0m
+[0;33m    a.append('a')[0m
+[0;33m'''[0m
+[0;33m[0m
+[0;33mtest_StringIO='''from StringIO import StringIO[0m
+[0;33ma = StringIO()[0m
+[0;33mfor i in range(100):[0m
+[0;33m    a.write('a')[0m
+[0;33m'''[0m
+[0;33mtest_cStringIO='''from cStringIO import StringIO[0m
+[0;33ma = StringIO()[0m
+[0;33mfor i in range(100):[0m
+[0;33m    a.write('a')[0m
+[0;33m'''[0m
+[0;33mprint(timeit.timeit(test_join, number=1))[0m
+1.90734863281e-05
+[0;33mprint(timeit.timeit(test_StringIO, number=1))[0m
+0.000763893127441
+[0;33mprint(timeit.timeit(test_cStringIO, number=1))[0m
+0.000146150588989
+[0;33m[0m
+[0;33m[0m
+
+
+[91m========= use dict to store list =========[0m
+[92m### if elements in dict are list, how to give default value '[]' [0m
+[92m##1. when use dict, no default value build in for dict[0m
+[92mcontxt = {}[0m
+[92mif True:
+    if "name_list" in contxt:
+        contxt["name_list"].append("Fiona")
+    else:
+        contxt["name_list"] = ["Fiona"][0m
+[92mprint contxt[0m
+{'name_list': ['Fiona']}
+
+
+[91m========= use defaultdict to store list =========[0m
+[92m##2. when use defaultdict, default value is available for all elements[0m
+[92mfrom collections import defaultdict[0m
+[92mcontxt = defaultdict(list)[0m
+[92mcontxt["name_list"].append("Fiona")[0m
+[92mprint contxt[0m
+defaultdict(<type 'list'>, {'name_list': ['Fiona']})
+
+
+[91m========= use dict setdefault =========[0m
+[92m##3. use setdefault to set default for only one element[0m
+[92mcontxt = {}[0m
+[92mcontxt.setdefault("name_list", []).append("Fiona")[0m
+[92mprint contxt[0m
+{'name_list': ['Fiona']}
+[92m[0m
+[92mcontxt = {}[0m
+[92mprint contxt.get("name_list", [])[0m
+[]
+[92mprint contxt.get("name_list")[0m
+None
+
+
+[91m========= use fromkeys =========[0m
+[92m##4. use fromkeys to set default for multiple elements[0m
+[94m#   fromkeys() creates a new dictionary with keys from seq and values set to value.[0m
+[94m#   dict.fromkeys(seq[, value]))[0m
+[92mlst = ['name_list', 'school_list'][0m
+[94m#warn: the value [] is for all elements, so normaly we should use immutable as value[0m
+[92mcontxt = {}.fromkeys(lst, [])[0m
+[92mprint contxt[0m
+{'school_list': [], 'name_list': []}
+[92mcontxt['name_list'].append("Fiona")[0m
+[92mprint contxt[0m
+{'school_list': ['Fiona'], 'name_list': ['Fiona']}
+[94m#                ^^^^^^                  ^^^^^^^[0m
+
+
+[91m========= make dict with two list =========[0m
+[92mkeys = ['a', 'b', 'c'][0m
+[92mvalues = [1, 2, 3][0m
+[92mdd = dict(zip(keys, values)); print dd[0m
+{'a': 1, 'c': 3, 'b': 2}
+[92mdd = {k:v for k,v in zip(keys,values)}; print dd[0m
+{'a': 1, 'c': 3, 'b': 2}
+[94m#reverse dict[0m
+[92mprint {v: k for k, v in dd.items()}[0m
+{1: 'a', 2: 'b', 3: 'c'}
+[94m#another way to reverse dict[0m
+[92mprint                 dd.items()[0m
+[('a', 1), ('c', 3), ('b', 2)]
+[92mprint            zip(*dd.items())[0m
+[('a', 'c', 'b'), (1, 3, 2)]
+[92mprint            zip(*dd.items())[::-1][0m
+[(1, 3, 2), ('a', 'c', 'b')]
+[92mprint      zip(*(zip(*dd.items())[::-1]))[0m
+[(1, 'a'), (3, 'c'), (2, 'b')]
+[92mprint dict(zip(*(zip(*dd.items())[::-1])))[0m
+{1: 'a', 2: 'b', 3: 'c'}
+[94m#the 3rd way[0m
+[92mprint dict(zip(dd.values(), dd.keys()))[0m
+{1: 'a', 2: 'b', 3: 'c'}
+
+
+[91m========= dir =========[0m
+[92m###dir() function[0m
+[92m##dir() is the most important function when doing introspection. The function returns a sorted list of attributes and methods belonging to an object[0m
+[92m###why dir() doesn't display __dict__ attribute[0m
+[92mprint dir.__doc__[0m
+dir([object]) -> list of strings
+
+If called without an argument, return the names in the current scope.
+Else, return an alphabetized list of names comprising (some of) the attributes
+of the given object, and of attributes reachable from it.
+If the object supplies a method named __dir__, it will be used; otherwise
+the default dir() logic is used and returns:
+  for a module object: the module's attributes.
+  for a class object:  its attributes, and recursively the attributes
+    of its bases.
+  for any other object: its attributes, its class's attributes, and
+    recursively the attributes of its class's base classes.
+[92mclass Bar(object):
+    def __init__(self):
+        self.a = "bar"
+        self.b = 4711[0m
+[92mglobal b[0m
+[92mb=Bar()[0m
+[92mprint type(Bar), dir(Bar)[0m
+<type 'type'> ['__class__', '__delattr__', '__dict__', '__doc__', '__format__', '__getattribute__', '__hash__', '__init__', '__module__', '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__setattr__', '__sizeof__', '__str__', '__subclasshook__', '__weakref__']
+[92mprint type(b),   dir(b)[0m
+<class 'color.Bar'> ['__class__', '__delattr__', '__dict__', '__doc__', '__format__', '__getattribute__', '__hash__', '__init__', '__module__', '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__setattr__', '__sizeof__', '__str__', '__subclasshook__', '__weakref__', 'a', 'b']
+[92m[0m
+[92mclass Foo:
+    def __init__(self):
+        self.a = "bar"
+        self.b = 4711[0m
+[92mglobal a[0m
+[92ma=Foo(); [0m
+[92mprint type(Foo), dir(Foo)[0m
+<type 'classobj'> ['__doc__', '__init__', '__module__']
+[92mprint type(a),   dir(a)[0m
+<type 'instance'> ['__doc__', '__init__', '__module__', 'a', 'b']
+[92mprint a; print a.__class__; print a.__class__.__name__[0m
+<color.Foo instance at 0x7f12d4520460>
+color.Foo
+Foo
+[92mprint type(1),   dir(1)[0m
+<type 'int'> ['__abs__', '__add__', '__and__', '__class__', '__cmp__', '__coerce__', '__delattr__', '__div__', '__divmod__', '__doc__', '__float__', '__floordiv__', '__format__', '__getattribute__', '__getnewargs__', '__hash__', '__hex__', '__index__', '__init__', '__int__', '__invert__', '__long__', '__lshift__', '__mod__', '__mul__', '__neg__', '__new__', '__nonzero__', '__oct__', '__or__', '__pos__', '__pow__', '__radd__', '__rand__', '__rdiv__', '__rdivmod__', '__reduce__', '__reduce_ex__', '__repr__', '__rfloordiv__', '__rlshift__', '__rmod__', '__rmul__', '__ror__', '__rpow__', '__rrshift__', '__rshift__', '__rsub__', '__rtruediv__', '__rxor__', '__setattr__', '__sizeof__', '__str__', '__sub__', '__subclasshook__', '__truediv__', '__trunc__', '__xor__', 'bit_length', 'conjugate', 'denominator', 'imag', 'numerator', 'real']
+[92mprint type(int), dir(int)[0m
+<type 'type'> ['__abs__', '__add__', '__and__', '__class__', '__cmp__', '__coerce__', '__delattr__', '__div__', '__divmod__', '__doc__', '__float__', '__floordiv__', '__format__', '__getattribute__', '__getnewargs__', '__hash__', '__hex__', '__index__', '__init__', '__int__', '__invert__', '__long__', '__lshift__', '__mod__', '__mul__', '__neg__', '__new__', '__nonzero__', '__oct__', '__or__', '__pos__', '__pow__', '__radd__', '__rand__', '__rdiv__', '__rdivmod__', '__reduce__', '__reduce_ex__', '__repr__', '__rfloordiv__', '__rlshift__', '__rmod__', '__rmul__', '__ror__', '__rpow__', '__rrshift__', '__rshift__', '__rsub__', '__rtruediv__', '__rxor__', '__setattr__', '__sizeof__', '__str__', '__sub__', '__subclasshook__', '__truediv__', '__trunc__', '__xor__', 'bit_length', 'conjugate', 'denominator', 'imag', 'numerator', 'real']
+
+
+[91m========= __dict__ =========[0m
+[92mclass Base():
+    def __init__(self, conf):
+        print self
+        self.__conf__ = conf
+        print self.__dict__
+        print dir(self)[0m
+[92mclass Test(Base):
+      a = 1
+      b = 2
+      def func1(self):
+        self.c = "hello"[0m
+[92m[0m
+[92m## self is instance of subclass[0m
+[92mt = Test("myconf")[0m
+<color.Test instance at 0x7f12d3f21640>
+{'__conf__': 'myconf'}
+['__conf__', '__doc__', '__init__', '__module__', 'a', 'b', 'func1']
+[92mprint t[0m
+<color.Test instance at 0x7f12d3f21640>
+[92m##__dict__ only contains attributes of instance itself[0m
+[92mprint t.__dict__[0m
+{'__conf__': 'myconf'}
+[92mt.func1()[0m
+[92mprint t.__dict__[0m
+{'c': 'hello', '__conf__': 'myconf'}
+[92m##dir() contains __dict_ and class attribues,etc[0m
+[92mprint dir(t)[0m
+['__conf__', '__doc__', '__init__', '__module__', 'a', 'b', 'c', 'func1']
+
+
+[91m========= eval and exec =========[0m
+[94m#eval and exec have these two differences:[0m
+[94m#eval: take a single expression, return a value[0m
+[94m#exec: take a block,             return None [0m
+[94m#[0m
+[94m#1.eval accepts only a single expression, [0m
+[94m#  exec can take a code block that has Python statements: loops, try: except:, class and function/method definitions and so on.[0m
+[94m#2.eval returns the value of the given expression, [0m
+[94m#  exec always returns None, ignores the return value from its code[0m
+[92m[0m
+[92ma=5; a = eval('37 + a'); print a          #42[0m
+42
+[92ma=5; exec('a = 37 + a'); print a          #42 [0m
+42
+[94m#a=5; eval('a = 37 + a')                   #SyntaxError: invalid syntax, you cannot evaluate a statement with eval[0m
+
+
+[91m========= try except raise =========[0m
+[92m###1. the way to capture multiple exceptions is use a tuple as the first parmamter of except
+###2. and always use 'as', for both python 2&3 support it
+try:
+    l = ["a", "b"]
+    int(l[2])
+except (ValueError, IndexError) as e:  
+    print "expection captured"
+
+##raise an exception
+#raise NameError('HiThere')
+
+#raise then capture an exception
+try:
+    raise NameError('HiThere1')
+except NameError:
+    print 'An exception captured!'
+
+
+##re-raise the same exception
+#If you need to determine whether an exception was raised but don't intend to handle it, a simpler form of the raise statement allows you to re-raise the same exception:
+try:
+    raise NameError('HiThere2')
+except:
+    print 'An exception flew by!'
+    #raise    #comment out the raise NameError[0m
+expection captured
+An exception captured!
+An exception flew by!
+
+
+[91m========= filter and map =========[0m
+[92m##The function filter(function, list) offers an elegant way to print out all the elements of a list, that for which the function function returns True. [0m
+[92m[0m
+[92mfib = [0,1,1,2,3,5,8,13,21,34,55][0m
+[92mprint "Odd numbers: ", filter(lambda x: x % 2, fib)[0m
+Odd numbers:  [1, 1, 3, 5, 13, 21, 55]
+[92mprint "Even numbers:", filter(lambda x: x % 2 == 0, fib)[0m
+Even numbers: [0, 2, 8, 34]
+[92m[0m
+[92m##print all elements start with 'h'[0m
+[92mf = ['hello',"where", 'hare', "hmm"][0m
+[92mprint filter(lambda x: x[0:1] == 'h', f)[0m
+['hello', 'hare', 'hmm']
+[92mprint filter(lambda x: x.startswith('h'), f)[0m
+['hello', 'hare', 'hmm']
+[92m[0m
+[92mimport os[0m
+[94m#current dir[0m
+[92mdir1 =  os.path.dirname(os.path.abspath(os.getcwd())); print dir1[0m
+/home/neutrino0717
+[92mdir2 = os.path.dirname(dir1);                          print dir2[0m
+/home
+[92mflst = os.listdir(dir1);                               print flst[0m
+['.Polynomial.py.swp', '.bash_aliases', '.bash_history', '.bash_logout', '.bashrc', '.cache', '.cpan', '.gitconfig', '.local', '.perldb', '.profile', '.python_history', '.pythonhist', '.ssh', '.sudo_as_admin_successful', '.tmux.conf', '.viminfo', '.vimrc', '.vscode-server', 'Polynomial.py', 'bash', 'graduation', 'java', 'leetcode', 'python', 'summary', 'wtest', 'wtest.c']
+[92m##print files starting with 'c'[0m
+[92mflt1 = filter(lambda x: x.startswith('c'), flst);      print flt1[0m
+[]
+[92m[0m
+[92m##removing the '.py' extension[0m
+[92mflt2 = map(lambda x: x.rstrip('.py'), flst);           print flt2[0m
+['.Polynomial.py.sw', '.bash_aliases', '.bash_histor', '.bash_logout', '.bashrc', '.cache', '.cpan', '.gitconfig', '.local', '.perldb', '.profile', '.python_histor', '.pythonhist', '.ssh', '.sudo_as_admin_successful', '.tmux.conf', '.viminfo', '.vimrc', '.vscode-server', 'Polynomial', 'bash', 'graduation', 'java', 'leetcode', 'python', 'summar', 'wtest', 'wtest.c']
+
+
+[91m========= map =========[0m
+[92m##map(function, iterable, ...)[0m
+[92m##Apply function to every item of iterable and return a list of the results[0m
+[92mprint map(lambda x: x*x, [1,2,3])[0m
+[1, 4, 9]
+[92m[0m
+[92m##map with two iterables for input[0m
+[92ma = [1, 2, 3, 4][0m
+[92mb = [2, 3, 4, 5][0m
+[92mprint map(lambda x, y: x*y, a, b)[0m
+[2, 6, 12, 20]
+[92m[0m
+[94m#check if items in a list exits in a string[0m
+[92malist = ["scala", "akka", "play framework", "sbt", "typesafe"][0m
+[92mprint map(lambda x: x in "This is an example tweet talking about scala and sbt.".split(), alist)[0m
+[True, False, False, False, False]
+[92mprint [ x in "This is an example tweet talking about scala and sbt.".split() for x in alist ]          #[True, False, False, False, False][0m
+[True, False, False, False, False]
+
+
+[91m========= reduce =========[0m
+[92m###The function reduce(func, seq) continually applies the function func() to the sequence seq. It returns a single value. [0m
+[92m##reduce(func, seq)[0m
+[92m##reduce(func, [ s1, s2, s3, ... , sn ])[0m
+[92m##reduce(func(s1, s2), [ s3, s4, s5... , sn ])[0m
+[92m##reduce(func(func(s1, s2),s3), [s4, s5 ... ,  sn ])[0m
+[92m##.....[0m
+[92m[0m
+[92m##the largest number[0m
+[92mresult=reduce(lambda a,b: a if (a > b) else b, [47,11,42,102,13]); print result[0m
+102
+[92m[0m
+[92m##1 + 2 + 3 ...+ 10[0m
+[92mresult=reduce(lambda x, y: x+y, range(1,10)); print result[0m
+45
+[92m[0m
+[92m##turn [1, 2, 3, 4, 5, 6, 7, 8] into 12345678[0m
+[92mresult=reduce(lambda x, y: 10*x+y, range(1,9)); print result[0m
+12345678
+[92m[0m
+[92m##turn [[1, 2, 3], [4, 5], [6, 7, 8]] into [1, 2, 3, 4, 5, 6, 7, 8][0m
+[92mresult=reduce(list.__add__,[[1, 2, 3], [4, 5], [6, 7, 8]]); print result[0m
+[1, 2, 3, 4, 5, 6, 7, 8]
+
+
+[91m========= positional arguments and named arguments =========[0m
+[92m##use individual parameters[0m
+[92mdef func(p1,p2): 
+    print(p1, p2)[0m
+[92mprint func.__doc__[0m
+None
+[92mtup=("param1","param2")[0m
+[92mfunc("param1","param2")[0m
+('param1', 'param2')
+[92mfunc(*tup)[0m
+('param1', 'param2')
+[92m[0m
+[92m##The single star * unpacks the sequence/collection into positional arguments, use tuple as parmaters instead[0m
+[92mdef func(*t):
+    print(t)[0m
+[92mtup=("one", 2, 3.0)[0m
+[94m#func("one", 2, 3.0)[0m
+[92mfunc(*tup)[0m
+('one', 2, 3.0)
+[92m[0m
+[92m##The double star ** does the same, only using a dictionary and thus named arguments, use dict as parameter[0m
+[92mdef func(**ages): 
+    print(ages)  #**ages is dictionary
+    print "the age of dad, mom, lisa are: %(dad)s, %(mom)s, %(lisa)s" % ages[0m
+[92mdic={'dad':42,'mom':48,'lisa':7}; [0m
+[92mfunc(**dic)[0m
+{'dad': 42, 'lisa': 7, 'mom': 48}
+the age of dad, mom, lisa are: 42, 48, 7
+[92mfunc(dad=42,mom=48,lisa=7)[0m
+{'dad': 42, 'lisa': 7, 'mom': 48}
+the age of dad, mom, lisa are: 42, 48, 7
+[92m[0m
+[94m#The double star ** uses a dictionary --> named arguments[0m
+[92mdef func(particle, weight=0): print "the weight of %s is %s" %(particle, weight)[0m
+[92md={"particle": "neutrino", "weight": 0.001}[0m
+[92mfunc(**d)[0m
+the weight of neutrino is 0.001
+[92m[0m
+[92m##parameters with default value[0m
+[92mdef func4(p1='tst1',p2='tst2'): print(p1+" "+p2)[0m
+[92mfunc4()[0m
+tst1 tst2
+[92m[0m
+[92m###function with tuple and dictionary as parameters[0m
+[94m#first, last only take one parameters respectively[0m
+[94m#*numbers takes as many as possible until a '=' [0m
+[94m#**items takes all parameters start with a '='[0m
+[92mdef profile(first, last, *numbers, **items):
+    print first, last
+    print numbers
+    print items[0m
+[92mprofile('bucky', 'roberts', 1,2,3,4,5, bacon=4, saus=64)[0m
+bucky roberts
+(1, 2, 3, 4, 5)
+{'saus': 64, 'bacon': 4}
+
+
+[91m========= id =========[0m
+[92m##Return the identity of an object. This is an integer (or long integer) which is guaranteed to be unique and constant for this object during its lifetime.[0m
+[92m##[0m
+[92m##id() (or its equivalent) is used in the is operator.[0m
+[92m##[0m
+[92mimport copy[0m
+[92mfoo = 1; bar = foo; print id(foo), id(bar)[0m
+140736957556120 140736957556120
+[92mlist = [1,2,3]; print id(list), id(list[0]), id(list[1]), id(list[2])[0m
+139718876025152 140736957556120 140736957556096 140736957556072
+[92mfor i in list: print id(i), [0m
+140736957556120 140736957556096 140736957556072 [92m[0m
+[94m#for imutable, copy.copy() don't really copy[0m
+[92mlist2 = copy.copy(list); print id(list2)[0m
+139718842081360
+[92mfor i in list2: print id(i),[0m
+140736957556120 140736957556096 140736957556072
+
+[91m========= locals(), vars(), globals() =========[0m
+[92m##globals() returns the dictionary of the module namespace[0m
+[92m##          global variables can be accessed inside functions, but cann't be modified inside functions[0m
+[92m##locals()  returns a dictionary of the current namespace[0m
+[92m##vars()    returns either a dictionary of the current namespace (if called with no argument) or the dictionary of the argument.[0m
+[92m[0m
+[92mmap_l=locals(); print map_l[0m
+{'b_next': 'map_l=locals(); print type(map_l)', 'execute': True, 'lcomment': False, 'inblock': False, 'map_l': {...}, 'linep': 'map_l=locals(); print type(map_l)', 'start': True, 'b_now': 'map_l=locals(); print map_l', 'p1': '##globals() returns the dictionary of the module namespace\n##          global variables can be accessed inside functions, but cann\'t be modified inside functions\n##locals()  returns a dictionary of the current namespace\n##vars()    returns either a dictionary of the current namespace (if called with no argument) or the dictionary of the argument.\n\nmap_l=locals(); print map_l\nmap_l=locals(); print type(map_l)\nmap_l=locals(); print map_l.get("name")\nmap_l=locals(); name=""; print map_l\nprint globals()["__name__"]\nprint vars()\n\nages={\'dad\':42,\'mom\':48,\'me\':7}\nages.clear()          # remove all entries in dict\nprint ages if \'ages\' in locals() else "ages not defined"\n\nages={\'dad\':42,\'mom\':48,\'me\':7}\ndel ages              # delete all entries\nprint ages if \'ages\' in locals() else "ages not defined"\n\nage = "16"\nname = "Evan"\nprint "hello %(name)s you are %(age)s years old" % locals()\n\n\na_string="this is a global variable"\ndef foo():\n    a_string = "this is local variable"\n    print \'\'\'-->locals() variabls \'\'\'\n    print locals()\n    print \'\'\'-->vars() variabls \'\'\'\n    print vars()\n\nfoo()\nprint \'\'\'-->global variabls \'\'\'\nprint globals()'}
+[92mmap_l=locals(); print type(map_l)[0m
+<type 'dict'>
+[92mmap_l=locals(); print map_l.get("name")[0m
+None
+[92mmap_l=locals(); name=""; print map_l[0m
+{'b_next': 'print globals()["__name__"]', 'execute': True, 'lcomment': False, 'name': '', 'inblock': False, 'map_l': {...}, 'linep': 'print globals()["__name__"]', 'start': True, 'b_now': 'map_l=locals(); name=""; print map_l', 'p1': '##globals() returns the dictionary of the module namespace\n##          global variables can be accessed inside functions, but cann\'t be modified inside functions\n##locals()  returns a dictionary of the current namespace\n##vars()    returns either a dictionary of the current namespace (if called with no argument) or the dictionary of the argument.\n\nmap_l=locals(); print map_l\nmap_l=locals(); print type(map_l)\nmap_l=locals(); print map_l.get("name")\nmap_l=locals(); name=""; print map_l\nprint globals()["__name__"]\nprint vars()\n\nages={\'dad\':42,\'mom\':48,\'me\':7}\nages.clear()          # remove all entries in dict\nprint ages if \'ages\' in locals() else "ages not defined"\n\nages={\'dad\':42,\'mom\':48,\'me\':7}\ndel ages              # delete all entries\nprint ages if \'ages\' in locals() else "ages not defined"\n\nage = "16"\nname = "Evan"\nprint "hello %(name)s you are %(age)s years old" % locals()\n\n\na_string="this is a global variable"\ndef foo():\n    a_string = "this is local variable"\n    print \'\'\'-->locals() variabls \'\'\'\n    print locals()\n    print \'\'\'-->vars() variabls \'\'\'\n    print vars()\n\nfoo()\nprint \'\'\'-->global variabls \'\'\'\nprint globals()'}
+[92mprint globals()["__name__"][0m
+color
+[92mprint vars()[0m
+{'b_next': '', 'execute': True, 'lcomment': False, 'name': '', 'inblock': False, 'map_l': {...}, 'linep': '', 'start': True, 'b_now': 'print vars()', 'p1': '##globals() returns the dictionary of the module namespace\n##          global variables can be accessed inside functions, but cann\'t be modified inside functions\n##locals()  returns a dictionary of the current namespace\n##vars()    returns either a dictionary of the current namespace (if called with no argument) or the dictionary of the argument.\n\nmap_l=locals(); print map_l\nmap_l=locals(); print type(map_l)\nmap_l=locals(); print map_l.get("name")\nmap_l=locals(); name=""; print map_l\nprint globals()["__name__"]\nprint vars()\n\nages={\'dad\':42,\'mom\':48,\'me\':7}\nages.clear()          # remove all entries in dict\nprint ages if \'ages\' in locals() else "ages not defined"\n\nages={\'dad\':42,\'mom\':48,\'me\':7}\ndel ages              # delete all entries\nprint ages if \'ages\' in locals() else "ages not defined"\n\nage = "16"\nname = "Evan"\nprint "hello %(name)s you are %(age)s years old" % locals()\n\n\na_string="this is a global variable"\ndef foo():\n    a_string = "this is local variable"\n    print \'\'\'-->locals() variabls \'\'\'\n    print locals()\n    print \'\'\'-->vars() variabls \'\'\'\n    print vars()\n\nfoo()\nprint \'\'\'-->global variabls \'\'\'\nprint globals()'}
+[92m[0m
+[92mages={'dad':42,'mom':48,'me':7}[0m
+[92mages.clear()          # remove all entries in dict[0m
+[92mprint ages if 'ages' in locals() else "ages not defined"[0m
+{}
+[92m[0m
+[92mages={'dad':42,'mom':48,'me':7}[0m
+[92mdel ages              # delete all entries[0m
+[92mprint ages if 'ages' in locals() else "ages not defined"[0m
+ages not defined
+[92m[0m
+[92mage = "16"[0m
+[92mname = "Evan"[0m
+[92mprint "hello %(name)s you are %(age)s years old" % locals()[0m
+hello Evan you are 16 years old
+[92m[0m
+[92m[0m
+[92ma_string="this is a global variable"[0m
+[92mdef foo():
+    a_string = "this is local variable"
+    print '''-->locals() variabls '''
+    print locals()
+    print '''-->vars() variabls '''
+    print vars()[0m
+[92m[0m
+[92mfoo()[0m
+-->locals() variabls 
+{'a_string': 'this is local variable'}
+-->vars() variabls 
+{'a_string': 'this is local variable'}
+[92mprint '''-->global variabls '''[0m
+-->global variabls 
+[92mprint globals()[0m
+{'YELLOW': '\x1b[93m', 'colors': <class color.colors at 0x7f12d44c2440>, 'GREEN': '\x1b[92m', 'RED': '\x1b[91m', 'eprtdoc': <function eprtdoc at 0x7f12d44cfe50>, 'eprtline': <function eprtline at 0x7f12d44d07d0>, 'randint': <bound method Random.randint of <random.Random object at 0x7fffe068d1e0>>, 'll': None, 'urllib': <module 'urllib' from '/usr/lib/python2.7/urllib.pyc'>, '__package__': None, 're': <module 're' from '/usr/lib/python2.7/re.pyc'>, '__file__': '/home/neutrino0717/graduation/python/color.pyc', 'esrun': <function esrun at 0x7f12d44d0cd0>, 'expanduser': <function expanduser at 0x7f12d5f66350>, '__builtins__': {'bytearray': <type 'bytearray'>, 'IndexError': <type 'exceptions.IndexError'>, 'all': <built-in function all>, 'help': Type help() for interactive help, or help(object) for help about object., 'vars': <built-in function vars>, 'SyntaxError': <type 'exceptions.SyntaxError'>, 'unicode': <type 'unicode'>, 'UnicodeDecodeError': <type 'exceptions.UnicodeDecodeError'>, 'memoryview': <type 'memoryview'>, 'isinstance': <built-in function isinstance>, 'copyright': Copyright (c) 2001-2019 Python Software Foundation.
+All Rights Reserved.
+
+Copyright (c) 2000 BeOpen.com.
+All Rights Reserved.
+
+Copyright (c) 1995-2001 Corporation for National Research Initiatives.
+All Rights Reserved.
+
+Copyright (c) 1991-1995 Stichting Mathematisch Centrum, Amsterdam.
+All Rights Reserved., 'NameError': <type 'exceptions.NameError'>, 'BytesWarning': <type 'exceptions.BytesWarning'>, 'dict': <type 'dict'>, 'input': <built-in function input>, 'oct': <built-in function oct>, 'bin': <built-in function bin>, 'SystemExit': <type 'exceptions.SystemExit'>, 'StandardError': <type 'exceptions.StandardError'>, 'format': <built-in function format>, 'repr': <built-in function repr>, 'sorted': <built-in function sorted>, 'False': False, 'RuntimeWarning': <type 'exceptions.RuntimeWarning'>, 'list': <type 'list'>, 'iter': <built-in function iter>, 'reload': <built-in function reload>, 'Warning': <type 'exceptions.Warning'>, '__package__': None, 'round': <built-in function round>, 'dir': <built-in function dir>, 'cmp': <built-in function cmp>, 'set': <type 'set'>, 'bytes': <type 'str'>, 'reduce': <built-in function reduce>, 'intern': <built-in function intern>, 'issubclass': <built-in function issubclass>, 'Ellipsis': Ellipsis, 'EOFError': <type 'exceptions.EOFError'>, 'locals': <built-in function locals>, 'BufferError': <type 'exceptions.BufferError'>, 'slice': <type 'slice'>, 'FloatingPointError': <type 'exceptions.FloatingPointError'>, 'sum': <built-in function sum>, 'getattr': <built-in function getattr>, 'abs': <built-in function abs>, 'exit': Use exit() or Ctrl-D (i.e. EOF) to exit, 'print': <built-in function print>, 'True': True, 'FutureWarning': <type 'exceptions.FutureWarning'>, 'ImportWarning': <type 'exceptions.ImportWarning'>, 'None': None, 'hash': <built-in function hash>, 'ReferenceError': <type 'exceptions.ReferenceError'>, 'len': <built-in function len>, 'credits':     Thanks to CWI, CNRI, BeOpen.com, Zope Corporation and a cast of thousands
+    for supporting Python development.  See www.python.org for more information., 'frozenset': <type 'frozenset'>, '__name__': '__builtin__', 'ord': <built-in function ord>, 'super': <type 'super'>, 'TypeError': <type 'exceptions.TypeError'>, 'license': Type license() to see the full license text, 'KeyboardInterrupt': <type 'exceptions.KeyboardInterrupt'>, 'UserWarning': <type 'exceptions.UserWarning'>, 'filter': <built-in function filter>, 'range': <built-in function range>, 'staticmethod': <type 'staticmethod'>, 'SystemError': <type 'exceptions.SystemError'>, 'BaseException': <type 'exceptions.BaseException'>, 'pow': <built-in function pow>, 'RuntimeError': <type 'exceptions.RuntimeError'>, 'float': <type 'float'>, 'MemoryError': <type 'exceptions.MemoryError'>, 'StopIteration': <type 'exceptions.StopIteration'>, 'globals': <built-in function globals>, 'divmod': <built-in function divmod>, 'enumerate': <type 'enumerate'>, 'apply': <built-in function apply>, 'LookupError': <type 'exceptions.LookupError'>, 'open': <built-in function open>, 'quit': Use quit() or Ctrl-D (i.e. EOF) to exit, 'basestring': <type 'basestring'>, 'UnicodeError': <type 'exceptions.UnicodeError'>, 'zip': <built-in function zip>, 'hex': <built-in function hex>, 'long': <type 'long'>, 'next': <built-in function next>, 'ImportError': <type 'exceptions.ImportError'>, 'chr': <built-in function chr>, 'xrange': <type 'xrange'>, 'type': <type 'type'>, '__doc__': "Built-in functions, exceptions, and other objects.\n\nNoteworthy: None is the `nil' object; Ellipsis represents `...' in slices.", 'Exception': <type 'exceptions.Exception'>, 'tuple': <type 'tuple'>, 'UnicodeTranslateError': <type 'exceptions.UnicodeTranslateError'>, 'reversed': <type 'reversed'>, 'UnicodeEncodeError': <type 'exceptions.UnicodeEncodeError'>, 'IOError': <type 'exceptions.IOError'>, 'hasattr': <built-in function hasattr>, 'delattr': <built-in function delattr>, 'setattr': <built-in function setattr>, 'raw_input': <built-in function raw_input>, 'SyntaxWarning': <type 'exceptions.SyntaxWarning'>, 'compile': <built-in function compile>, 'ArithmeticError': <type 'exceptions.ArithmeticError'>, 'str': <type 'str'>, 'property': <type 'property'>, 'GeneratorExit': <type 'exceptions.GeneratorExit'>, 'int': <type 'int'>, '__import__': <built-in function __import__>, 'KeyError': <type 'exceptions.KeyError'>, 'coerce': <built-in function coerce>, 'PendingDeprecationWarning': <type 'exceptions.PendingDeprecationWarning'>, 'file': <type 'file'>, 'EnvironmentError': <type 'exceptions.EnvironmentError'>, 'unichr': <built-in function unichr>, 'id': <built-in function id>, 'OSError': <type 'exceptions.OSError'>, 'DeprecationWarning': <type 'exceptions.DeprecationWarning'>, 'min': <built-in function min>, 'UnicodeWarning': <type 'exceptions.UnicodeWarning'>, 'execfile': <built-in function execfile>, 'any': <built-in function any>, 'complex': <type 'complex'>, 'bool': <type 'bool'>, 'ValueError': <type 'exceptions.ValueError'>, 'NotImplemented': NotImplemented, 'map': <built-in function map>, 'buffer': <type 'buffer'>, 'max': <built-in function max>, 'object': <type 'object'>, 'TabError': <type 'exceptions.TabError'>, 'callable': <built-in function callable>, 'ZeroDivisionError': <type 'exceptions.ZeroDivisionError'>, 'eval': <built-in function eval>, '__debug__': True, 'IndentationError': <type 'exceptions.IndentationError'>, 'AssertionError': <type 'exceptions.AssertionError'>, 'classmethod': <type 'classmethod'>, 'UnboundLocalError': <type 'exceptions.UnboundLocalError'>, 'NotImplementedError': <type 'exceptions.NotImplementedError'>, 'AttributeError': <type 'exceptions.AttributeError'>, 'OverflowError': <type 'exceptions.OverflowError'>}, 'glob': <module 'glob' from '/usr/lib/python2.7/glob.pyc'>, 'inspect': <module 'inspect' from '/usr/lib/python2.7/inspect.pyc'>, 'erun': <function erun at 0x7f12d44d0250>, 'sys': <module 'sys' (built-in)>, 'HEADER': '\x1b[95m', 'ENDC': '\x1b[0m', 'traceit': <function traceit at 0x7f12d453c6d0>, '__name__': 'color', 'BLUE': '\x1b[94m', 'sfile': None, 'elrun': <function elrun at 0x7f12d44d0ad0>, '__doc__': None, 'threading': <module 'threading' from '/usr/lib/python2.7/threading.pyc'>, 'ebrun': <function ebrun at 0x7f12d44d0e50>, 'time': <module 'time' (built-in)>, 'os': <module 'os' from '/usr/lib/python2.7/os.pyc'>, 'eprt': <function eprt at 0x7f12d44cf0d0>}
+
+
+[91m========= callable() function. The function checks if an object is a callable object. Or in other words, if an object is a function.  =========[0m
+[92mprint callable.__doc__[0m
+callable(object) -> bool
+
+Return whether the object is callable (i.e., some kind of function).
+Note that classes are callable, as are instances with a __call__() method.
+[92mclass Car:
+    def setName(self, name):
+        self.name = name[0m
+[92m[0m
+[92mc = Car(); print callable(c.setName)[0m
+True
+[92mdef fun(): pass[0m
+[92mprint callable(fun)[0m
+True
+[92mprint callable([])[0m
+False
+[92mprint callable(1)[0m
+False
+
+
+[91m========= hasattr =========[0m
+[92m##The hasattr() function checks if an object has an attribute. The getattr() function returns the contents of an attribute if there are some.[0m
+[92m[0m
+[92m##class attributes:[0m
+[92mclass Foo:
+    def __init__(self):
+        self.a = "bar"
+        self.b = 4711
+    def bar(): pass[0m
+[92mfoo=Foo()[0m
+[92m[0m
+[94m#object[0m
+[92mprint object.__dict__[0m
+{'__setattr__': <slot wrapper '__setattr__' of 'object' objects>, '__reduce_ex__': <method '__reduce_ex__' of 'object' objects>, '__new__': <built-in method __new__ of type object at 0x7f12d671b980>, '__reduce__': <method '__reduce__' of 'object' objects>, '__str__': <slot wrapper '__str__' of 'object' objects>, '__format__': <method '__format__' of 'object' objects>, '__getattribute__': <slot wrapper '__getattribute__' of 'object' objects>, '__class__': <attribute '__class__' of 'object' objects>, '__delattr__': <slot wrapper '__delattr__' of 'object' objects>, '__subclasshook__': <method '__subclasshook__' of 'object' objects>, '__repr__': <slot wrapper '__repr__' of 'object' objects>, '__hash__': <slot wrapper '__hash__' of 'object' objects>, '__sizeof__': <method '__sizeof__' of 'object' objects>, '__doc__': 'The most base type', '__init__': <slot wrapper '__init__' of 'object' objects>}
+[92mprint dir(object)[0m
+['__class__', '__delattr__', '__doc__', '__format__', '__getattribute__', '__hash__', '__init__', '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__setattr__', '__sizeof__', '__str__', '__subclasshook__']
+[92mfor i in dir(object): print "class object has attribute", i,":", hasattr(object, i)[0m
+class object has attribute __class__ : True
+class object has attribute __delattr__ : True
+class object has attribute __doc__ : True
+class object has attribute __format__ : True
+class object has attribute __getattribute__ : True
+class object has attribute __hash__ : True
+class object has attribute __init__ : True
+class object has attribute __new__ : True
+class object has attribute __reduce__ : True
+class object has attribute __reduce_ex__ : True
+class object has attribute __repr__ : True
+class object has attribute __setattr__ : True
+class object has attribute __sizeof__ : True
+class object has attribute __str__ : True
+class object has attribute __subclasshook__ : True
+[94m#Foo[0m
+[92mprint Foo.__dict__[0m
+{'__module__': 'color', 'bar': <function bar at 0x7f12d3f34f50>, '__doc__': None, '__init__': <function __init__ at 0x7f12d3f34ed0>}
+[92mprint dir(Foo)[0m
+['__doc__', '__init__', '__module__', 'bar']
+[92mfor i in dir(Foo): print "class Foo has attribute", i,":", hasattr(Foo, i)[0m
+class Foo has attribute __doc__ : True
+class Foo has attribute __init__ : True
+class Foo has attribute __module__ : True
+class Foo has attribute bar : True
+[94m#foo[0m
+[92mprint foo.__dict__[0m
+{'a': 'bar', 'b': 4711}
+[92mprint dir(foo)[0m
+['__doc__', '__init__', '__module__', 'a', 'b', 'bar']
+[92mfor i in dir(foo): print "instance foo has attribute", i,":", hasattr(foo, i)[0m
+instance foo has attribute __doc__ : True
+instance foo has attribute __init__ : True
+instance foo has attribute __module__ : True
+instance foo has attribute a : True
+instance foo has attribute b : True
+instance foo has attribute bar : True
+[92mfor i in dir(foo): print "instance foo's  attribute", i,":", getattr(foo, i)[0m
+instance foo's  attribute __doc__ : None
+instance foo's  attribute __init__ : <bound method Foo.__init__ of <color.Foo instance at 0x7f12d3f21780>>
+instance foo's  attribute __module__ : color
+instance foo's  attribute a : bar
+instance foo's  attribute b : 4711
+instance foo's  attribute bar : <bound method Foo.bar of <color.Foo instance at 0x7f12d3f21780>>
+[92m[0m
+[92m##function attributes:[0m
+[92mdef fun(): pass[0m
+[92mprint fun.__dict__[0m
+{}
+[92mprint dir(fun)[0m
+['__call__', '__class__', '__closure__', '__code__', '__defaults__', '__delattr__', '__dict__', '__doc__', '__format__', '__get__', '__getattribute__', '__globals__', '__hash__', '__init__', '__module__', '__name__', '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__setattr__', '__sizeof__', '__str__', '__subclasshook__', 'func_closure', 'func_code', 'func_defaults', 'func_dict', 'func_doc', 'func_globals', 'func_name']
+[92mfor i in dir(fun): print "function fun() has attribute", i,":", hasattr(fun, i)[0m
+function fun() has attribute __call__ : True
+function fun() has attribute __class__ : True
+function fun() has attribute __closure__ : True
+function fun() has attribute __code__ : True
+function fun() has attribute __defaults__ : True
+function fun() has attribute __delattr__ : True
+function fun() has attribute __dict__ : True
+function fun() has attribute __doc__ : True
+function fun() has attribute __format__ : True
+function fun() has attribute __get__ : True
+function fun() has attribute __getattribute__ : True
+function fun() has attribute __globals__ : True
+function fun() has attribute __hash__ : True
+function fun() has attribute __init__ : True
+function fun() has attribute __module__ : True
+function fun() has attribute __name__ : True
+function fun() has attribute __new__ : True
+function fun() has attribute __reduce__ : True
+function fun() has attribute __reduce_ex__ : True
+function fun() has attribute __repr__ : True
+function fun() has attribute __setattr__ : True
+function fun() has attribute __sizeof__ : True
+function fun() has attribute __str__ : True
+function fun() has attribute __subclasshook__ : True
+function fun() has attribute func_closure : True
+function fun() has attribute func_code : True
+function fun() has attribute func_defaults : True
+function fun() has attribute func_dict : True
+function fun() has attribute func_doc : True
+function fun() has attribute func_globals : True
+function fun() has attribute func_name : True
+[94m#for i in dir(fun): print "function fun()'s attribute", i,":", getattr(fun, i)[0m
+
+
+[91m========= inspect.getcallargs() =========[0m
+[92mimport inspect[0m
+[92mdef f(a, b=1, *pos, **named):
+    pass[0m
+[92mprint inspect.getcallargs(f,7)[0m
+{'a': 7, 'named': {}, 'b': 1, 'pos': ()}
+[92mprint inspect.getcallargs(f,7,2)[0m
+{'a': 7, 'named': {}, 'b': 2, 'pos': ()}
+[92mprint inspect.getcallargs(f,7,2,'a','b','c')[0m
+{'a': 7, 'named': {}, 'b': 2, 'pos': ('a', 'b', 'c')}
+[92mm={'d':'dd', 'e':'ee'}[0m
+[92mprint inspect.getcallargs(f,7,2,'a','b','c',**m)[0m
+{'a': 7, 'named': {'e': 'ee', 'd': 'dd'}, 'b': 2, 'pos': ('a', 'b', 'c')}
+
+
+[91m========= inspect.getmembers() =========[0m
+[92mimport pprint[0m
+[92m##All functions of the module re:[0m
+[92mpprint.pprint(inspect.getmembers(os, inspect.isfunction))[0m
+[('_execvpe', <function _execvpe at 0x7f12d5f66b50>),
+ ('_exists', <function _exists at 0x7f12d5f22450>),
+ ('_get_exports_list', <function _get_exports_list at 0x7f12d60019d0>),
+ ('_make_stat_result', <function _make_stat_result at 0x7f12d5f90150>),
+ ('_make_statvfs_result', <function _make_statvfs_result at 0x7f12d5f90750>),
+ ('_pickle_stat_result', <function _pickle_stat_result at 0x7f12d5f906d0>),
+ ('_pickle_statvfs_result',
+  <function _pickle_statvfs_result at 0x7f12d5f907d0>),
+ ('_spawnvef', <function _spawnvef at 0x7f12d5f224d0>),
+ ('execl', <function execl at 0x7f12d5f66850>),
+ ('execle', <function execle at 0x7f12d5f668d0>),
+ ('execlp', <function execlp at 0x7f12d5f66950>),
+ ('execlpe', <function execlpe at 0x7f12d5f669d0>),
+ ('execvp', <function execvp at 0x7f12d5f66a50>),
+ ('execvpe', <function execvpe at 0x7f12d5f66ad0>),
+ ('getenv', <function getenv at 0x7f12d5f67850>),
+ ('makedirs', <function makedirs at 0x7f12d60139d0>),
+ ('popen2', <function popen2 at 0x7f12d5f22950>),
+ ('popen3', <function popen3 at 0x7f12d5f229d0>),
+ ('popen4', <function popen4 at 0x7f12d5f22a50>),
+ ('removedirs', <function removedirs at 0x7f12d5f666d0>),
+ ('renames', <function renames at 0x7f12d5f66750>),
+ ('spawnl', <function spawnl at 0x7f12d5f22750>),
+ ('spawnle', <function spawnle at 0x7f12d5f227d0>),
+ ('spawnlp', <function spawnlp at 0x7f12d5f22850>),
+ ('spawnlpe', <function spawnlpe at 0x7f12d5f228d0>),
+ ('spawnv', <function spawnv at 0x7f12d5f22550>),
+ ('spawnve', <function spawnve at 0x7f12d5f225d0>),
+ ('spawnvp', <function spawnvp at 0x7f12d5f22650>),
+ ('spawnvpe', <function spawnvpe at 0x7f12d5f226d0>),
+ ('walk', <function walk at 0x7f12d5f667d0>)]
+[92mpprint.pprint(inspect.getmembers(re, inspect.isfunction))[0m
+[('_compile', <function _compile at 0x7f12d5f4f850>),
+ ('_compile_repl', <function _compile_repl at 0x7f12d5f4f8d0>),
+ ('_expand', <function _expand at 0x7f12d5f4f950>),
+ ('_pickle', <function _pickle at 0x7f12d5f4fa50>),
+ ('_subx', <function _subx at 0x7f12d5f4f9d0>),
+ ('compile', <function compile at 0x7f12d5f4f650>),
+ ('escape', <function escape at 0x7f12d5f4f7d0>),
+ ('findall', <function findall at 0x7f12d5f4f550>),
+ ('finditer', <function finditer at 0x7f12d5f4f5d0>),
+ ('match', <function match at 0x7f12d5f3b8d0>),
+ ('purge', <function purge at 0x7f12d5f4f6d0>),
+ ('search', <function search at 0x7f12d5f3b850>),
+ ('split', <function split at 0x7f12d5f4f4d0>),
+ ('sub', <function sub at 0x7f12d5f33f50>),
+ ('subn', <function subn at 0x7f12d5f33ed0>),
+ ('template', <function template at 0x7f12d5f4f750>)]
+[94m#or:[0m
+[92mprint dir(re); print type(re)[0m
+['DEBUG', 'DOTALL', 'I', 'IGNORECASE', 'L', 'LOCALE', 'M', 'MULTILINE', 'S', 'Scanner', 'T', 'TEMPLATE', 'U', 'UNICODE', 'VERBOSE', 'X', '_MAXCACHE', '__all__', '__builtins__', '__doc__', '__file__', '__name__', '__package__', '__version__', '_alphanum', '_cache', '_cache_repl', '_compile', '_compile_repl', '_expand', '_locale', '_pattern_type', '_pickle', '_subx', 'compile', 'copy_reg', 'error', 'escape', 'findall', 'finditer', 'match', 'purge', 'search', 'split', 'sre_compile', 'sre_parse', 'sub', 'subn', 'sys', 'template']
+<type 'module'>
+
+
+[91m========= inspect.getmro() =========[0m
+[92m##inspect.getmro(cls)[0m
+[92m##mro --> method resolution order[0m
+[92m##Return a tuple of class cls's base classes, including cls, in method resolution order. No class appears more than once in this tuple. Note that the method resolution order depends on cls type. Unless a very peculiar user-defined metatype is in use, cls will be the first element of the tuple.[0m
+[92mimport inspect[0m
+[92mprint inspect.getmro.__class__[0m
+<type 'function'>
+[92mprint inspect.getmro.__doc__[0m
+Return tuple of base classes (including cls) in method resolution order.
+[92m[0m
+[92mclass A(object): pass[0m
+[92mclass B(A): pass[0m
+[92mprint inspect.getmro(B)[0m
+(<class 'color.B'>, <class 'color.A'>, <type 'object'>)
+[92mprint B.__base__[0m
+<class 'color.A'>
+[92mprint B.__base__.__base__[0m
+<type 'object'>
+[92mprint B.__base__.__base__.__base__[0m
+None
+
+
+[91m========= isinstance =========[0m
+[92m##isinstance(object, classinfo)[0m
+[92m##  check if the object argument is an instance of the classinfo argument[0m
+[92m##  classinfo need to be a class object nor a type object[0m
+[92mprint isinstance ("hello", str)[0m
+True
+[92mprint isinstance ("hello", object)[0m
+True
+[92mprint isinstance (123.0, float )[0m
+True
+[92mprint isinstance (False, bool )[0m
+True
+[92mprint isinstance (0, bool )[0m
+False
+[92mprint isinstance(u'foo', (str))[0m
+False
+[92mprint isinstance(u'foo', (str,basestring))[0m
+True
+[92mprint isinstance(u'foo', (str,unicode))[0m
+True
+[92mprint isinstance([], list)[0m
+True
+[92mprint isinstance((), tuple)[0m
+True
+
+
+[91m========= issubclass =========[0m
+[92mclass MyObject():
+   def __init__(self):
+      pass[0m
+[92mclass Wall(MyObject):
+   def __init__(self):
+      pass[0m
+[92mimport inspect; print inspect.getmro(Wall)[0m
+(<class color.Wall at 0x7f12d3f3cc90>, <class color.MyObject at 0x7f12d3f3cbb0>)
+[92mprint issubclass(MyObject, MyObject)[0m
+True
+[92mprint issubclass(MyObject, Wall)[0m
+False
+[92mprint issubclass(Wall, MyObject)[0m
+True
+[92mprint issubclass(Wall, Wall)[0m
+True
+
+
+[91m========= inspect.currentframe().f_code.co_name, magic =========[0m
+[94m#e1 = Employee('evan' 'liu',10000)[0m
+[94m#[0m
+[94m#str(e1)     --> call e1.__str__()[0m
+[94m#repr(e1)    --> call e1.__repr__()[0m
+[92m[0m
+[94m#e1+e2       --> call e1.__add__(e2)[0m
+[94m#'a'+'b'     --> call str.__add__('a','b')[0m
+[94m#1+2         --> call int.__add__(1,2)[0m
+[92m[0m
+[94m#'ls'>'la'   --> call 'ls'.__ge__('la')[0m
+[94m#            --> call str.__ge__('ls','la')[0m
+[92m[0m
+[94m#len('ls')   --> call 'ls'.__len__()[0m
+[92mimport inspect[0m
+[92mclass Employee:
+    def __str__(self):
+        return inspect.stack()[0][3] + " called"
+    def __repr__(self):
+        return inspect.currentframe().f_code.co_name + " called"
+    def __add__(self, n):
+        return inspect.currentframe().f_code.co_name + " called"[0m
+[92me1 = Employee()[0m
+[92me2 = Employee()[0m
+[92mprint str(e1)            #__str__ called[0m
+__str__ called
+[92mprint repr(e2)           #__repr__ called[0m
+__repr__ called
+[92mprint e1 + e2            #__add__ called[0m
+__add__ called
+
+
+[91m========= iterator =========[0m
+[92m##what is iterable: [0m
+[94m#An iterable is an object that you can get an iterator from.[0m
+[94m#list, str, xrange, dict, file are iterable[0m
+[94m#An iterable is an object that has [0m
+[94m#1. __iter__()   #method which returns an iterator,  or[0m
+[94m#2. __getitem__  #method [0m
+[92m[0m
+[92m##what is iterator:[0m
+[94m#An iterator is an object with a next (Python 2) or __next__ (Python 3) method. [0m
+[94m#Iterator objects are required to support the following two methods[0m
+[94m#1. __iter__()[0m
+[94m#    Return the iterator object itself[0m
+[94m#    allow both containers and iterators to be used with the for and in statements.[0m
+[94m#2. next()   #I think it's generator instead of Iterator[0m
+[94m#    Return the next item from the container. If there are no further items, raise the StopIteration exception. [0m
+[92m[0m
+[94m#Whenever you use a for loop, or map, or a list comprehension, etc. in Python, the next method is called automatically to get each item from the iterator, thus going through the process of iteration.[0m
+[92m[0m
+[92m##iterable[0m
+[94m#1. Iterable_instance.__iter__()  --> Iterrator_instance[0m
+[94m#2. iter(Iterable_instance)       --> Iterrator_instance[0m
+[94m#3. Iterable_instance.__getitem__()->  the item of the index[0m
+[92m##iterator[0m
+[94m#1. Iterator_instance.__iter__() --> get the iterator itself[0m
+[94m#2. Iterator_instance.next()      --> get item for python 2[0m
+[94m#3. Iterator_instance.__next__()  --> get item for python 3[0m
+[92m[0m
+[94m#fname=os.path.dirname(os.path.abspath(__file__))+'/color.py'[0m
+[92mfname=os.path.join(os.path.expanduser('~'), 'graduation/python/color.py')[0m
+[92mx=[1,2,3];           print type(iter(x)), type(x.__iter__()), x.__getitem__(1)[0m
+<type 'listiterator'> <type 'listiterator'> 2
+[92mx='123';             print type(iter(x)),                     x.__getitem__(1)[0m
+<type 'iterator'> 2
+[92mx=xrange(1,4);       print type(iter(x)), type(x.__iter__()), x.__getitem__(1)[0m
+<type 'rangeiterator'> <type 'rangeiterator'> 2
+[92mx=range(1,4);        print type(iter(x)), type(x.__iter__()), x.__getitem__(1)[0m
+<type 'listiterator'> <type 'listiterator'> 2
+[92mwith open(fname) as x:print type(x), type(iter(x)), type(x.__iter__())[0m
+<type 'file'> <type 'file'> <type 'file'>
+[92m[0m
+[92mi=iter([1,2,3]);     print i.next(), i.next(), i.next()[0m
+1 2 3
+[92mi=iter('123');       print i.next(), i.next(), i.next()[0m
+1 2 3
+[92mi=iter(xrange(1,4)); print i.next(), i.next(), i.next()[0m
+1 2 3
+[92mi=iter(range(1,4));  print i.next(), i.next(), i.next()[0m
+1 2 3
+[92mi=open(fname);       print i.next(), i.next(), i.next()[0m
+#!/usr/bin/env python
+import re
+import time
+
+[92mii=iter(i);          print ii.next(),ii.next(),ii.next(); i.close()[0m
+import os
+import sys
+from random import randint
+
+[92m[0m
+[94m#use the 'globl' next() method[0m
+[92mi=iter([1,2,3]);     print next(i), next(i), next(i)[0m
+1 2 3
+[92mi=open(fname);       print next(i), next(i), next(i); i.close()[0m
+#!/usr/bin/env python
+import re
+import time
+
+[92m[0m
+[94m#iterator type 1 --> str[0m
+[92mprint "__getitem__" in  dir(str)[0m
+True
+[92mfor c in 'python': print c[0m
+p
+y
+t
+h
+o
+n
+[92m[0m
+[94m#iterator type 2 --> list[0m
+[92mfor i in [1,2,3,4]: print i[0m
+1
+2
+3
+4
+[92mfor i in iter([1,2,3,4]): print i[0m
+1
+2
+3
+4
+[92m[0m
+[94m#iterator type 3: dictionary[0m
+[92mfor k in {"feng":36, "yu":25, "zhong":27}: print k[0m
+zhong
+feng
+yu
+[92mfor k in {"feng":36, "yu":25, "zhong":27}.keys(): print k[0m
+zhong
+feng
+yu
+[92mfor k in {"feng":36, "yu":25, "zhong":27}.values(): print k[0m
+27
+36
+25
+[92mfor k in {"feng":36, "yu":25, "zhong":27}.items(): print k[0m
+('zhong', 27)
+('feng', 36)
+('yu', 25)
+[94m#iterator type 4: read file[0m
+[92mwith open("/etc/hosts") as f:
+    print type(f) 
+    for line in f: print line,[0m
+<type 'file'>
+# This file is automatically generated by WSL based on the Windows hosts file:
+# %WINDIR%\System32\drivers\etc\hosts. Modifications to this file will be overwritten.
+127.0.0.1	localhost
+127.0.1.1	DESKTOP-PJR9H89.localdomain	DESKTOP-PJR9H89
+
+# The following lines are desirable for IPv6 capable hosts
+::1     ip6-localhost ip6-loopback
+fe00::0 ip6-localnet
+ff00::0 ip6-mcastprefix
+ff02::1 ip6-allnodes
+ff02::2 ip6-allrouters
+
+
+[91m========= enumerate =========[0m
+[92m##enumerate(sequence, start=0)[0m
+[94m#Return an enumerate object. sequence must be a sequence, an iterator, or some other object which supports iteration. The next() method of the iterator returned by enumerate() returns a tuple containing a count (from start which defaults to 0) and the values obtained from iterating over sequence:[0m
+[94m#[0m
+[92m##my_enumerate() below is similar to enmerate(), however[0m
+[94m#The real enumerate function returns an iterator, not an generator. You can see this if you call help(x) after doing creating an enumerate object:[0m
+[94m#[0m
+[94m#In Python, generators are basically a specific type of iterator that's implemented by using a yield to return data from a function.[0m
+[94m#However, enumerate is actually implemented in C, not pure Python, so there's no yield involved. You can find the source here: http://hg.python.org/cpython/file/2.7/Objects/enumobject.c[0m
+[94m#[0m
+[92m[0m
+[92mdef my_enumerate(sequence, start=0):
+    n = start
+    for elem in sequence:
+        yield n, elem
+        n += 1[0m
+[94m# 1[0m
+[92me=enumerate    (["spring", "summer","fall" ,"winter"], 1)[0m
+[92m##enumerate return an iterator(enumerate is iterator)[0m
+[92mprint type(e), dir(e)[0m
+<type 'enumerate'> ['__class__', '__delattr__', '__doc__', '__format__', '__getattribute__', '__hash__', '__init__', '__iter__', '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__setattr__', '__sizeof__', '__str__', '__subclasshook__', 'next']
+[92mprint list(e)[0m
+[(1, 'spring'), (2, 'summer'), (3, 'fall'), (4, 'winter')]
+[92mimport inspect; print inspect.getmro(enumerate)[0m
+(<type 'enumerate'>, <type 'object'>)
+[92m[0m
+[94m# 2 [0m
+[92m##my_enumerate return a generator[0m
+[92me=my_enumerate (["spring", "summer","fall" ,"winter"], 1)[0m
+[92mprint type(e), dir(e)[0m
+<type 'generator'> ['__class__', '__delattr__', '__doc__', '__format__', '__getattribute__', '__hash__', '__init__', '__iter__', '__name__', '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__setattr__', '__sizeof__', '__str__', '__subclasshook__', 'close', 'gi_code', 'gi_frame', 'gi_running', 'next', 'send', 'throw']
+[92mprint list(e)[0m
+[(1, 'spring'), (2, 'summer'), (3, 'fall'), (4, 'winter')]
+[92m[0m
+[92m## use for loop[0m
+[92me=enumerate    (["spring", "summer","fall" ,"winter"])[0m
+[92mfor i in e: print i[0m
+(0, 'spring')
+(1, 'summer')
+(2, 'fall')
+(3, 'winter')
+[92me=my_enumerate (["spring", "summer","fall" ,"winter"])[0m
+[92mfor i in e: print i[0m
+(0, 'spring')
+(1, 'summer')
+(2, 'fall')
+(3, 'winter')
+
+
+[91m========= generator =========[0m
+[94m#myview:[0m
+[94m#1. creating a function with yield statement in it[0m
+[94m#2. then the function would return a generator object[0m
+[94m#3. generator object is a iterator object, support next() method[0m
+[94m#[0m
+[94m#myview:[0m
+[94m#1. generator function is a function with yield statement inside[0m
+[94m#2. generator function return generator object[0m
+[94m#3. generator object is iterator[0m
+[92m[0m
+[94m#Every generator is an iterator, but not vice versa. A generator is built by calling a function that has one or more yield [0m
+[92mdef city_generator():
+    yield("Konstanz")
+    yield("Zurich")
+    yield("Schaffhausen")
+    yield("Stuttgart")[0m
+[92m[0m
+[92mx=city_generator()[0m
+[94m#import inspect; inspect.getmro(x)[0m
+[92mprint type(x), type(type(x))[0m
+<type 'generator'> <type 'type'>
+[92mprint x[0m
+<generator object city_generator at 0x7f12d3f36af0>
+[92mprint x.next()[0m
+Konstanz
+[92mprint x.next()[0m
+Zurich
+[92mprint x.next()[0m
+Schaffhausen
+[92mprint x.next()[0m
+Stuttgart
+[92m[0m
+[94m#'i for i in list if' syntax will return a generator[0m
+[92mg=(x for x in os.listdir('/etc') if '.conf' in x)[0m
+[92mprint g[0m
+<generator object <genexpr> at 0x7f12d3f36960>
+[92mprint g.next()[0m
+adduser.conf
+[92mprint g.next()[0m
+ca-certificates.conf
+[92mprint g.next()[0m
+debconf.conf
+[92mg2=[x for x in glob.glob('/etc/*.conf')][0m
+[92mprint g2[0m
+['/etc/adduser.conf', '/etc/ca-certificates.conf', '/etc/debconf.conf', '/etc/deluser.conf', '/etc/fuse.conf', '/etc/gai.conf', '/etc/hdparm.conf', '/etc/host.conf', '/etc/kernel-img.conf', '/etc/ld.so.conf', '/etc/libaudit.conf', '/etc/logrotate.conf', '/etc/ltrace.conf', '/etc/mke2fs.conf', '/etc/nsswitch.conf', '/etc/ntp.conf', '/etc/overlayroot.conf', '/etc/overlayroot.local.conf', '/etc/pam.conf', '/etc/popularity-contest.conf', '/etc/resolv.conf', '/etc/rsyslog.conf', '/etc/sos.conf', '/etc/sysctl.conf', '/etc/ucf.conf', '/etc/updatedb.conf']
+
+
+[91m========= itertools.chain(),count(),repeat(),cycle() =========[0m
+[92mimport itertools[0m
+[92mprint list(itertools.repeat(7, 5))  #[7] * 5[0m
+[7, 7, 7, 7, 7]
+[92m[0m
+[92m##1. itertools.chain(*iterables)[0m
+[92mprint [ i for i in itertools.chain('ABC', 'DEF','XYZ') ][0m
+['A', 'B', 'C', 'D', 'E', 'F', 'X', 'Y', 'Z']
+[94m#user defined equivelent[0m
+[94m#chain('ABC', 'DEF') --> A B C D E F[0m
+[94m#same as [0m
+[92mdef chain(*iterables):
+    for it in iterables:
+        for element in it:
+            yield element[0m
+[92m[0m
+[92m##2. itertools.count(start=0, step=1: once for each integer, Infinite![0m
+[92mfor num in xrange(10008):      #not good
+    if num < 10000: continue
+    print num,[0m
+10000 10001 10002 10003 10004 10005 10006 10007 [92mfor num in itertools.count():  #good
+    if num < 10000: continue
+    if num > 10007: break
+    print num,[0m
+10000 10001 10002 10003 10004 10005 10006 10007 [92m[0m
+[92m##3. chain, repeat, cycle[0m
+[92m##   itertools.cycle(iterable)[0m
+[92m##   itertools.repeat(object[, times])[0m
+[92mseq = itertools.chain(itertools.repeat(17,3), itertools.cycle(range(7, 11, 1)))[0m
+[92mprint seq[0m
+<itertools.chain object at 0x7f12d3eef910>
+[92mfor count, num in enumerate(seq):
+    if count > 20: break
+    print num,[0m
+17 17 17 7 8 9 10 7 8 9 10 7 8 9 10 7 8 9 10 7 8
+
+[91m========= re =========[0m
+[92mimport re[0m
+[92mwith open('/etc/passwd') as f: c = f.read()[0m
+[92mprint c[0m
+root:x:0:0:root:/root:/bin/bash
+daemon:x:1:1:daemon:/usr/sbin:/usr/sbin/nologin
+bin:x:2:2:bin:/bin:/usr/sbin/nologin
+sys:x:3:3:sys:/dev:/usr/sbin/nologin
+sync:x:4:65534:sync:/bin:/bin/sync
+games:x:5:60:games:/usr/games:/usr/sbin/nologin
+man:x:6:12:man:/var/cache/man:/usr/sbin/nologin
+lp:x:7:7:lp:/var/spool/lpd:/usr/sbin/nologin
+mail:x:8:8:mail:/var/mail:/usr/sbin/nologin
+news:x:9:9:news:/var/spool/news:/usr/sbin/nologin
+uucp:x:10:10:uucp:/var/spool/uucp:/usr/sbin/nologin
+proxy:x:13:13:proxy:/bin:/usr/sbin/nologin
+www-data:x:33:33:www-data:/var/www:/usr/sbin/nologin
+backup:x:34:34:backup:/var/backups:/usr/sbin/nologin
+list:x:38:38:Mailing List Manager:/var/list:/usr/sbin/nologin
+irc:x:39:39:ircd:/var/run/ircd:/usr/sbin/nologin
+gnats:x:41:41:Gnats Bug-Reporting System (admin):/var/lib/gnats:/usr/sbin/nologin
+nobody:x:65534:65534:nobody:/nonexistent:/usr/sbin/nologin
+systemd-network:x:100:102:systemd Network Management,,,:/run/systemd/netif:/usr/sbin/nologin
+systemd-resolve:x:101:103:systemd Resolver,,,:/run/systemd/resolve:/usr/sbin/nologin
+syslog:x:102:106::/home/syslog:/usr/sbin/nologin
+messagebus:x:103:107::/nonexistent:/usr/sbin/nologin
+_apt:x:104:65534::/nonexistent:/usr/sbin/nologin
+lxd:x:105:65534::/var/lib/lxd/:/bin/false
+uuidd:x:106:110::/run/uuidd:/usr/sbin/nologin
+dnsmasq:x:107:65534:dnsmasq,,,:/var/lib/misc:/usr/sbin/nologin
+landscape:x:108:112::/var/lib/landscape:/usr/sbin/nologin
+sshd:x:109:65534::/run/sshd:/usr/sbin/nologin
+pollinate:x:110:1::/var/cache/pollinate:/bin/false
+neutrino0717:x:1000:1000:,,,:/home/neutrino0717:/bin/bash
+mysql:x:111:115:MySQL Server,,,:/nonexistent:/bin/false
+ntp:x:112:117::/nonexistent:/usr/sbin/nologin
+
+[94m#test r'' and re.M[0m
+[92mprint re.findall(r'^(\w+):',         c      )       #[0m
+['root']
+[92mprint re.findall(r'^(\w+):',         c, re.M)       #['root',                ..,  'puppet'][0m
+['root', 'daemon', 'bin', 'sys', 'sync', 'games', 'man', 'lp', 'mail', 'news', 'uucp', 'proxy', 'backup', 'list', 'irc', 'gnats', 'nobody', 'syslog', 'messagebus', '_apt', 'lxd', 'uuidd', 'dnsmasq', 'landscape', 'sshd', 'pollinate', 'neutrino0717', 'mysql', 'ntp']
+[92mprint re.findall(r'^\w+(?=:)',      c, re.M)        #['root',                ..,  'puppet']  #lookahead[0m
+['root', 'daemon', 'bin', 'sys', 'sync', 'games', 'man', 'lp', 'mail', 'news', 'uucp', 'proxy', 'backup', 'list', 'irc', 'gnats', 'nobody', 'syslog', 'messagebus', '_apt', 'lxd', 'uuidd', 'dnsmasq', 'landscape', 'sshd', 'pollinate', 'neutrino0717', 'mysql', 'ntp']
+[92mprint re.findall(r'^(\w+):.*:(.+)$', c, re.M)       #[('root', '/bin/bash'), .., ('puppet', '/bin/false')][0m
+[('root', '/bin/bash'), ('daemon', '/usr/sbin/nologin'), ('bin', '/usr/sbin/nologin'), ('sys', '/usr/sbin/nologin'), ('sync', '/bin/sync'), ('games', '/usr/sbin/nologin'), ('man', '/usr/sbin/nologin'), ('lp', '/usr/sbin/nologin'), ('mail', '/usr/sbin/nologin'), ('news', '/usr/sbin/nologin'), ('uucp', '/usr/sbin/nologin'), ('proxy', '/usr/sbin/nologin'), ('backup', '/usr/sbin/nologin'), ('list', '/usr/sbin/nologin'), ('irc', '/usr/sbin/nologin'), ('gnats', '/usr/sbin/nologin'), ('nobody', '/usr/sbin/nologin'), ('syslog', '/usr/sbin/nologin'), ('messagebus', '/usr/sbin/nologin'), ('_apt', '/usr/sbin/nologin'), ('lxd', '/bin/false'), ('uuidd', '/usr/sbin/nologin'), ('dnsmasq', '/usr/sbin/nologin'), ('landscape', '/usr/sbin/nologin'), ('sshd', '/usr/sbin/nologin'), ('pollinate', '/bin/false'), ('neutrino0717', '/bin/bash'), ('mysql', '/bin/false'), ('ntp', '/usr/sbin/nologin')]
+[92m[0m
+[94m#test match(), search, findall, finditer()[0m
+[92mprint re.findall (r'^(\w+):.*:(.+)$', c, re.M)                                   #[('root', '/bin/bash'), .., ('puppet', '/bin/false')][0m
+[('root', '/bin/bash'), ('daemon', '/usr/sbin/nologin'), ('bin', '/usr/sbin/nologin'), ('sys', '/usr/sbin/nologin'), ('sync', '/bin/sync'), ('games', '/usr/sbin/nologin'), ('man', '/usr/sbin/nologin'), ('lp', '/usr/sbin/nologin'), ('mail', '/usr/sbin/nologin'), ('news', '/usr/sbin/nologin'), ('uucp', '/usr/sbin/nologin'), ('proxy', '/usr/sbin/nologin'), ('backup', '/usr/sbin/nologin'), ('list', '/usr/sbin/nologin'), ('irc', '/usr/sbin/nologin'), ('gnats', '/usr/sbin/nologin'), ('nobody', '/usr/sbin/nologin'), ('syslog', '/usr/sbin/nologin'), ('messagebus', '/usr/sbin/nologin'), ('_apt', '/usr/sbin/nologin'), ('lxd', '/bin/false'), ('uuidd', '/usr/sbin/nologin'), ('dnsmasq', '/usr/sbin/nologin'), ('landscape', '/usr/sbin/nologin'), ('sshd', '/usr/sbin/nologin'), ('pollinate', '/bin/false'), ('neutrino0717', '/bin/bash'), ('mysql', '/bin/false'), ('ntp', '/usr/sbin/nologin')]
+[92mprint re.finditer(r'^(\w+):.*:(.+)$', c, re.M)                                   #<callable-iterator object at 0x7f8c69fb8390>[0m
+<callable-iterator object at 0x7f12d3f33650>
+[92mprint re.search  (r'^(\w+):.*:(.+)$', c, re.M)                                   #<_sre.SRE_Match object at 0x7f8c69eab250>[0m
+<_sre.SRE_Match object at 0x7f12d3ee9810>
+[92mprint re.match   (r'^(\w+):.*:(.+)$', c, re.M)                                   #<_sre.SRE_Match object at 0x7f8c69eab0b8>[0m
+<_sre.SRE_Match object at 0x7f12d3ee9810>
+[92m[0m
+[92mfor l in re.findall (r'^(\w+):.*:(.+)$', c, re.M): print l                       #('root', '/bin/bash'),..,('puppet', '/bin/false')[0m
+('root', '/bin/bash')
+('daemon', '/usr/sbin/nologin')
+('bin', '/usr/sbin/nologin')
+('sys', '/usr/sbin/nologin')
+('sync', '/bin/sync')
+('games', '/usr/sbin/nologin')
+('man', '/usr/sbin/nologin')
+('lp', '/usr/sbin/nologin')
+('mail', '/usr/sbin/nologin')
+('news', '/usr/sbin/nologin')
+('uucp', '/usr/sbin/nologin')
+('proxy', '/usr/sbin/nologin')
+('backup', '/usr/sbin/nologin')
+('list', '/usr/sbin/nologin')
+('irc', '/usr/sbin/nologin')
+('gnats', '/usr/sbin/nologin')
+('nobody', '/usr/sbin/nologin')
+('syslog', '/usr/sbin/nologin')
+('messagebus', '/usr/sbin/nologin')
+('_apt', '/usr/sbin/nologin')
+('lxd', '/bin/false')
+('uuidd', '/usr/sbin/nologin')
+('dnsmasq', '/usr/sbin/nologin')
+('landscape', '/usr/sbin/nologin')
+('sshd', '/usr/sbin/nologin')
+('pollinate', '/bin/false')
+('neutrino0717', '/bin/bash')
+('mysql', '/bin/false')
+('ntp', '/usr/sbin/nologin')
+[92mfor m in re.finditer(r'^(\w+):.*:(.+)$', c, re.M): print (m.group(1), m.group(2))#('root', '/bin/bash'),..,('puppet', '/bin/false')[0m
+('root', '/bin/bash')
+('daemon', '/usr/sbin/nologin')
+('bin', '/usr/sbin/nologin')
+('sys', '/usr/sbin/nologin')
+('sync', '/bin/sync')
+('games', '/usr/sbin/nologin')
+('man', '/usr/sbin/nologin')
+('lp', '/usr/sbin/nologin')
+('mail', '/usr/sbin/nologin')
+('news', '/usr/sbin/nologin')
+('uucp', '/usr/sbin/nologin')
+('proxy', '/usr/sbin/nologin')
+('backup', '/usr/sbin/nologin')
+('list', '/usr/sbin/nologin')
+('irc', '/usr/sbin/nologin')
+('gnats', '/usr/sbin/nologin')
+('nobody', '/usr/sbin/nologin')
+('syslog', '/usr/sbin/nologin')
+('messagebus', '/usr/sbin/nologin')
+('_apt', '/usr/sbin/nologin')
+('lxd', '/bin/false')
+('uuidd', '/usr/sbin/nologin')
+('dnsmasq', '/usr/sbin/nologin')
+('landscape', '/usr/sbin/nologin')
+('sshd', '/usr/sbin/nologin')
+('pollinate', '/bin/false')
+('neutrino0717', '/bin/bash')
+('mysql', '/bin/false')
+('ntp', '/usr/sbin/nologin')
+[92m[0m
+[92mm =      re.search  (r'^(\w+):.*:(.+)$', c, re.M); print (m.group(1), m.group(2))  #('root', '/bin/bash')[0m
+('root', '/bin/bash')
+[94m#m =      re.match   (r'^(\w+):.*:(.+)$', c, re.M); print (m.group(1), m.group(2))#('root', '/bin/bash')[0m
+[92m[0m
+[94m#test regex named group(P means placeholder),[0m
+[94m#myview named groups are for search() or match()[0m
+[94m#m = re.match   (r'(root):.*:(.+)$', c, re.M);                print(m.group(1), m.group(2))          #('root', '/bin/bash')[0m
+[92mm = re.search (r'^(root):.*:(.+)$', c, re.M);                print(m.group(1), m.group(2))          #('root', '/bin/bash')[0m
+('root', '/bin/bash')
+[92mm = re.search (r'^(?P<id>root):.*:(?P<shell>.+)$', c, re.M); print(m.group('id'), m.group(2))       #('root', '/bin/bash')[0m
+('root', '/bin/bash')
+[92mm = re.search (r'^(?P<id>root):.*:(?P<shell>.+)$', c, re.M); print(m.group('id'), m.group('shell')) #('root', '/bin/bash')[0m
+('root', '/bin/bash')
+[92ml = re.findall(r'^(?P<id>root):.*:(?P<shell>.+)$', c, re.M); print l                                #[('root', '/bin/bash')][0m
+[('root', '/bin/bash')]
+[92m[0m
+[94m#re.I, (?i), (?imx)[0m
+[92mfor m in re.finditer(r'.*(BASH|sh)$', c, re.M|re.I)     : print m.group(0)[0m
+root:x:0:0:root:/root:/bin/bash
+neutrino0717:x:1000:1000:,,,:/home/neutrino0717:/bin/bash
+[92mfor m in re.finditer(r'(?im).*(BASH|sh)$', c)           : print m.group(0)[0m
+root:x:0:0:root:/root:/bin/bash
+neutrino0717:x:1000:1000:,,,:/home/neutrino0717:/bin/bash
+[92m[0m
+[94m#split into list in the boundary of \W+[0m
+[92mprint re.findall(r'\w+'         , c, re.M) #same as[0m
+['root', 'x', '0', '0', 'root', 'root', 'bin', 'bash', 'daemon', 'x', '1', '1', 'daemon', 'usr', 'sbin', 'usr', 'sbin', 'nologin', 'bin', 'x', '2', '2', 'bin', 'bin', 'usr', 'sbin', 'nologin', 'sys', 'x', '3', '3', 'sys', 'dev', 'usr', 'sbin', 'nologin', 'sync', 'x', '4', '65534', 'sync', 'bin', 'bin', 'sync', 'games', 'x', '5', '60', 'games', 'usr', 'games', 'usr', 'sbin', 'nologin', 'man', 'x', '6', '12', 'man', 'var', 'cache', 'man', 'usr', 'sbin', 'nologin', 'lp', 'x', '7', '7', 'lp', 'var', 'spool', 'lpd', 'usr', 'sbin', 'nologin', 'mail', 'x', '8', '8', 'mail', 'var', 'mail', 'usr', 'sbin', 'nologin', 'news', 'x', '9', '9', 'news', 'var', 'spool', 'news', 'usr', 'sbin', 'nologin', 'uucp', 'x', '10', '10', 'uucp', 'var', 'spool', 'uucp', 'usr', 'sbin', 'nologin', 'proxy', 'x', '13', '13', 'proxy', 'bin', 'usr', 'sbin', 'nologin', 'www', 'data', 'x', '33', '33', 'www', 'data', 'var', 'www', 'usr', 'sbin', 'nologin', 'backup', 'x', '34', '34', 'backup', 'var', 'backups', 'usr', 'sbin', 'nologin', 'list', 'x', '38', '38', 'Mailing', 'List', 'Manager', 'var', 'list', 'usr', 'sbin', 'nologin', 'irc', 'x', '39', '39', 'ircd', 'var', 'run', 'ircd', 'usr', 'sbin', 'nologin', 'gnats', 'x', '41', '41', 'Gnats', 'Bug', 'Reporting', 'System', 'admin', 'var', 'lib', 'gnats', 'usr', 'sbin', 'nologin', 'nobody', 'x', '65534', '65534', 'nobody', 'nonexistent', 'usr', 'sbin', 'nologin', 'systemd', 'network', 'x', '100', '102', 'systemd', 'Network', 'Management', 'run', 'systemd', 'netif', 'usr', 'sbin', 'nologin', 'systemd', 'resolve', 'x', '101', '103', 'systemd', 'Resolver', 'run', 'systemd', 'resolve', 'usr', 'sbin', 'nologin', 'syslog', 'x', '102', '106', 'home', 'syslog', 'usr', 'sbin', 'nologin', 'messagebus', 'x', '103', '107', 'nonexistent', 'usr', 'sbin', 'nologin', '_apt', 'x', '104', '65534', 'nonexistent', 'usr', 'sbin', 'nologin', 'lxd', 'x', '105', '65534', 'var', 'lib', 'lxd', 'bin', 'false', 'uuidd', 'x', '106', '110', 'run', 'uuidd', 'usr', 'sbin', 'nologin', 'dnsmasq', 'x', '107', '65534', 'dnsmasq', 'var', 'lib', 'misc', 'usr', 'sbin', 'nologin', 'landscape', 'x', '108', '112', 'var', 'lib', 'landscape', 'usr', 'sbin', 'nologin', 'sshd', 'x', '109', '65534', 'run', 'sshd', 'usr', 'sbin', 'nologin', 'pollinate', 'x', '110', '1', 'var', 'cache', 'pollinate', 'bin', 'false', 'neutrino0717', 'x', '1000', '1000', 'home', 'neutrino0717', 'bin', 'bash', 'mysql', 'x', '111', '115', 'MySQL', 'Server', 'nonexistent', 'bin', 'false', 'ntp', 'x', '112', '117', 'nonexistent', 'usr', 'sbin', 'nologin']
+[92mprint re.findall(r'\w+'         , c)       #same as[0m
+['root', 'x', '0', '0', 'root', 'root', 'bin', 'bash', 'daemon', 'x', '1', '1', 'daemon', 'usr', 'sbin', 'usr', 'sbin', 'nologin', 'bin', 'x', '2', '2', 'bin', 'bin', 'usr', 'sbin', 'nologin', 'sys', 'x', '3', '3', 'sys', 'dev', 'usr', 'sbin', 'nologin', 'sync', 'x', '4', '65534', 'sync', 'bin', 'bin', 'sync', 'games', 'x', '5', '60', 'games', 'usr', 'games', 'usr', 'sbin', 'nologin', 'man', 'x', '6', '12', 'man', 'var', 'cache', 'man', 'usr', 'sbin', 'nologin', 'lp', 'x', '7', '7', 'lp', 'var', 'spool', 'lpd', 'usr', 'sbin', 'nologin', 'mail', 'x', '8', '8', 'mail', 'var', 'mail', 'usr', 'sbin', 'nologin', 'news', 'x', '9', '9', 'news', 'var', 'spool', 'news', 'usr', 'sbin', 'nologin', 'uucp', 'x', '10', '10', 'uucp', 'var', 'spool', 'uucp', 'usr', 'sbin', 'nologin', 'proxy', 'x', '13', '13', 'proxy', 'bin', 'usr', 'sbin', 'nologin', 'www', 'data', 'x', '33', '33', 'www', 'data', 'var', 'www', 'usr', 'sbin', 'nologin', 'backup', 'x', '34', '34', 'backup', 'var', 'backups', 'usr', 'sbin', 'nologin', 'list', 'x', '38', '38', 'Mailing', 'List', 'Manager', 'var', 'list', 'usr', 'sbin', 'nologin', 'irc', 'x', '39', '39', 'ircd', 'var', 'run', 'ircd', 'usr', 'sbin', 'nologin', 'gnats', 'x', '41', '41', 'Gnats', 'Bug', 'Reporting', 'System', 'admin', 'var', 'lib', 'gnats', 'usr', 'sbin', 'nologin', 'nobody', 'x', '65534', '65534', 'nobody', 'nonexistent', 'usr', 'sbin', 'nologin', 'systemd', 'network', 'x', '100', '102', 'systemd', 'Network', 'Management', 'run', 'systemd', 'netif', 'usr', 'sbin', 'nologin', 'systemd', 'resolve', 'x', '101', '103', 'systemd', 'Resolver', 'run', 'systemd', 'resolve', 'usr', 'sbin', 'nologin', 'syslog', 'x', '102', '106', 'home', 'syslog', 'usr', 'sbin', 'nologin', 'messagebus', 'x', '103', '107', 'nonexistent', 'usr', 'sbin', 'nologin', '_apt', 'x', '104', '65534', 'nonexistent', 'usr', 'sbin', 'nologin', 'lxd', 'x', '105', '65534', 'var', 'lib', 'lxd', 'bin', 'false', 'uuidd', 'x', '106', '110', 'run', 'uuidd', 'usr', 'sbin', 'nologin', 'dnsmasq', 'x', '107', '65534', 'dnsmasq', 'var', 'lib', 'misc', 'usr', 'sbin', 'nologin', 'landscape', 'x', '108', '112', 'var', 'lib', 'landscape', 'usr', 'sbin', 'nologin', 'sshd', 'x', '109', '65534', 'run', 'sshd', 'usr', 'sbin', 'nologin', 'pollinate', 'x', '110', '1', 'var', 'cache', 'pollinate', 'bin', 'false', 'neutrino0717', 'x', '1000', '1000', 'home', 'neutrino0717', 'bin', 'bash', 'mysql', 'x', '111', '115', 'MySQL', 'Server', 'nonexistent', 'bin', 'false', 'ntp', 'x', '112', '117', 'nonexistent', 'usr', 'sbin', 'nologin']
+[92mprint re.split(r'\W+'           , c)       #same as[0m
+['root', 'x', '0', '0', 'root', 'root', 'bin', 'bash', 'daemon', 'x', '1', '1', 'daemon', 'usr', 'sbin', 'usr', 'sbin', 'nologin', 'bin', 'x', '2', '2', 'bin', 'bin', 'usr', 'sbin', 'nologin', 'sys', 'x', '3', '3', 'sys', 'dev', 'usr', 'sbin', 'nologin', 'sync', 'x', '4', '65534', 'sync', 'bin', 'bin', 'sync', 'games', 'x', '5', '60', 'games', 'usr', 'games', 'usr', 'sbin', 'nologin', 'man', 'x', '6', '12', 'man', 'var', 'cache', 'man', 'usr', 'sbin', 'nologin', 'lp', 'x', '7', '7', 'lp', 'var', 'spool', 'lpd', 'usr', 'sbin', 'nologin', 'mail', 'x', '8', '8', 'mail', 'var', 'mail', 'usr', 'sbin', 'nologin', 'news', 'x', '9', '9', 'news', 'var', 'spool', 'news', 'usr', 'sbin', 'nologin', 'uucp', 'x', '10', '10', 'uucp', 'var', 'spool', 'uucp', 'usr', 'sbin', 'nologin', 'proxy', 'x', '13', '13', 'proxy', 'bin', 'usr', 'sbin', 'nologin', 'www', 'data', 'x', '33', '33', 'www', 'data', 'var', 'www', 'usr', 'sbin', 'nologin', 'backup', 'x', '34', '34', 'backup', 'var', 'backups', 'usr', 'sbin', 'nologin', 'list', 'x', '38', '38', 'Mailing', 'List', 'Manager', 'var', 'list', 'usr', 'sbin', 'nologin', 'irc', 'x', '39', '39', 'ircd', 'var', 'run', 'ircd', 'usr', 'sbin', 'nologin', 'gnats', 'x', '41', '41', 'Gnats', 'Bug', 'Reporting', 'System', 'admin', 'var', 'lib', 'gnats', 'usr', 'sbin', 'nologin', 'nobody', 'x', '65534', '65534', 'nobody', 'nonexistent', 'usr', 'sbin', 'nologin', 'systemd', 'network', 'x', '100', '102', 'systemd', 'Network', 'Management', 'run', 'systemd', 'netif', 'usr', 'sbin', 'nologin', 'systemd', 'resolve', 'x', '101', '103', 'systemd', 'Resolver', 'run', 'systemd', 'resolve', 'usr', 'sbin', 'nologin', 'syslog', 'x', '102', '106', 'home', 'syslog', 'usr', 'sbin', 'nologin', 'messagebus', 'x', '103', '107', 'nonexistent', 'usr', 'sbin', 'nologin', '_apt', 'x', '104', '65534', 'nonexistent', 'usr', 'sbin', 'nologin', 'lxd', 'x', '105', '65534', 'var', 'lib', 'lxd', 'bin', 'false', 'uuidd', 'x', '106', '110', 'run', 'uuidd', 'usr', 'sbin', 'nologin', 'dnsmasq', 'x', '107', '65534', 'dnsmasq', 'var', 'lib', 'misc', 'usr', 'sbin', 'nologin', 'landscape', 'x', '108', '112', 'var', 'lib', 'landscape', 'usr', 'sbin', 'nologin', 'sshd', 'x', '109', '65534', 'run', 'sshd', 'usr', 'sbin', 'nologin', 'pollinate', 'x', '110', '1', 'var', 'cache', 'pollinate', 'bin', 'false', 'neutrino0717', 'x', '1000', '1000', 'home', 'neutrino0717', 'bin', 'bash', 'mysql', 'x', '111', '115', 'MySQL', 'Server', 'nonexistent', 'bin', 'false', 'ntp', 'x', '112', '117', 'nonexistent', 'usr', 'sbin', 'nologin', '']
+[92mprint re.split(r'[^a-zA-Z0-9_]+', c)       #['root', 'x', '0', '0', 'root', 'root',...,''][0m
+['root', 'x', '0', '0', 'root', 'root', 'bin', 'bash', 'daemon', 'x', '1', '1', 'daemon', 'usr', 'sbin', 'usr', 'sbin', 'nologin', 'bin', 'x', '2', '2', 'bin', 'bin', 'usr', 'sbin', 'nologin', 'sys', 'x', '3', '3', 'sys', 'dev', 'usr', 'sbin', 'nologin', 'sync', 'x', '4', '65534', 'sync', 'bin', 'bin', 'sync', 'games', 'x', '5', '60', 'games', 'usr', 'games', 'usr', 'sbin', 'nologin', 'man', 'x', '6', '12', 'man', 'var', 'cache', 'man', 'usr', 'sbin', 'nologin', 'lp', 'x', '7', '7', 'lp', 'var', 'spool', 'lpd', 'usr', 'sbin', 'nologin', 'mail', 'x', '8', '8', 'mail', 'var', 'mail', 'usr', 'sbin', 'nologin', 'news', 'x', '9', '9', 'news', 'var', 'spool', 'news', 'usr', 'sbin', 'nologin', 'uucp', 'x', '10', '10', 'uucp', 'var', 'spool', 'uucp', 'usr', 'sbin', 'nologin', 'proxy', 'x', '13', '13', 'proxy', 'bin', 'usr', 'sbin', 'nologin', 'www', 'data', 'x', '33', '33', 'www', 'data', 'var', 'www', 'usr', 'sbin', 'nologin', 'backup', 'x', '34', '34', 'backup', 'var', 'backups', 'usr', 'sbin', 'nologin', 'list', 'x', '38', '38', 'Mailing', 'List', 'Manager', 'var', 'list', 'usr', 'sbin', 'nologin', 'irc', 'x', '39', '39', 'ircd', 'var', 'run', 'ircd', 'usr', 'sbin', 'nologin', 'gnats', 'x', '41', '41', 'Gnats', 'Bug', 'Reporting', 'System', 'admin', 'var', 'lib', 'gnats', 'usr', 'sbin', 'nologin', 'nobody', 'x', '65534', '65534', 'nobody', 'nonexistent', 'usr', 'sbin', 'nologin', 'systemd', 'network', 'x', '100', '102', 'systemd', 'Network', 'Management', 'run', 'systemd', 'netif', 'usr', 'sbin', 'nologin', 'systemd', 'resolve', 'x', '101', '103', 'systemd', 'Resolver', 'run', 'systemd', 'resolve', 'usr', 'sbin', 'nologin', 'syslog', 'x', '102', '106', 'home', 'syslog', 'usr', 'sbin', 'nologin', 'messagebus', 'x', '103', '107', 'nonexistent', 'usr', 'sbin', 'nologin', '_apt', 'x', '104', '65534', 'nonexistent', 'usr', 'sbin', 'nologin', 'lxd', 'x', '105', '65534', 'var', 'lib', 'lxd', 'bin', 'false', 'uuidd', 'x', '106', '110', 'run', 'uuidd', 'usr', 'sbin', 'nologin', 'dnsmasq', 'x', '107', '65534', 'dnsmasq', 'var', 'lib', 'misc', 'usr', 'sbin', 'nologin', 'landscape', 'x', '108', '112', 'var', 'lib', 'landscape', 'usr', 'sbin', 'nologin', 'sshd', 'x', '109', '65534', 'run', 'sshd', 'usr', 'sbin', 'nologin', 'pollinate', 'x', '110', '1', 'var', 'cache', 'pollinate', 'bin', 'false', 'neutrino0717', 'x', '1000', '1000', 'home', 'neutrino0717', 'bin', 'bash', 'mysql', 'x', '111', '115', 'MySQL', 'Server', 'nonexistent', 'bin', 'false', 'ntp', 'x', '112', '117', 'nonexistent', 'usr', 'sbin', 'nologin', '']
+[92mprint re.split(r'\W+'           , c, 1)    #['root', 'x:0:0:root:/root...\n][0m
+['root', 'x:0:0:root:/root:/bin/bash\ndaemon:x:1:1:daemon:/usr/sbin:/usr/sbin/nologin\nbin:x:2:2:bin:/bin:/usr/sbin/nologin\nsys:x:3:3:sys:/dev:/usr/sbin/nologin\nsync:x:4:65534:sync:/bin:/bin/sync\ngames:x:5:60:games:/usr/games:/usr/sbin/nologin\nman:x:6:12:man:/var/cache/man:/usr/sbin/nologin\nlp:x:7:7:lp:/var/spool/lpd:/usr/sbin/nologin\nmail:x:8:8:mail:/var/mail:/usr/sbin/nologin\nnews:x:9:9:news:/var/spool/news:/usr/sbin/nologin\nuucp:x:10:10:uucp:/var/spool/uucp:/usr/sbin/nologin\nproxy:x:13:13:proxy:/bin:/usr/sbin/nologin\nwww-data:x:33:33:www-data:/var/www:/usr/sbin/nologin\nbackup:x:34:34:backup:/var/backups:/usr/sbin/nologin\nlist:x:38:38:Mailing List Manager:/var/list:/usr/sbin/nologin\nirc:x:39:39:ircd:/var/run/ircd:/usr/sbin/nologin\ngnats:x:41:41:Gnats Bug-Reporting System (admin):/var/lib/gnats:/usr/sbin/nologin\nnobody:x:65534:65534:nobody:/nonexistent:/usr/sbin/nologin\nsystemd-network:x:100:102:systemd Network Management,,,:/run/systemd/netif:/usr/sbin/nologin\nsystemd-resolve:x:101:103:systemd Resolver,,,:/run/systemd/resolve:/usr/sbin/nologin\nsyslog:x:102:106::/home/syslog:/usr/sbin/nologin\nmessagebus:x:103:107::/nonexistent:/usr/sbin/nologin\n_apt:x:104:65534::/nonexistent:/usr/sbin/nologin\nlxd:x:105:65534::/var/lib/lxd/:/bin/false\nuuidd:x:106:110::/run/uuidd:/usr/sbin/nologin\ndnsmasq:x:107:65534:dnsmasq,,,:/var/lib/misc:/usr/sbin/nologin\nlandscape:x:108:112::/var/lib/landscape:/usr/sbin/nologin\nsshd:x:109:65534::/run/sshd:/usr/sbin/nologin\npollinate:x:110:1::/var/cache/pollinate:/bin/false\nneutrino0717:x:1000:1000:,,,:/home/neutrino0717:/bin/bash\nmysql:x:111:115:MySQL Server,,,:/nonexistent:/bin/false\nntp:x:112:117::/nonexistent:/usr/sbin/nologin\n']
+[92mprint re.split(r'\W+'           , c, 2)    #['root', 'x', '0:0:root:/root...\n'][0m
+['root', 'x', '0:0:root:/root:/bin/bash\ndaemon:x:1:1:daemon:/usr/sbin:/usr/sbin/nologin\nbin:x:2:2:bin:/bin:/usr/sbin/nologin\nsys:x:3:3:sys:/dev:/usr/sbin/nologin\nsync:x:4:65534:sync:/bin:/bin/sync\ngames:x:5:60:games:/usr/games:/usr/sbin/nologin\nman:x:6:12:man:/var/cache/man:/usr/sbin/nologin\nlp:x:7:7:lp:/var/spool/lpd:/usr/sbin/nologin\nmail:x:8:8:mail:/var/mail:/usr/sbin/nologin\nnews:x:9:9:news:/var/spool/news:/usr/sbin/nologin\nuucp:x:10:10:uucp:/var/spool/uucp:/usr/sbin/nologin\nproxy:x:13:13:proxy:/bin:/usr/sbin/nologin\nwww-data:x:33:33:www-data:/var/www:/usr/sbin/nologin\nbackup:x:34:34:backup:/var/backups:/usr/sbin/nologin\nlist:x:38:38:Mailing List Manager:/var/list:/usr/sbin/nologin\nirc:x:39:39:ircd:/var/run/ircd:/usr/sbin/nologin\ngnats:x:41:41:Gnats Bug-Reporting System (admin):/var/lib/gnats:/usr/sbin/nologin\nnobody:x:65534:65534:nobody:/nonexistent:/usr/sbin/nologin\nsystemd-network:x:100:102:systemd Network Management,,,:/run/systemd/netif:/usr/sbin/nologin\nsystemd-resolve:x:101:103:systemd Resolver,,,:/run/systemd/resolve:/usr/sbin/nologin\nsyslog:x:102:106::/home/syslog:/usr/sbin/nologin\nmessagebus:x:103:107::/nonexistent:/usr/sbin/nologin\n_apt:x:104:65534::/nonexistent:/usr/sbin/nologin\nlxd:x:105:65534::/var/lib/lxd/:/bin/false\nuuidd:x:106:110::/run/uuidd:/usr/sbin/nologin\ndnsmasq:x:107:65534:dnsmasq,,,:/var/lib/misc:/usr/sbin/nologin\nlandscape:x:108:112::/var/lib/landscape:/usr/sbin/nologin\nsshd:x:109:65534::/run/sshd:/usr/sbin/nologin\npollinate:x:110:1::/var/cache/pollinate:/bin/false\nneutrino0717:x:1000:1000:,,,:/home/neutrino0717:/bin/bash\nmysql:x:111:115:MySQL Server,,,:/nonexistent:/bin/false\nntp:x:112:117::/nonexistent:/usr/sbin/nologin\n']
+[92mprint re.split(r'(\W+)'         , c, 2)    #['root', ':', 'x', ':', '0:0:root...\n'][0m
+['root', ':', 'x', ':', '0:0:root:/root:/bin/bash\ndaemon:x:1:1:daemon:/usr/sbin:/usr/sbin/nologin\nbin:x:2:2:bin:/bin:/usr/sbin/nologin\nsys:x:3:3:sys:/dev:/usr/sbin/nologin\nsync:x:4:65534:sync:/bin:/bin/sync\ngames:x:5:60:games:/usr/games:/usr/sbin/nologin\nman:x:6:12:man:/var/cache/man:/usr/sbin/nologin\nlp:x:7:7:lp:/var/spool/lpd:/usr/sbin/nologin\nmail:x:8:8:mail:/var/mail:/usr/sbin/nologin\nnews:x:9:9:news:/var/spool/news:/usr/sbin/nologin\nuucp:x:10:10:uucp:/var/spool/uucp:/usr/sbin/nologin\nproxy:x:13:13:proxy:/bin:/usr/sbin/nologin\nwww-data:x:33:33:www-data:/var/www:/usr/sbin/nologin\nbackup:x:34:34:backup:/var/backups:/usr/sbin/nologin\nlist:x:38:38:Mailing List Manager:/var/list:/usr/sbin/nologin\nirc:x:39:39:ircd:/var/run/ircd:/usr/sbin/nologin\ngnats:x:41:41:Gnats Bug-Reporting System (admin):/var/lib/gnats:/usr/sbin/nologin\nnobody:x:65534:65534:nobody:/nonexistent:/usr/sbin/nologin\nsystemd-network:x:100:102:systemd Network Management,,,:/run/systemd/netif:/usr/sbin/nologin\nsystemd-resolve:x:101:103:systemd Resolver,,,:/run/systemd/resolve:/usr/sbin/nologin\nsyslog:x:102:106::/home/syslog:/usr/sbin/nologin\nmessagebus:x:103:107::/nonexistent:/usr/sbin/nologin\n_apt:x:104:65534::/nonexistent:/usr/sbin/nologin\nlxd:x:105:65534::/var/lib/lxd/:/bin/false\nuuidd:x:106:110::/run/uuidd:/usr/sbin/nologin\ndnsmasq:x:107:65534:dnsmasq,,,:/var/lib/misc:/usr/sbin/nologin\nlandscape:x:108:112::/var/lib/landscape:/usr/sbin/nologin\nsshd:x:109:65534::/run/sshd:/usr/sbin/nologin\npollinate:x:110:1::/var/cache/pollinate:/bin/false\nneutrino0717:x:1000:1000:,,,:/home/neutrino0717:/bin/bash\nmysql:x:111:115:MySQL Server,,,:/nonexistent:/bin/false\nntp:x:112:117::/nonexistent:/usr/sbin/nologin\n']
+
+
+[91m========= str repr backtick =========[0m
+[94m#str(), repr(), `` are three ways to convert objects to str[0m
+[92m[0m
+[94m#str is a class, repr is a function[0m
+[94m#back tick is similar to str(), to trasform everything to string[0m
+[92m[0m
+[92mprint str.__doc__[0m
+str(object='') -> string
+
+Return a nice string representation of the object.
+If the argument is a string, the return value is the same object.
+[94m#str(object='') -> string[0m
+[94m#Return a nice string representation of the object.[0m
+[94m#If the argument is a string, the return value is the same object.[0m
+[92mprint repr.__doc__[0m
+repr(object) -> string
+
+Return the canonical string representation of the object.
+For most object types, eval(repr(object)) == object.
+[94m#repr(object) -> string[0m
+[94m#Return the canonical string representation of the object.[0m
+[94m#For most object types, eval(repr(object)) == object.[0m
+[92m[0m
+[92mprint str.__class__               #<type 'type'>[0m
+<type 'type'>
+[92mprint repr.__class__              #<type 'builtin_function_or_method'>[0m
+<type 'builtin_function_or_method'>
+[92m[0m
+[92mprint "my mom is " + `29`              #my mom is 29[0m
+my mom is 29
+[92mprint "my mom is " + repr(29)          #my mom is 29[0m
+my mom is 29
+[92mprint "my mom is " + str(29)           #my mom is 29[0m
+my mom is 29
+
+
+[91m========= join =========[0m
+[92mprint ":".join(["a", "b", "c"])[0m
+a:b:c
+[92mprint list("python")[0m
+['p', 'y', 't', 'h', 'o', 'n']
+[92mprint "".join(list("python"))[0m
+python
+[92m[0m
+[92mmap={"guo":36, "zhi":25, "shang":27}[0m
+[92mprint list(map)[0m
+['zhi', 'shang', 'guo']
+[92mprint "--".join(map)[0m
+zhi--shang--guo
+[92mprint "--".join(list(map))[0m
+zhi--shang--guo
+
+
+[91m========= json.load() =========[0m
+[92mimport json[0m
+[92mfrom pprint import pprint[0m
+[92m[0m
+[92mcmd='''cat > AAT.conf <<EOF
+{ "test": {
+    "data"              : "/home/eenmliu/aat/data01",
+    "backup"            : "/home/eenmliu/aat/backup",
+    "log-dir"           : "/home/eenmliu/aat/logs" 
+    }
+}
+EOF
+'''[0m
+[92mos.system(cmd)[0m
+[92mwith open('AAT.conf') as f:
+    print f.read()
+    f.seek(0)
+    data = json.load(f)[0m
+{ "test": {
+    "data"              : "/home/eenmliu/aat/data01",
+    "backup"            : "/home/eenmliu/aat/backup",
+    "log-dir"           : "/home/eenmliu/aat/logs" 
+    }
+}
+
+[92mprint type(data)[0m
+<type 'dict'>
+[92mprint data[u'test'][u'log-dir'][0m
+/home/eenmliu/aat/logs
+[92mprint data[u'test']['log-dir'][0m
+/home/eenmliu/aat/logsLambdas
+*******
+
+   lambda_expr     ::= "lambda" [parameter_list]: expression
+   old_lambda_expr ::= "lambda" [parameter_list]: old_expression
+
+Lambda expressions (sometimes called lambda forms) have the same
+syntactic position as expressions.  They are a shorthand to create
+anonymous functions; the expression "lambda arguments: expression"
+yields a function object.  The unnamed object behaves like a function
+object defined with
+
+   def name(arguments):
+       return expression
+
+See section Function definitions for the syntax of parameter lists.
+Note that functions created with lambda expressions cannot contain
+statements.
+
+Related help topics: FUNCTIONS
+
+
+[92mpprint(data)[0m
+{u'test': {u'backup': u'/home/eenmliu/aat/backup',
+           u'data': u'/home/eenmliu/aat/data01',
+           u'log-dir': u'/home/eenmliu/aat/logs'}}
+
+
+[91m========= Lambda =========[0m
+[92m###Lambda expressions are a shorthand to create anonymous functions; yields a function object. [0m
+[92m## lambda[0m
+[94m#  lambda arguments: expression [0m
+[92m## function[0m
+[94m#  def name(arguments): return expression[0m
+[92mimport os[0m
+[92mos.system('pydoc lambda|cat')[0m
+[92m[0m
+[92m##equal to 'def sum(x,y): return x + y'[0m
+[92msum = lambda x,y: x + y[0m
+[92mprint sum(1,2)[0m
+3
+[92m[0m
+[92mdef sum(x,y): return x + y[0m
+[92mprint sum(1,2)[0m
+3
+[92m[0m
+[92m[0m
+[92m##How to make a lambda, that takes a object as input, return the object's atribute "name"'s value[0m
+[92m##aka:  lambda_fun(object) ---> return object.getname()[0m
+[92mclass A(object):
+    name="hello"[0m
+[94m#self is just the name of parameter, which is a object, which must have attribute 'name'[0m
+[92maaa = lambda self: self.__dict__['name'] [0m
+[92mprint aaa(A)[0m
+hello
+[92m[0m
+[94m#or[0m
+[92mdef makeGetter(attrName):
+    return lambda self: self.__dict__[attrName][0m
+[92maaa = makeGetter('name')[0m
+[92mprint aaa(A)[0m
+hello
+
+
+[91m========= logging stream=sys.stdout =========[0m
+[92m### stream=sys.stdout[0m
+[92mlightyear={'Sun':0,'Sirius':8.6}[0m
+[92mimport logging[0m
+[94m#set the logging output level to debug, by default, sys.stderr will be used.[0m
+[92mlogging.basicConfig(level=logging.INFO,stream=sys.stdout)[0m
+[94m#logging is hierarchical,getLogger() will return root logger[0m
+[92mlogger=logging.getLogger(__name__); print logger[0m
+<logging.Logger object at 0x7f12d3ef2e50>
+[92mlogger.warn ('the distance of nearby stars: %s ' % lightyear)[0m
+WARNING:color:the distance of nearby stars: {'Sun': 0, 'Sirius': 8.6} 
+[92mlogger.info ('the distance of nearby stars: %s ' % lightyear)[0m
+INFO:color:the distance of nearby stars: {'Sun': 0, 'Sirius': 8.6} 
+[92mlogger.debug('the distance of nearby stars: %s ' % lightyear)[0m
+[92m[0m
+[92m### handler[0m
+[92mlogging.basicConfig(level=logging.INFO)[0m
+[92mlogger=logging.getLogger(__name__); print logger[0m
+<logging.Logger object at 0x7f12d3ef2e50>
+[94m#create a filehandle[0m
+[92mhandler=logging.FileHandler('/tmp/stars.log','w')[0m
+[92mlogger.addHandler(handler)[0m
+[92mlogger.warn ('the distance of nearby stars: %s ' % lightyear)[0m
+WARNING:color:the distance of nearby stars: {'Sun': 0, 'Sirius': 8.6} 
+[92mlogger.info ('the distance of nearby stars: %s ' % lightyear)[0m
+INFO:color:the distance of nearby stars: {'Sun': 0, 'Sirius': 8.6} 
+[92mlogger.debug('the distance of nearby stars: %s ' % lightyear)[0m
+[92mwith open('/tmp/stars.log', 'r') as f: print f.read()[0m
+the distance of nearby stars: {'Sun': 0, 'Sirius': 8.6} 
+the distance of nearby stars: {'Sun': 0, 'Sirius': 8.6} 
+
+[92m[0m
+[92m### format[0m
+[92mlogging.basicConfig(level=logging.INFO)[0m
+[92mlogger=logging.getLogger(__name__); print logger[0m
+<logging.Logger object at 0x7f12d3ef2e50>
+[94m#create a filehandle[0m
+[92mhandler=logging.FileHandler('/tmp/stars2.log','w')[0m
+[92mlogger.addHandler(handler)[0m
+[92mfmt1=logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s') [0m
+[92mfmt2=logging.Formatter('%(asctime)s %(levelname)s %(threadName)s: %(message)s','%b %d %H:%M:%S')[0m
+[92mhandler.setFormatter(fmt2) [0m
+[92mlightyear={'Sun':0,'Sirius':8.6}[0m
+[92mlogger.warn ('the distance of nearby stars: %s ' % lightyear)[0m
+WARNING:color:the distance of nearby stars: {'Sun': 0, 'Sirius': 8.6} 
+[92mlogger.info ('the distance of nearby stars: %s ' % lightyear)[0m
+INFO:color:the distance of nearby stars: {'Sun': 0, 'Sirius': 8.6} 
+[92mlogger.debug('the distance of nearby stars: %s ' % lightyear)[0m
+[92mwith open('/tmp/stars2.log', 'r') as f: print f.read()[0m
+Feb 14 23:51:41 WARNING MainThread: the distance of nearby stars: {'Sun': 0, 'Sirius': 8.6} 
+Feb 14 23:51:41 INFO MainThread: the distance of nearby stars: {'Sun': 0, 'Sirius': 8.6} 
+
+
+
+[91m========= ord and chr =========[0m
+[92mprint ord.__doc__                  #string to integer oridnal[0m
+ord(c) -> integer
+
+Return the integer ordinal of a one-character string.
+[92mprint chr.__doc__                  #intgger to char[0m
+chr(i) -> character
+
+Return a string of one character with ordinal i; 0 <= i < 256.
+[92mprint ord('a'), chr(ord('a'))[0m
+97 a
+[92mprint ord('1'), chr(ord('a'))[0m
+49 a
+[92m[0m
+[92ms = "Hello world!"[0m
+[92mprint ":".join( str(ord(x)) for x in s)[0m
+72:101:108:108:111:32:119:111:114:108:100:33
+[92mprint ":".join( ('%0X' % ord(x) for x in s))[0m
+48:65:6C:6C:6F:20:77:6F:72:6C:64:21
+[92mprint ":".join("{:02x}".format(ord(x)) for x in s)[0m
+48:65:6c:6c:6f:20:77:6f:72:6c:64:21
+[92mprint ":".join( hex(ord(x)) for x in s)[0m
+0x48:0x65:0x6c:0x6c:0x6f:0x20:0x77:0x6f:0x72:0x6c:0x64:0x21
+[94m#a list of A-Z, use map[0m
+[92ml = map(lambda x: chr(x), xrange(ord('A'),ord('Z')+1)); print l[0m
+['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
+[94m#a list of a-z, use 'x for x in'[0m
+[92mprint [ chr(x) for x in xrange(ord('a'), ord('z')+1)][0m
+['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z']
+[94m#a generator of A-Z, use 'x for x in'[0m
+[92mg = ( chr(x) for x in xrange(ord('a'), ord('z')+1))[0m
+[92mprint g[0m
+<generator object <genexpr> at 0x7f12d3ef7e10>
+[92mprint list(g)[0m
+['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z']
+
+
+[91m========= dec and hex =========[0m
+[94m#dec to hex[0m
+[92mprint hex(16)           #0x10[0m
+0x10
+[92mprint "%X"     % 16     #10[0m
+10
+[92mprint "%x"     % 16     #10[0m
+10
+[92mprint "0x%x"   % 16     #0x10[0m
+0x10
+[92mprint "0x%x"   % 1616   #0x650[0m
+0x650
+[92mprint "0x%2x"  % 1616   #0x650[0m
+0x650
+[92mprint "0x%17x" % 1616   #0x              650[0m
+0x              650
+[92m[0m
+[92ms = "Hello world!"[0m
+[92mprint ":".join(            str(ord(x))for x in s)  #72:101:108:108:111:32:119:111:114:108:100:33[0m
+72:101:108:108:111:32:119:111:114:108:100:33
+[92mprint ":".join(  '%d'  %       ord(x) for x in s)  #72:101:108:108:111:32:119:111:114:108:100:33[0m
+72:101:108:108:111:32:119:111:114:108:100:33
+[92mprint ":".join(  '%x'  %       ord(x) for x in s)  #48:65:6c:6c:6f:20:77:6f:72:6c:64:21[0m
+48:65:6c:6c:6f:20:77:6f:72:6c:64:21
+[92mprint ":".join( '%0X'  %       ord(x)  for x in s) #48:65:6C:6C:6F:20:77:6F:72:6C:64:21[0m
+48:65:6C:6C:6F:20:77:6F:72:6C:64:21
+[92mprint ":".join("{:02x}".format(ord(x)) for x in s) #48:65:6c:6c:6f:20:77:6f:72:6c:64:21[0m
+48:65:6c:6c:6f:20:77:6f:72:6c:64:21
+[92mprint ":".join(            hex(ord(x)) for x in s) #0x48:0x65:0x6c:0x6c:0x6f:0x20:0x77:0x6f:0x72:0x6c:0x64:0x21[0m
+0x48:0x65:0x6c:0x6c:0x6f:0x20:0x77:0x6f:0x72:0x6c:0x64:0x21
+[92m[0m
+[94m#a list of A-E[0m
+[92mprint map(lambda x: chr(x), xrange(ord('A'),ord('E')+1))     #['A', 'B', 'C', 'D', 'E'][0m
+['A', 'B', 'C', 'D', 'E']
+[92mprint    [ chr(x) for x in xrange(ord('A'), ord('E')+1)]     #['A', 'B', 'C', 'D', 'E'][0m
+['A', 'B', 'C', 'D', 'E']
+[92mprint    ( chr(x) for x in xrange(ord('a'), ord('z')+1))     #<generator object <genexpr> at 0x7f16f2c915f0>[0m
+<generator object <genexpr> at 0x7f12d3f368c0>
+
+
+[91m========= math =========[0m
+[92mimport math[0m
+[94m#square root[0m
+[92mprint math.sqrt(81)[0m
+9.0
+[92mprint math.sqrt.__doc__[0m
+sqrt(x)
+
+Return the square root of x.
+[94m#all the functions of module math[0m
+[92mprint dir(math)[0m
+['__doc__', '__name__', '__package__', 'acos', 'acosh', 'asin', 'asinh', 'atan', 'atan2', 'atanh', 'ceil', 'copysign', 'cos', 'cosh', 'degrees', 'e', 'erf', 'erfc', 'exp', 'expm1', 'fabs', 'factorial', 'floor', 'fmod', 'frexp', 'fsum', 'gamma', 'hypot', 'isinf', 'isnan', 'ldexp', 'lgamma', 'log', 'log10', 'log1p', 'modf', 'pi', 'pow', 'radians', 'sin', 'sinh', 'sqrt', 'tan', 'tanh', 'trunc']
+[94m#help(math) shows the help of each functions[0m
+[94m#__doc__ to show help[0m
+[92mfor i in dir(math):
+    #exec "print math.%s.__doc__" % i
+    print "math.%s.__doc__" % i
+    print[0m
+math.__doc__.__doc__
+
+math.__name__.__doc__
+
+math.__package__.__doc__
+
+math.acos.__doc__
+
+math.acosh.__doc__
+
+math.asin.__doc__
+
+math.asinh.__doc__
+
+math.atan.__doc__
+
+math.atan2.__doc__
+
+math.atanh.__doc__
+
+math.ceil.__doc__
+
+math.copysign.__doc__
+
+math.cos.__doc__
+
+math.cosh.__doc__
+
+math.degrees.__doc__
+
+math.e.__doc__
+
+math.erf.__doc__
+
+math.erfc.__doc__
+
+math.exp.__doc__
+
+math.expm1.__doc__
+
+math.fabs.__doc__
+
+math.factorial.__doc__
+
+math.floor.__doc__
+
+math.fmod.__doc__
+
+math.frexp.__doc__
+
+math.fsum.__doc__
+
+math.gamma.__doc__
+
+math.hypot.__doc__
+
+math.isinf.__doc__
+
+math.isnan.__doc__
+
+math.ldexp.__doc__
+
+math.lgamma.__doc__
+
+math.log.__doc__
+
+math.log10.__doc__
+
+math.log1p.__doc__
+
+math.modf.__doc__
+
+math.pi.__doc__
+
+math.pow.__doc__
+
+math.radians.__doc__
+
+math.sin.__doc__
+
+math.sinh.__doc__
+
+math.sqrt.__doc__
+
+math.tan.__doc__
+
+math.tanh.__doc__
+
+math.trunc.__doc__
+
+
+
+[91m========= os and subprocess =========[0m
+[92m###           errorcode                                output[0m
+[94m# --------------------------------------------------------------------------------[0m
+[92m##  shell     os.system("ls -al")                      os.popen(ls -al).read()[0m
+[92m##            subprocess.call('ls -al',shell=True)     subprocess.check_output('ls -al', shell=True)[0m
+[92m##                                                     subprocess.popen()[0m
+[94m# -----------------------------------------------------------------------------------------------[0m
+[92m##  python    subprocess.call(['uname', '-a'])         subprocess.check_output(['ltotal 394
+drwxrwxrwx 1 neutrino0717 neutrino0717    512 Feb 14 23:51 .
+drwxr-xr-x 1 neutrino0717 neutrino0717    512 Feb 14 18:57 ..
+s', '-al'])[0m
+[92m##[0m
+[92m[0m
+[92m##if you need to get the error code,[0m
+[94m# use os.system()[0m
+[94m# use subprocess.call()[0m
+[92m##if you need to get the stdout,[0m
+[94m# use os.popen[0m
+[94m# use subprocess.popen[0m
+[94m# use subprocess.check_output (in python2.7)[0m
+[92mimport subprocess[0m
+[92m[0m
+[92mos.system('ls -al |head -n3')[0m
+[92mprint os.popen('ls -al |head -n3').read()[0m
+total 394
+drwxrwxrwx 1 neutrino0717 neutrino0717    512 Feb 14 23:51 .
+drwxr-xr-x 1 neutrtotal 394
+drwxrwxrwx 1 neutrino0717 neutrino0717    512 Feb 14 23:51 .
+drwxr-xr-x 1 neutrino0717 neutrino0717    512 Feb 14 18:57 ..
+Linux DESKTOP-PJR9H89 4.4.0-18362-Microsoft #476-Microsoft Fri Nov 01 16:53:00 PST 2019 x86_64 x86_64 x86_64 GNU/Linux
+ino0717 neutrino0717    512 Feb 14 18:57 ..
+
+[92m[0m
+[94m#shell=True is only available in subprocess[0m
+[92msubprocess.call('ls -al |head -n3', shell=True)[0m
+[92msubprocess.check_output('ls -al |head -n3', shell=True)[0m
+[92m[0m
+[92merrorcode=os.system('uname -a');    print errorcode[0m
+0
+[92moutput=os.popen('uname -a').read(); print output[0m
+Linux DESKTOP-PJR9H89 4.4.0-18362-Microsoft #476-Microsoft Fri Nov 01 16:53:00 PST 2019 x86_64 x86_64 x86_64 GNU/Linux
+
+[92moutput=subprocess.check_ouLinux DESKTOP-PJR9H89 4.4.0-18362-Microsoft #476-Microsoft Fri Nov 01 16:53:00 PST 2019 x86_64 x86_64 x86_64 GNU/Linux
+tput('uname -a', shell=True); print output[0m
+Linux DESKTOP-PJR9H89 4.4.0-18362-Microsoft #476-Microsoft Fri Nov 01 16:53:00 PST 2019 x86_64 x86_64 x86_64 GNU/Linux
+
+[92moutput=subprocess.check_output(['uname', '-a']);        print output[0m
+Linux DESKTOP-PJR9H89 4.4.0-18362-Microsoft #476-Microsoft Fri Nov 01 16:53:00 PST 2019 x86_64 x86_64 x86_64 GNU/Linux
+
+[92merrorcode=subprocess.call('uname -a', shell=True);      print errorcode[0m
+0
+[92merrorcode=subprocess.call(['uname', '-a']);             priLinux DESKTOP-PJR9H89 4.4.0-18362-Microsoft #476-Microsoft Fri Nov 01 16:53:00 PST 2019 x86_64 x86_64 x86_64 GNU/Linux
+nt errorcode[0m
+0
+
+
+[91m========= threading: inherent, no lock, no semaphore =========[0m
+[92mimport time[0m
+[92mimport threading[0m
+[92mfrom random import randint[0m
+[92mclass AsyncPrint(threading.Thread):
+    def __init__(self, text):
+        threading.Thread.__init__(self)
+        self.text = text
+    def run(self):
+        for i in range(1,10):
+            time.sleep(randint(0,2))
+            print self.text,
+        print "Finished Background", self.text[0m
+[92m[0m
+[92mbackground1 = AsyncPrint("#")[0m
+[92mbackground2 = AsyncPrint("$")[0m
+[92mbackground3 = AsyncPrint("^")[0m
+[92mbackground1.start()[0m
+[92mbackground2.start()[0m
+# [92mbackground3.start()[0m
+[92mfor i in range(1,5):
+    time.sleep(randint(0,2))
+    print "-",[0m
+$ # # # # ^ ^ -$ - ^ # $ $ $ - # $ ^ $ # $ ^ - [92mprint "Finished Main"[0m
+Finished Main
+
+
+[91m========= threading: no lock, no semaphore =========[0m
+[94m#global tLock[0m
+[94m#tLock = threading.Lock()[0m
+[92mdef timer(name, delay, repeat):
+    c=colors.YELLOW
+    if name=="Test2": c=colors.RED
+    print c + 'timer: ' + name + " Started"+colors.ENDC
+    #tLock.acquire(); print(c + name + " has acquired lock to some codes")
+    while repeat > 0:
+        time.sleep(delay)
+        print c + 'timer: ' + name +": " + str(time.ctime(time.time())) + colors.ENDC
+        repeat -= 1
+    #tLock.release(); print(c + name + " released lock to the codes")
+    print c + "Timer: " + name + " Completed"+colors.ENDC[0m
+[92m[0m
+[92mthreading.Thread(target=timer, args=("Test1", 1, 5)).start()[0m
+[93mtimer: Test1 Started[0m
+[92mthreading.Thread(target=timer, args=("Test2", 2, 5)).start()[0m
+[91mtimer: Test2 Started[0m
+[92mprint "Main Complete"[0m
+Main Complete
+
+
+[91m========= threading: lock =========[0m
+[94m#global tLock[0m
+[94m#tLock = threading.Lock()[0m
+[92mdef timer(name, delay, repeat):
+    c=colors.YELLOW
+    if name=="Test2": c=colors.RED
+    print c + 'timer: ' + name + " Started"+colors.ENDC
+    #tLock.acquire(); print(c + name + " has acquired lock to some codes")
+    while repeat > 0:
+        time.sleep(delay)
+        print c + 'timer: ' + name +": " + str(time.ctime(time.time())) + colors.ENDC
+        repeat -= 1
+    #tLock.release(); print(c + name + " released lock to the codes")
+    print c + "Timer: " + name + " Completed"+colors.ENDC[0m
+[92m[0m
+[92mthreading.Thread(target=timer, args=("Test1", 1, 5)).start()[0m
+[93mtimer: Test1 Started[0m
+[92mthreading.Thread(target=timer, args=("Test2", 2, 5)).start()[0m
+[91mtimer: Test2 Started[0m[92mprint "Main Complete"[0m
+Main Complete
+
+
+
+[91m========= threading: inherent =========[0m
+[92mimport threading[0m
+[92mimport re[0m
+[92mimport urllib[0m
+[92mimport time[0m
+[92mclass WebpageThread(threading.Thread):
+    def __init__(self, site):
+        #super(WebpageThread,self).__init__()
+        threading.Thread.__init__(self)
+        self.site=site
+        self.total=0
+    def run(self):
+        t1=time.time()
+        #print "--> accessing to %s ..." % self.site
+        u=urllib.urlopen("http://"+ self.site)
+        text = u.read()
+        #print "--> done with %s " % self.site
+        self.total = time.time() - t1[0m
+[92m[0m
+[92msites = 'baidu.com|163.com|qq.com'.split('|')[0m
+[94m#sites = 'google.com|facebook.com|linuxfromscratch.org'.split('|')[0m
+[92mthreadlst = [][0m
+[92mt1=time.time()[0m
+[92mfor i in xrange(0,len(sites)):
+    threadlst.append(WebpageThread(sites[i]))[0m
+[92mfor i in xrange(0,len(sites)):
+    threadlst[i].start()[0m
+[92mfor i in xrange(0,len(sites)):
+    threadlst[i].join()[0m
+[92mtotal=0[0m
+[92mfor i in xrange(0,len(sites)):
+    print "%-15s --> %-15s seconds" % (threadlst[i].site, threadlst[i].total)
+    total += threadlst[i].total[0m
+baidu.com       --> 0.129292011261  seconds
+163.com         --> 0.33026599884   seconds
+qq.com          --> 0.770516872406  seconds
+[92mactual = time.time() - t1[0m
+[92mprint "total time used: %d" % total[0m
+total time used: 1
+[92mprint "actual time used: %d" % actual[0m
+actual time used: 0
+
+
+[91m========= multiprocessing.Queue =========[0m
+[94m# multiprocessing.Queue, a near clone of Queue.Queue, thread and process safe[0m
+[92mfrom multiprocessing import Process, Queue[0m
+[92mdef f(q):
+    q.put([42, None, 'hello'])[0m
+[92mq = Queue()[0m
+[92mp = Process(target=f, args=(q,))[0m
+[92mp.start()[0m
+[92mprint q.get()                        #[42, None, 'hello'], #data retrieved from the subprocess by queue.[0m
+[42, None, 'hello']
+[92mp.join()[0m
+
+
+[91m========= multiprocessing.Pipe =========[0m
+[94m#multiprocessing.Pipe, a pipe which by default is duplex (two-way)[0m
+[92mfrom multiprocessing import Process, Pipe[0m
+[92mdef f(conn):
+    conn.send([42, None, 'hello'])
+    conn.close()[0m
+[92mparent_conn, child_conn = Pipe()[0m
+[92mp = Process(target=f, args=(child_conn,))[0m
+[92mp.start()[0m
+[92mprint parent_conn.recv()            #[42, None, 'hello'],  #data retrieved from the subprocess by pipe.[0m
+[42, None, 'hello']
+[92mp.join()[0m
+
+
+[91m========= multiprocessing.Pool =========[0m
+# Finished Background #
+^ $ Finished Background $
+[93mtimer: Test1: Fri Feb 14 23:51:49 2020[0m
+[93mtimer: Test1: Fri Feb 14 23:51:49 2020[0m
+[0;33m[0m
+[0;36m#start multiple new processes[0m
+[0;32m##return value from all the processes will be in a list as Pool.map() function's return value[0m
+[0;33mimport multiprocessing[0m
+[0;33mdef f1(x): [0m
+[0;33m    return x*x[0m
+[0;33mprint multiprocessing.Pool(processes=4).map(f1,range(1,11))[0m
+[1, 4, 9, 16, 25, 36, 49, 64, 81, 100]
+[0;33m[0m
+
+
+[91m========= multiprocessing.Pool =========[0m
+[0;33m[0m
+[0;36m#start multiple new processes[0m
+[0;33mfrom multiprocessing import Process[0m
+[0;33mfrom multiprocessing import Pool[0m
+[0;33mdef f(title):[0m
+[0;33m    print '-->{}'.format(title)[0m
+[0;33m    print 'module name:', __name__[0m
+[0;33m    if hasattr(os, 'getppid'):  # only available on Unix[0m
+[0;33m        print 'parent process:', os.getppid()[0m
+[0;33m    print 'process id:', os.getpid()[0m
+[0;33m    return title[0m
+[0;33mprint os.getpid()          ###current process, 43003[0m
+6880
+[0;33mf('function all')          #not start a new process, parent process: 60652, process id: 43003[0m
+-->function all
+module name: __main__
+parent process: 6879
+process id: 6880
+[0;33mp  = Process(target=f, args=('function all with process',))[0m
+[0;33mp.start()[0m
+-->function all with process
+module name: __main__
+parent process: 6880
+process id: 6881
+[0;33mp.join()                   #    start a new process, parent process: 43003, process id: 43004[0m
+[0;33mp2 = Pool(5)               #    start multiple new processes ....[0m
+-->function call 0 in pool
+module name: __main__
+parent process: 6880
+process id: 6882
+-->function call 1 in pool
+module name: __main__
+parent process: 6880
+process id: 6882
+-->function call 2 in pool
+module name: __main__
+parent process: 6880
+process id: 6882
+-->function call 3 in pool
+module name: __main__
+parent process: 6880
+process id: 6882
+-->function call 4 in pool
+module name: __main__
+parent process: 6880
+process id: 6882
+-->function call 5 in pool
+module name: __main__
+parent process: 6880
+process id: 6882
+-->function call 6 in pool
+module name: __main__
+parent process: 6880
+process id: 6882
+[0;33mresult = p2.map(f, ['function call {} in pool'.format(x) for x in xrange(7)])[0m
+[0;33mprint result[0m
+['function call 0 in pool', 'function call 1 in pool', 'function call 2 in pool', 'function call 3 in pool', 'function call 4 in pool', 'function call 5 in pool', 'function call 6 in pool']
+[0;33m[0m
+
+
+[91m========= multiprocessing.Lock =========[0m
+[0;33m[0m
+[0;33mimport multiprocessing[0m
+[0;33ml = multiprocessing.Lock()[0m
+[0;33mdef timer(tLock, name, delay, repeat):[0m
+[0;33m    tLock.acquire();[0m
+[0;33m    print 'delay %s, repeat %s' % (delay, repeat)[0m
+[0;33m    tLock.release();[0m
+[0;33mmultiprocessing.Process(target=timer, args=(l, "Test1", 1, 5)).start()[0m
+[0;33mmultiprocessing.Process(target=timer, args=(l, "Test2", 2, 4)).start()[0m
+delay 1, repeat 5
+delay 2, repeat 4
+[0;33m[0m
+[0;33m[0m
+
+
+[91m========= sys =========[0m
+[94m#ImportError: No module named foo actually means the module foo.py or package foo/__init__.py could not be found in any of the directories in the search path (sys.path list).[0m
+[92mprint sys.path[0m
+['/home/neutrino0717/summary', '/home/neutrino0717/graduation/python', '/usr/lib/python2.7', '/usr/lib/python2.7/plat-x86_64-linux-gnu', '/usr/lib/python2.7/lib-tk', '/usr/lib/python2.7/lib-old', '/usr/lib/python2.7/lib-dynload', '/home/neutrino0717/.local/lib/python2.7/site-packages', '/usr/local/lib/python2.7/dist-packages', '/usr/lib/python2.7/dist-packages']
+[92msys.path.append('/path/to/the/example_file.py')[0m
+[92mprint sys.path[0m
+['/home/neutrino0717/summary', '/home/neutrino0717/graduation/python', '/usr/lib/python2.7', '/usr/lib/python2.7/plat-x86_64-linux-gnu', '/usr/lib/python2.7/lib-tk', '/usr/lib/python2.7/lib-old', '/usr/lib/python2.7/lib-dynload', '/home/neutrino0717/.local/lib/python2.7/site-packages', '/usr/local/lib/python2.7/dist-packages', '/usr/lib/python2.7/dist-packages', '/path/to/the/example_file.py']
+[92mprint sys.argv[0m
+['./review.py']
+[92mprint sys.executable[0m
+/usr/bin/python
+
+
+[91m========= tarfile =========[0m
+[94m#import tarfile[0m
+[94m#tar = tarfile.open("1.tar.gz")[0m
+[94m#tar.extractall()[0m
+[94m#tar.close()[0m
+
+
+[91m========= glob =========[0m
+[92mimport glob[0m
+[92mfor sfile in glob.glob("/etc/r*.conf"):
+    print sfile[0m
+/etc/resolv.conf
+/etc/rsyslog.conf
+
+
+[91m========= open =========[0m
+[0;33m[0m
+[0;36m#mode can be [0m
+[0;36m#'r'     when the file will only be read,it's default with omitted[0m
+[0;36m#'w'     for only writing (an existing file with the same name will be erased)[0m
+[0;36m#'a'     opens the file for appending; any data written is added to the end. [0m
+[0;36m#'r+'    opens the file for both reading and writing. [0m
+[0;36m#'b'     Windows only, 'b' appended to the mode opens the file in binary mode, [0m
+[0;36m#        so there are also modes like 'rb', 'wb', and 'r+b'. [0m
+[0;33m[0m
+[0;33mfo = open('/etc/hosts','r')[0m
+[0;33mprint type(fo)[0m
+<type 'file'>
+[0;36m#some properties[0m
+[0;33mprint fo.name[0m
+/etc/hosts
+[0;33mprint fo.closed[0m
+False
+[0;33mprint fo.mode[0m
+r
+[0;33mprint fo.softspace[0m
+0
+[0;33m[0m
+[0;36m#read(10): read 10 bytes to str[0m
+[0;33mtenbytes=fo.read(10); print tenbytes[0m
+# This fil
+[0;33m[0m
+[0;36m#readline: read a line to str[0m
+[0;33mprint fo.readline()[0m
+e is automatically generated by WSL based on the Windows hosts file:
+
+[0;33m[0m
+[0;36m#read(): read all the rest str[0m
+[0;33mcontent=fo.read(); fo.close()[0m
+[0;33mprint type(content); print content[0m
+<type 'str'>
+# %WINDIR%\System32\drivers\etc\hosts. Modifications to this file will be overwritten.
+127.0.0.1	localhost
+127.0.1.1	DESKTOP-PJR9H89.localdomain	DESKTOP-PJR9H89
+
+# The following lines are desirable for IPv6 capable hosts
+::1     ip6-localhost ip6-loopback
+fe00::0 ip6-localnet
+ff00::0 ip6-mcastprefix
+ff02::1 ip6-allnodes
+ff02::2 ip6-allrouters
+
+[0;33m[0m
+[0;36m#readlines(): read all lines to list[0m
+[0;33mfo = open('/etc/hosts','r')[0m
+[0;33marr = fo.readlines(); fo.close()[0m
+[0;33mprint type(arr)[0m
+<type 'list'>
+[0;33mfor i in arr: print i,[0m
+# This file is automatically generated by WSL based on the Windows hosts file:
+# %WINDIR%\System32\drivers\etc\hosts. Modifications to this file will be overwritten.
+127.0.0.1	localhost
+127.0.1.1	DESKTOP-PJR9H89.localdomain	DESKTOP-PJR9H89
+
+# The following lines are desirable for IPv6 capable hosts
+::1     ip6-localhost ip6-loopback
+fe00::0 ip6-localnet
+ff00::0 ip6-mcastprefix
+ff02::1 ip6-allnodes
+ff02::2 ip6-allrouters
+[0;33m[0m
+
+
+[91m========= readlines() =========[0m
+[0;33m[0m
+[0;32m##read file into list[0m
+[0;33mwith  open("/etc/hosts") as f: print f.readlines()[0m
+['# This file is automatically generated by WSL based on the Windows hosts file:\n', '# %WINDIR%\\System32\\drivers\\etc\\hosts. Modifications to this file will be overwritten.\n', '127.0.0.1\tlocalhost\n', '127.0.1.1\tDESKTOP-PJR9H89.localdomain\tDESKTOP-PJR9H89\n', '\n', '# The following lines are desirable for IPv6 capable hosts\n', '::1     ip6-localhost ip6-loopback\n', 'fe00::0 ip6-localnet\n', 'ff00::0 ip6-mcastprefix\n', 'ff02::1 ip6-allnodes\n', 'ff02::2 ip6-allrouters\n']
+[0;33mprint open("/etc/hosts").readlines()[0m
+['# This file is automatically generated by WSL based on the Windows hosts file:\n', '# %WINDIR%\\System32\\drivers\\etc\\hosts. Modifications to this file will be overwritten.\n', '127.0.0.1\tlocalhost\n', '127.0.1.1\tDESKTOP-PJR9H89.localdomain\tDESKTOP-PJR9H89\n', '\n', '# The following lines are desirable for IPv6 capable hosts\n', '::1     ip6-localhost ip6-loopback\n', 'fe00::0 ip6-localnet\n', 'ff00::0 ip6-mcastprefix\n', 'ff02::1 ip6-allnodes\n', 'ff02::2 ip6-allrouters\n']
+[0;33m[0m
+
+
+[91m========= os =========[0m
+[0;33m[0m
+[31m###os.name is 'posix', 'nt', 'os2', 'ce' or 'riscos'[0m
+[31m###os.curdir is a string representing the current directory ('.' or ':')[0m
+[31m###os.pardir is a string representing the parent directory ('..' or '::')[0m
+[31m###os.sep is the (or a most common) pathname separator ('/' or ':' or '\')[0m
+[0;33m[0m
+[31m###os.extsep is the extension separator ('.' or '/')[0m
+[31m###os.altsep is the alternate pathname separator (None or '/')[0m
+[31m###os.pathsep is the component separator used in $PATH etc[0m
+[31m###os.linesep is the line separator in text files ('\r' or '\n' or '\r\n')[0m
+[31m###os.defpath is the default search path for executables[0m
+[31m###os.devnull is the file path of the null device ('/dev/null', etc.)[0m
+[31m###difference between os.fchdir() and os.chdir()[0m
+[0;32m##1.os.fchdir(fd)[0m
+[0;36m# change the current working directory to the directory represented by the file descriptor fd. [0m
+[0;36m# The descriptor must refer to an opened directory, not an open file.[0m
+[0;32m##2.os.chdir(str)[0m
+[0;36m# ...[0m
+[0;33mimport os, sys[0m
+[0;32m## use chdir()[0m
+[0;36m# current working dir:[0m
+[0;33mprint os.getcwd()[0m
+/home/neutrino0717/summary
+[0;36m# change current working dir to home dir:[0m
+[0;33mos.chdir(os.path.expanduser("~")); print os.getcwd()[0m
+/home/neutrino0717
+[0;33m[0m
+[0;32m## use fchdir()[0m
+[0;33mfd = os.open( "/tmp", os.O_RDONLY )[0m
+[0;33mos.fchdir(fd); print os.getcwd()[0m
+/tmp
+[0;33m[0m
+[0;32m##get pid and parent pid[0m
+[0;33mprint os.getpid(), os.getppid()[0m
+6899 6898
+[0;33m[0m
+[0;32m##os data values[0m
+[0;33mprint os.environ['HOME'][0m
+/home/neutrino0717
+[0;33mprint type(os.environ)[0m
+<type 'instance'>
+[0;33mprint os.curdir[0m
+.
+[0;33mprint os.pardir[0m
+..
+[0;33mprint os.sep[0m
+/
+[0;33mprint os.pathsep[0m
+:
+[0;33mprint ">%s<"%os.linesep[0m
+>
+<
+[0;33mprint os.defpath[0m
+:/bin:/usr/bin
+[0;33mprint os.devnull[0m
+/dev/null
+[0;33m[0m
+[0;32m##directory [0m
+[0;33mos.makedirs("/tmp/tmp1/tmp2"); print os.path.isdir("/tmp/tmp1/tmp2")[0m
+True
+[0;33mos.removedirs("/tmp/tmp1/tmp2");print os.path.isdir("/tmp/tmp1")[0m
+False
+[0;33mos.makedirs("/tmp/tmp1/tmp2"); print os.path.isdir("/tmp/tmp1/tmp2")[0m
+True
+[0;33mos.rmdir("/tmp/tmp1/tmp2")[0m
+[0;33mos.rmdir("/tmp/tmp1")[0m
+[0;33m[0m
+[0;32m##document[0m
+[0;33mprint os.remove.__doc__[0m
+remove(path)
+
+Remove a file (same as unlink(path)).
+[0;33mprint os.rmdir.__doc__[0m
+rmdir(path)
+
+Remove a directory.
+[0;33mprint os.removedirs.__doc__[0m
+removedirs(path)
+
+    Super-rmdir; remove a leaf directory and all empty intermediate
+    ones.  Works like rmdir except that, if the leaf directory is
+    successfully removed, directories corresponding to rightmost path
+    segments will be pruned away until either the whole path is
+    consumed or an error occurs.  Errors during this latter phase are
+    ignored -- they generally mean that a directory was not empty.
+
+    
+[0;33mprint os.rename.__doc__[0m
+rename(old, new)
+
+Rename a file or directory.
+[0;33mprint os.stat.__doc__[0m
+stat(path) -> stat result
+
+Perform a stat system call on the given path.
+[0;33mprint os.unlink.__doc__[0m
+unlink(path)
+
+Remove a file (same as remove(path)).
+[0;33mprint os.utime.__doc__[0m
+utime(path, (atime, mtime))
+utime(path, None)
+
+Set the access and modified time of the file to the given values.  If the
+second form is used, set the access and modified times to the current time.
+[0;33mprint os.symlink.__doc__[0m
+symlink(src, dst)
+
+Create a symbolic link pointing to src named dst.
+[0;33mprint os.link.__doc__[0m
+link(src, dst)
+
+Create a hard link to a file.
+[0;33mprint os.chown.__doc__[0m
+chown(path, uid, gid)
+
+Change the owner and group id of path to the numeric uid and gid.
+[0;33m[0m
+
+
+[91m========= os.path =========[0m
+[0;33m[0m
+[31m###1. os.path is not a submodule of os "package"[0m
+[31m###2. actually both os and os.path are modules[0m
+[0;33m[0m
+[0;32m##to verify, see below##[0m
+[0;33mprint os; print os.path[0m
+<module 'os' from '/usr/lib/python2.7/os.pyc'>
+<module 'posixpath' from '/usr/lib/python2.7/posixpath.pyc'>
+[0;36m#note: posixpath for UNIX-style paths; ntpath for Windows paths[0m
+[0;33mprint sys.modules['os']; print sys.modules['os.path'][0m
+<module 'os' from '/usr/lib/python2.7/os.pyc'>
+<module 'posixpath' from '/usr/lib/python2.7/posixpath.pyc'>
+[0;33mprint type(sys.modules)[0m
+<type 'dict'>
+[0;33m[0m
+[0;32m##functions in os##[0m
+[0;33mfname = os.__file__; print fname[0m
+/usr/lib/python2.7/os.pyc
+[0;33mprint os.path.abspath(fname)[0m
+/usr/lib/python2.7/os.pyc
+[0;33mprint os.path.dirname(fname)[0m
+/usr/lib/python2.7
+[0;33mprint os.path.basename(fname)[0m
+os.pyc
+[0;33mprint os.path.split(fname)[0m
+('/usr/lib/python2.7', 'os.pyc')
+[0;33mprint os.path.splitext(os.path.basename(fname))[0m
+('os', '.pyc')
+[0;33mprint os.path.join('/full/path/to/dir','abc.txt')[0m
+/full/path/to/dir/abc.txt
+[0;33mprint os.path.join('/full/path/to/dir/','abc.txt')[0m
+/full/path/to/dir/abc.txt
+[0;33mprint os.path.join('/full/path/to/dir//','abc.txt')[0m
+/full/path/to/dir//abc.txt
+[0;33mprint os.path.join('/full/path/to/dir//','rpath/abc.txt')[0m
+/full/path/to/dir//rpath/abc.txt
+[0;33mprint os.path.expanduser('~')[0m
+/home/neutrino0717
+[0;33mprint os.path.expanduser('~root')[0m
+/root
+[0;33mp=os.path[0m
+[0;33mprint p.exists(fname), p.isfile(fname), p.isdir(fname), p.islink(fname), p.ismount(fname)[0m
+True True False False False
+[0;33mfor i in ('$HOME', '$IFS', '$LANG', '$HISTFILE'):  [0m
+[0;33m    print os.path.expandvars(i)[0m
+/home/neutrino0717
+$IFS
+C.UTF-8
+$HISTFILE
+[0;36m#cwd is where before you run the scripts[0m
+[0;33mprint os.getcwd()[0m
+/home/neutrino0717/summary
+[0;33mprint os.listdir(os.getcwd())[0m
+['.git', '.gitignore', '.vscode', 'AAT.conf', 'README.md', 'bash', 'c', 'cmd.sh', 'cplus', 'eepython', 'examples', 'ic', 'icat', 'idcommon', 'idglob', 'idhelp', 'idheredoc', 'idmap', 'idopen', 'idsplit_join', 'idstring', 'idtemplate', 'igf', 'igg', 'igita', 'igitc', 'imv', 'ised', 'iswap', 'ivim', 'lsIFS', 'lsangular', 'lsawk', 'lscase', 'lscccclass_access', 'lsccinclude', 'lsccpointer', 'lsccstd', 'lscron', 'lsdeclare_export', 'lsecho', 'lsfind', 'lsgetent', 'lsgit', 'lsgitcheckout_reset_revert', 'lsgitdiff', 'lsglob', 'lsgrep', 'lsif', 'lsinstall', 'lsls', 'lslsof', 'lsprintf_seq', 'lsps', 'lspydecorator_best', 'lsread', 'lsread_IFS', 'lsredirect', 'lsregex', 'lsrsync', 'lssed', 'lsstickbit', 'lsstrace', 'lsstring', 'lssystemctl', 'lstmux', 'lstr', 'lsuseradd', 'lsvim', 'lsxargs', 'new', 'perl', 'python', 'review.cpp', 'review.log', 'review.py', 'reviewed.cpp']
+[0;33mprint re.sub(r'(.*)\/.*', r'',fname, flags=re.M)[0m
+
+[0;33m[0m
+[0;32m##document##[0m
+[0;33mprint os.path.abspath.__doc__[0m
+Return an absolute path.
+[0;33mprint os.path.realpath.__doc__[0m
+Return the canonical path of the specified filename, eliminating any
+symbolic links encountered in the path.
+[0;33mprint os.path.dirname.__doc__[0m
+Returns the directory component of a pathname
+[0;33mprint os.path.basename.__doc__[0m
+Returns the final component of a pathname
+[0;33mprint os.path.split.__doc__[0m
+Split a pathname.  Returns tuple "(head, tail)" where "tail" is
+    everything after the final slash.  Either part may be empty.
+[0;33mprint os.path.isdir.__doc__[0m
+Return true if the pathname refers to an existing directory.
+[0;33mprint os.path.expanduser.__doc__[0m
+Expand ~ and ~user constructions.  If user or $HOME is unknown,
+    do nothing.
+[0;33mprint os.path.join.__doc__[0m
+Join two or more pathname components, inserting '/' as needed.
+    If any component is an absolute path, all previous path components
+    will be discarded.  An empty last part will result in a path that
+    ends with a separator.
+[0;33mprint os.path.splitext.__doc__[0m
+Split the extension from a pathname.
+
+    Extension is everything from the last dot to the end, ignoring
+    leading dots.  Returns "(root, ext)"; ext may be empty.
+[0;33mprint os.path.exists.__doc__[0m
+Test whether a path exists.  Returns False for broken symbolic links
+[0;33mprint os.path.expandvars.__doc__[0m
+Expand shell variables of form $var and ${var}.  Unknown variables
+    are left unchanged.
+[0;33mprint os.path.getmtime.__doc__[0m
+Return the last modification time of a file, reported by os.stat().
+[0;33mprint os.listdir.__doc__[0m
+listdir(path) -> list_of_strings
+
+Return a list containing the names of the entries in the directory.
+
+    path: path of directory to list
+
+The list is in arbitrary order.  It does not include the special
+entries '.' and '..' even if they are present in the directory.
+[0;33mprint os.getcwd.__doc__[0m
+getcwd() -> path
+
+Return a string representing the current working directory.
+[0;33m[0m
+
+
+[91m========= os.walk =========[0m
+[0;33m[0m
+[0;33mfrom os.path import expanduser[0m
+[0;33mhome = expanduser("~")[0m
+[0;33mprint "home dir: " + home[0m
+home dir: /home/neutrino0717
+[0;32m##list root, the dirs in root, the files in root[0m
+[0;33mfor root, dirs, files in os.walk(os.path.join(home, 'graduation/javascript/'), topdown=False):[0m
+[0;33m    print ('\n----> root: ') + root[0m
+[0;33m    for name in files:[0m
+[0;33m        print('----> file: ' + os.path.join(root, name))[0m
+[0;33m    for name in dirs:[0m
+[0;33m        print('----> dir:  ' + os.path.join(root, name))[0m
+
+----> root: /home/neutrino0717/graduation/javascript/casperjs
+----> file: /home/neutrino0717/graduation/javascript/casperjs/googletesting.js
+----> file: /home/neutrino0717/graduation/javascript/casperjs/query-casperjs.js
+----> file: /home/neutrino0717/graduation/javascript/casperjs/sample-test.js
+----> file: /home/neutrino0717/graduation/javascript/casperjs/sample.js
+
+----> root: /home/neutrino0717/graduation/javascript/phantomjs
+----> file: /home/neutrino0717/graduation/javascript/phantomjs/example.js
+
+----> root: /home/neutrino0717/graduation/javascript/slimerijs
+----> file: /home/neutrino0717/graduation/javascript/slimerijs/evaluate.js
+----> file: /home/neutrino0717/graduation/javascript/slimerijs/hello.js
+----> file: /home/neutrino0717/graduation/javascript/slimerijs/module_require_webpage.js
+----> file: /home/neutrino0717/graduation/javascript/slimerijs/module_require_webpage2.js
+
+----> root: /home/neutrino0717/graduation/javascript/
+----> file: /home/neutrino0717/graduation/javascript/readme_casperjs_slimerijs
+----> dir:  /home/neutrino0717/graduation/javascript/casperjs
+----> dir:  /home/neutrino0717/graduation/javascript/phantomjs
+----> dir:  /home/neutrino0717/graduation/javascript/slimerijs
+[0;33m[0m
+[0;32m##list the roots(directories), topdown is False[0m
+[0;33mfor root, dirs, files in os.walk(os.path.join(home, 'graduation/javascript/'), topdown=False):[0m
+[0;33m    print ('----> root: ') + root[0m
+----> root: /home/neutrino0717/graduation/javascript/casperjs
+----> root: /home/neutrino0717/graduation/javascript/phantomjs
+----> root: /home/neutrino0717/graduation/javascript/slimerijs
+----> root: /home/neutrino0717/graduation/javascript/
+[0;33m[0m
+[0;32m##list the roots(directories), topdown is True[0m
+[0;33mfor root, dirs, files in os.walk(os.path.join(home, 'graduation/javascript/')):[0m
+[0;33m    print ('----> root: ') + root[0m
+----> root: /home/neutrino0717/graduation/javascript/
+----> root: /home/neutrino0717/graduation/javascript/casperjs
+----> root: /home/neutrino0717/graduation/javascript/phantomjs
+----> root: /home/neutrino0717/graduation/javascript/slimerijs
+[0;33m[0m
+
+
+[91m========= pickle =========[0m
+[91mtimer: Test2: Fri Feb 14 23:51:50 2020[0m
+^ [93mtimer: Test1: Fri Feb 14 23:51:50 2020[0m
+[93mtimer: Test1: Fri Feb 14 23:51:50 2020[0m
+[91mtimer: Test2: Fri Feb 14 23:51:50 2020[0m
+[0;33m[0m
+[31m###called when being pickled: __getstate__[0m
+[31m###called when being unpickled: __setstate__[0m
+[0;32m##unless you need to override how a class is pickled or unpickled you shouldn't need to worry about it.[0m
+[0;33m[0m
+[0;33mimport pickle[0m
+[0;33mclass Foo(object):[0m
+[0;33m  def __init__(self, val=2):[0m
+[0;33m     self.val = val[0m
+[0;33m  def __getstate__(self):[0m
+[0;33m     print "I'm being pickled"[0m
+[0;33m     self.val *= 2[0m
+[0;33m     return self.__dict__[0m
+[0;33m  def __setstate__(self, d):[0m
+[0;33m     print "I'm being unpickled with these values:", d[0m
+[0;33m     self.__dict__ = d[0m
+[0;33m     self.val *= 3[0m
+[0;33m[0m
+[0;33mimport pickle[0m
+[0;33mf = Foo(); print f.val[0m
+2
+[0;33mf_string = pickle.dumps(f)[0m
+I'm being pickled
+[0;33mprint f_string[0m
+ccopy_reg
+_reconstructor
+p0
+(c__main__
+Foo
+p1
+c__builtin__
+object
+p2
+Ntp3
+Rp4
+(dp5
+S'val'
+p6
+I4
+sb.
+[0;33mf_new = pickle.loads(f_string); print f_new.val[0m
+I'm being unpickled with these values: {'val': 4}
+12
+[0;33m[0m
+
+
+[91m========= random =========[0m
+[0;33m[0m
+[0;33mimport random[0m
+[0;33mprint random.random()        # Random float x, 0.0 <= x < 1.0[0m
+0.462969839976
+[0;33mprint random.uniform(1, 10)  # Random float x, 1.0 <= x < 10.0[0m
+2.82743990196
+[0;33mprint random.randint(1, 10)  # Integer from 1 to 10, endpoints included[0m
+6
+[0;33mprint random.randrange(0, 101, 2)  # Even integer from 0 to 100[0m
+6
+[0;33mprint random.choice('abcdefghij')  # Choose a random element[0m
+g
+[0;33mitems = [1, 2, 3, 4, 5, 6, 7]; print random.shuffle(items); print items[0m
+None
+[1, 7, 5, 6, 4, 2, 3]
+[0;33mprint random.sample([1, 2, 3, 4, 5],  3)  # Choose 3 elements[0m
+[2, 4, 5]
+[0;33mprint random.sample(xrange(10000000), 7)  # Choose 3 samples[0m
+[2078150, 5517927, 8667807, 7408718, 6886187, 6448972, 8238400]
+[0;33m[0m
+
+
+[91m========= raw_input =========[0m
+[94m#                  return string     return as expression[0m
+[94m#python 2          raw_input()       input()[0m
+[94m#python 3          input()           eval(input())[0m
+[92m[0m
+[92m##In Python 2, raw_input() returns a string[0m
+[92m##In Python 2, input() tries to run the input as expression[0m
+[92m##In Python 3, input() returns a string[0m
+[92m##In Python 3, eval(input()) is similar to Python 2 input()[0m
+[92m[0m
+[92m##x=raw_input("Your name: ")[0m
+[94m#Your name:                  #put in "Evan"[0m
+[94m#print "Hello, " + x         #Hello, Evan[0m
+
+
+[91m========= select.select() =========[0m
+[92m##a select call is for input timout[0m
+[92mimport sys, select[0m
+[92mprint select.select.__doc__[0m
+select(rlist, wlist, xlist[, timeout]) -> (rlist, wlist, xlist)
+
+Wait until one or more file descriptors are ready for some kind of I/O.
+The first three arguments are sequences of file descriptors to be waited for:
+rlist -- wait until ready for reading
+wlist -- wait until ready for writing
+xlist -- wait for an ``exceptional condition''
+If only one kind of condition is required, pass [] for the other lists.
+A file descriptor is either a socket or file object, or a small integer
+gotten from a fileno() method call on one of those.
+
+The optional 4th argument specifies a timeout in seconds; it may be
+a floating point number to specify fractions of seconds.  If it is absent
+or None, the call will never time out.
+
+The return value is a tuple of three lists corresponding to the first three
+arguments; each contains the subset of the corresponding file descriptors
+that are ready.
+
+*** IMPORTANT NOTICE ***
+On Windows and OpenVMS, only sockets are supported; on Unix, all file
+descriptors can be used.
+[92m[0m
+[92mprint "You have 1 seconds to say something!"[0m
+You have 1 seconds to say something!
+[92mi, o, e = select.select( [sys.stdin], [], [], 1 )[0m
+[93mtimer: Test1: Fri Feb 14 23:51:51 2020[0m
+[93mtimer: Test1: Fri Feb 14 23:51:51 2020[0m
+^ ^ Finished Background ^
+[92mprint i[0m
+[]
+[92mprint o[0m
+[]
+[92mprint e[0m
+[]
+[92mif (i):
+    print "You said", sys.stdin.readline().strip()[0m
+
+
+[91m========= list =========[0m
+[92mx = [ 1, 2 ,3 ]; print id(x), x  #140714377773496 [1, 2, 3][0m
+139718848303264 [1, 2, 3]
+[92mx.append(4);     print id(x), x  #140714377773496 [1, 2, 3, 4][0m
+139718848303264 [1, 2, 3, 4]
+[92mx.append([4,5]); print id(x), x  #140714377773496 [1, 2, 3, 4, [4, 5]][0m
+139718848303264 [1, 2, 3, 4, [4, 5]]
+[92mx.extend([4,5]); print id(x), x  #140714377773496 [1, 2, 3, 4, [4, 5], 4, 5][0m
+139718848303264 [1, 2, 3, 4, [4, 5], 4, 5]
+[92mx = x + [4, 5 ]; print id(x), x  #140714377754240 [1, 2, 3, 4, [4, 5], 4, 5, 4, 5][0m
+139718848353696 [1, 2, 3, 4, [4, 5], 4, 5, 4, 5]
+[92m[0m
+[92mlist1=['1', '2', '3']; [0m
+[92mprint      ''.join(list1)        #123[0m
+123
+[92mprint list(''.join(list1))       #['1', '2', '3'][0m
+['1', '2', '3']
+
+
+[91m========= sequence =========[0m
+[92m##about the sequence slice[0m
+[94m#a[start:end] # items start through end-1[0m
+[94m#a[start:]    # items start through the rest of the array[0m
+[94m#a[:end]      # items from the beginning through end-1[0m
+[94m#a[:]         # a copy of the whole array[0m
+[94m#[0m
+[94m# +---+---+---+---+---+[0m
+[94m# | H | e | l | p | A |[0m
+[94m# +---+---+---+---+---+[0m
+[94m# 0   1   2   3   4   5[0m
+[94m#-5  -4  -3  -2  -1[0m
+[92m[0m
+[92m##"One way to remember how slices work is to think of the indices as pointing between characters, with the left edge of the first character numbered 0."[0m
+[94m#>>> seq[:]                # [seq[0],   seq[1],          ..., seq[-1]    ][0m
+[94m#>>> seq[low:]             # [seq[low], seq[low+1],      ..., seq[-1]    ][0m
+[94m#>>> seq[:high]            # [seq[0],   seq[1],          ..., seq[high-1]][0m
+[94m#>>> seq[low:high]         # [seq[low], seq[low+1],      ..., seq[high-1]][0m
+[94m#>>> seq[::stride]         # [seq[0],   seq[stride],     ..., seq[-1]    ][0m
+[94m#>>> seq[low::stride]      # [seq[low], seq[low+stride], ..., seq[-1]    ][0m
+[94m#>>> seq[:high:stride]     # [seq[0],   seq[stride],     ..., seq[high-1]][0m
+[94m#>>> seq[low:high:stride]  # [seq[low], seq[low+stride], ..., seq[high-1]][0m
+[92m[0m
+[92m###sequence supports the following operations[0m
+[92m##1. in, not in[0m
+[92mprint "str" in "string"[0m
+True
+[92mprint "str" not in "string"[0m
+False
+[92mprint 2 in [0, 1, 2, 3][0m
+True
+[92mprint 2 in [0, 1, 22, 3][0m
+False
+[92m##2. + [0m
+[92mprint [1,2,3] + [3,4][0m
+[1, 2, 3, 3, 4]
+[92mprint "long live" + " and prosper"[0m
+long live and prosper
+[92m##3. * [0m
+[92mprint [1,2,3] *3 [0m
+[1, 2, 3, 1, 2, 3, 1, 2, 3]
+[92mprint "cloud" *3 [0m
+cloudcloudcloud
+[92m##4. slicing: s[i], s[i:j], s[i:j:k][0m
+[94m#s=[0,1,2,3,4,5,6,7,8,9][0m
+[92ms=list("0123456789")[0m
+[92mprint s[0:4][0m
+['0', '1', '2', '3']
+[92mprint s[3:5][0m
+['3', '4']
+[92mprint s[3:][0m
+['3', '4', '5', '6', '7', '8', '9']
+[92mprint s[-1][0m
+9
+[92mprint s[:-1][0m
+['0', '1', '2', '3', '4', '5', '6', '7', '8']
+[94m#reverse the order[0m
+[92mprint s[::-1]         #s not changed[0m
+['9', '8', '7', '6', '5', '4', '3', '2', '1', '0']
+[92ms.reverse(); print s; #s changed[0m
+['9', '8', '7', '6', '5', '4', '3', '2', '1', '0']
+[94m#sort the order[0m
+[92mprint sorted(s)          #s is not changed[0m
+['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
+[92ms.sort(); print s        #s is changed[0m
+['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
+[94m#remove 2 elements while insert 7 elements[0m
+[92ms[3:5] = [11]*7; print s[0m
+['0', '1', '2', 11, 11, 11, 11, 11, 11, 11, '5', '6', '7', '8', '9']
+[94m#remove 7 elements[0m
+[92ms[3:3+7] = []; print s[0m
+['0', '1', '2', '5', '6', '7', '8', '9']
+[94m#insert back the 7 elements with insert()[0m
+[92ms.insert(3, 11); s.insert(3,11); print s[0m
+['0', '1', '2', 11, 11, '5', '6', '7', '8', '9']
+[94m#remove() will not remove the fist occurence[0m
+[92ms.remove(11); print s[0m
+['0', '1', '2', 11, '5', '6', '7', '8', '9']
+[92m##5. len(s), min(s), max(s)[0m
+[92ms=(1,2,3); print len(s), min(s), max(s)[0m
+3 1 3
+[92m##6. s.index(i), s.count(i), s.find(i)[0m
+[92ms="banana"; print s.index('an'), s.count('an'), s.find('an')[0m
+1 2 1
+[92ms=(12,1,2,12); print s.index(2), s.count(2)[0m
+2 1
+[92m##7. ==, is -->the below difference is caused by that str is immutable[0m
+[92ma=[1,2,3];c=b=[1,2,3]; print a==b, a is b, c is b[0m
+True False True
+[92ma='12345';c=b='12345'; print a==b, a is b, c is b[0m
+True True True
+[92m##8. del s[i] only works for mutable sequene [0m
+[92ma=b=[1,2,3]; del a[0]; print a,b[0m
+[2, 3] [2, 3]
+[92ma=b=[1,2,3]; a.pop(0); print a,b[0m
+[2, 3] [2, 3]
+[92mprint inspect.getmro(str)[0m
+(<type 'str'>, <type 'basestring'>, <type 'object'>)
+[92mprint inspect.getmro(tuple)[0m
+(<type 'tuple'>, <type 'object'>)
+[92mprint inspect.getmro(xrange)[0m
+(<type 'xrange'>, <type 'object'>)
+
+
+[91m========= set =========[0m
+[92m##get intersection of two sets[0m
+[92mset1 = set([0,2,4,6,8])[0m
+[92mset2 = set((0,3,6,9))[0m
+[92mprint set1 & set2[0m
+set([0, 6])
+[92mprint set1.intersection(set2)[0m
+set([0, 6])
+[92m[0m
+[92m##get difference of two sets[0m
+[92mset1 = set([0,2,4,6,8])[0m
+[92mset2 = set((0,3,6,9))[0m
+[92mprint set1 - set2[0m
+set([8, 2, 4])
+[92mprint set1.difference(set2)[0m
+set([8, 2, 4])
+[92m[0m
+[92m##get union of two sets[0m
+[92mset1 = set([0,2,4,6,8])[0m
+[92mset2 = set((0,3,6,9))[0m
+[92mprint set1 | set2[0m
+set([0, 2, 3, 4, 6, 8, 9])
+[92mprint set1.union(set2)[0m
+set([0, 2, 3, 4, 6, 8, 9])
+[92m##below not supported[0m
+[94m#print set1 + set2[0m
+[92m[0m
+[92mimport copy[0m
+[92m##assignment will only create a pointer[0m
+[92mset1 = set([0,2,4]); set2 = set1;            set1.clear(); print set1, set2[0m
+set([]) set([])
+[92m##copy() will do a shallow copy[0m
+[92mset1 = set([0,2,4]); set2 = set1.copy();     set1.clear(); print set1, set2[0m
+set([]) set([0, 2, 4])
+[92mset1 = set([0,2,4]); set2 = copy.copy(set1); set1.clear(); print set1, set2[0m
+set([]) set([0, 2, 4])
+[92m[0m
+[92m##two ways to define a Set[0m
+[92mset1 = set([0,2,4,6,8,2,6]); print set1, type(set1)[0m
+set([0, 8, 2, 4, 6]) <type 'set'>
+[92mset1 = {0,2,4,6,8,2,6};      print set1, type(set1)  # using curly braces[0m
+set([0, 8, 2, 4, 6]) <type 'set'>
+
+
+[91m========= frozenset =========[0m
+[92m##add, remove, discard#[0m
+[92mprint dir(set)[0m
+['__and__', '__class__', '__cmp__', '__contains__', '__delattr__', '__doc__', '__eq__', '__format__', '__ge__', '__getattribute__', '__gt__', '__hash__', '__iand__', '__init__', '__ior__', '__isub__', '__iter__', '__ixor__', '__le__', '__len__', '__lt__', '__ne__', '__new__', '__or__', '__rand__', '__reduce__', '__reduce_ex__', '__repr__', '__ror__', '__rsub__', '__rxor__', '__setattr__', '__sizeof__', '__str__', '__sub__', '__subclasshook__', '__xor__', 'add', 'clear', 'copy', 'difference', 'difference_update', 'discard', 'intersection', 'intersection_update', 'isdisjoint', 'issubset', 'issuperset', 'pop', 'remove', 'symmetric_difference', 'symmetric_difference_update', 'union', 'update']
+[92mprint set.__doc__[0m
+set() -> new empty set object
+set(iterable) -> new set object
+
+Build an unordered collection of unique elements.
+[92mprint set.__bases__[0m
+(<type 'object'>,)
+[92mset1 = set([0,2,4,6,8])[0m
+[92mset1.add(10);    print set1[0m
+set([0, 2, 4, 6, 8, 10])
+[92mset1.remove(10); print set1[0m
+set([0, 2, 4, 6, 8])
+[94m#discard() is similar to remove(), butt it will not throw error if the 9 not a member of set1[0m
+[92mset1.discard(9); print set1[0m
+set([0, 2, 4, 6, 8])
+[92m[0m
+[92m##frozensets are sets immutable, 'set2.add(11)' will throw exception[0m
+[92mset2 = frozenset([1,3,5,7,9]); print set2[0m
+frozenset([1, 3, 9, 5, 7])
+
+
+[91m========= shutil =========[0m
+[92mimport shutil[0m
+[94m#shutil.move('/root/lab/testtools/rhel664/dallas',             '/lab/testtools/rhel664/')[0m
+[94m#shutil.move('/root/lab/testtools/rhel664/otp/R15B01_halfword','/lab/testtools/rhel664/otp/')[0m
+[94m#shutil.copy2   ('/root/var/dallas/1419_973_emalavn_BS',       '/var/dallas/OP305_R10A72')[0m
+[94m#shutil.copytree('/root/var/dallas/1419_973_emalavn_BS',       '/var/dallas/OP305_R10A72')[0m
+[94m#shutil.rmtree  (deploy_to_data_dir, ignore_errors=True)[0m
+[94m#if not os.path.isdir(deploy_to_data_dir):[0m
+[94m#   shutil.copytree(base_data_dir, deploy_to_data_dir)[0m
+[94m#os.listdir('/lab/testtools/rhel664')[0m
+
+
+[91m========= socket =========[0m
+[92m###python -c 'import socket; s=socket.socket(); s.bind(("", 0)); print(s.getsockname()[1]); s.close()'[0m
+[92mimport socket[0m
+[92ms=socket.socket(); print s; print(s.getsockname())[0m
+<socket._socketobject object at 0x7f12d0166ec0>
+('0.0.0.0', 0)
+[92ms.bind(("", 0));   print s; print(s.getsockname())[0m
+<socket._socketobject object at 0x7f12d0166ec0>
+('0.0.0.0', 8480)
+[92ms.close();         print s[0m
+<socket._socketobject object at 0x7f12d0166ec0>
+
+
+[91m========= time, datetime =========[0m
+[92mimport time[0m
+[92mmytuple=(1975,7,11,22,59,59,0,0,0)[0m
+[92mprint                             time.mktime(mytuple)   #174322799.0[0m
+174322799.0
+[92mprint time.asctime(time.localtime(time.mktime(mytuple))) #Fri Jul 11 22:59:59 1975[0m
+Fri Jul 11 22:59:59 1975
+[92mprint                             time.time()            #1493094303.6  #num of ticks since 1970/1/1/12:00 [0m
+1581695511.33
+[92mprint              time.localtime(time.time())           #time.struct_time() #local time in tuple[0m
+time.struct_time(tm_year=2020, tm_mon=2, tm_mday=14, tm_hour=23, tm_min=51, tm_sec=51, tm_wday=4, tm_yday=45, tm_isdst=0)
+[92mprint time.asctime(time.localtime(time.time()))          #Tue Apr 25 12:25:05 2017  #convert tuple to local formatted string[0m
+Fri Feb 14 23:51:51 2020
+[92m[0m
+[92mimport datetime[0m
+[92mprint datetime.timedelta                    #<type 'datetime.timedelta'>[0m
+<type 'datetime.timedelta'>
+[92mprint datetime.date                         #<type 'datetime.date'>  #class for date only[0m
+<type 'datetime.date'>
+[92mprint datetime.time                         #<type 'datetime.time'>  #class for time only[0m
+<type 'datetime.time'>
+[92mprint datetime.datetime                     #<type 'datetime.datetime'> #class for both date and time[0m
+<type 'datetime.datetime'>
+[92mprint datetime.datetime(2016, 10, 1, 19, 30, 59, 99999)   #2016-10-01 19:30:59.099999[0m
+2016-10-01 19:30:59.099999
+[92mprint datetime.datetime.today()             #2017-04-25 12:51:08.911752[0m
+2020-02-14 23:51:51.328601
+[92mprint datetime.datetime.today().date()      #2017-04-25     #local date[0m
+2020-02-14
+[92mprint datetime.datetime.today().time()      #12:52:05.980688[0m
+23:51:51.329196
+[92mprint datetime.datetime.utcnow()            #2017-04-25 04:58:29.998501[0m
+2020-02-14 15:51:51.329490
+[92mprint datetime.datetime.now()               #2017-04-25 12:58:47.785288[0m
+2020-02-14 23:51:51.329532
+[92mprint datetime.datetime.now()  .date()      #2017-04-25     #local date[0m
+2020-02-14
+[92mprint datetime.datetime.now()  .time()      #12:46:52.723122[0m
+23:51:51.330072
+[92mprint datetime.date.today()                 #2017-04-25[0m
+2020-02-14
+[92mprint datetime.date.today().weekday()       #1              #0 for Mon, 6 for Sun[0m
+4
+[92mprint datetime.date(1975,7,17)              #1975-07-17[0m
+1975-07-17
+[92mprint datetime.date.today()-datetime.date(1975,7,11)        #15264 days, 0:00:00 #how many days have I lived[0m
+16289 days, 0:00:00
+[92mprint datetime.date.today()+datetime.timedelta(days=10000)  #2044-09-10  #after 10000 days[0m
+2047-07-02
+[92m[0m
+[92mprint datetime.timedelta(hours=1)                           #1:00:00[0m
+1:00:00
+[92mprint datetime.timedelta(hours=25,days=1,seconds=1)         #2 days, 1:00:01[0m
+2 days, 1:00:01
+
+
+[91m========= calendar =========[0m
+[92mimport calendar[0m
+[92mcal = calendar.month(2016, 4)[0m
+[92mprint cal[0m
+     April 2016
+Mo Tu We Th Fr Sa Su
+             1  2  3
+ 4  5  6  7  8  9 10
+11 12 13 14 15 16 17
+18 19 20 21 22 23 24
+25 26 27 28 29 30
+
+[92mprint type(cal)[0m
+<type 'str'>
+[94m#Returns a 3-column calendar for an entire year as a multi-line string using the formatyear() of the TextCalendar class.[0m
+[94m#w  The width between two columns. Default value is 2.[0m
+[94m#l  Blank line between two rows. Default value is 1. [0m
+[94m#c  Space between two months (Column wise). Default value is 6. [0m
+[94m#m  Number of months in a row. Default value is 3.  [0m
+[92mprint calendar.calendar(1975,2,1,6,3)[0m
+                                  1975
+
+      January                   February                   March
+Mo Tu We Th Fr Sa Su      Mo Tu We Th Fr Sa Su      Mo Tu We Th Fr Sa Su
+       1  2  3  4  5                      1  2                      1  2
+ 6  7  8  9 10 11 12       3  4  5  6  7  8  9       3  4  5  6  7  8  9
+13 14 15 16 17 18 19      10 11 12 13 14 15 16      10 11 12 13 14 15 16
+20 21 22 23 24 25 26      17 18 19 20 21 22 23      17 18 19 20 21 22 23
+27 28 29 30 31            24 25 26 27 28            24 25 26 27 28 29 30
+                                                    31
+
+       April                      May                       June
+Mo Tu We Th Fr Sa Su      Mo Tu We Th Fr Sa Su      Mo Tu We Th Fr Sa Su
+    1  2  3  4  5  6                1  2  3  4                         1
+ 7  8  9 10 11 12 13       5  6  7  8  9 10 11       2  3  4  5  6  7  8
+14 15 16 17 18 19 20      12 13 14 15 16 17 18       9 10 11 12 13 14 15
+21 22 23 24 25 26 27      19 20 21 22 23 24 25      16 17 18 19 20 21 22
+28 29 30                  26 27 28 29 30 31         23 24 25 26 27 28 29
+                                                    30
+
+        July                     August                  September
+Mo Tu We Th Fr Sa Su      Mo Tu We Th Fr Sa Su      Mo Tu We Th Fr Sa Su
+    1  2  3  4  5  6                   1  2  3       1  2  3  4  5  6  7
+ 7  8  9 10 11 12 13       4  5  6  7  8  9 10       8  9 10 11 12 13 14
+14 15 16 17 18 19 20      11 12 13 14 15 16 17      15 16 17 18 19 20 21
+21 22 23 24 25 26 27      18 19 20 21 22 23 24      22 23 24 25 26 27 28
+28 29 30 31               25 26 27 28 29 30 31      29 30
+
+      October                   November                  December
+Mo Tu We Th Fr Sa Su      Mo Tu We Th Fr Sa Su      Mo Tu We Th Fr Sa Su
+       1  2  3  4  5                      1  2       1  2  3  4  5  6  7
+ 6  7  8  9 10 11 12       3  4  5  6  7  8  9       8  9 10 11 12 13 14
+13 14 15 16 17 18 19      10 11 12 13 14 15 16      15 16 17 18 19 20 21
+20 21 22 23 24 25 26      17 18 19 20 21 22 23      22 23 24 25 26 27 28
+27 28 29 30 31            24 25 26 27 28 29 30      29 30 31
+
+
+
+[91m========= multiple parents =========[0m
+[92m##multiple parents class[0m
+[92mclass Mom(object):
+    def __init__(self):
+        print "in Mom __init__, but self argument is child!!!", self
+        self.var1="hey im mom"
+        self.name="linda"[0m
+[92m[0m
+[92mclass Dad(object):
+    var2="hey im dad"
+    name="peter"[0m
+[92m[0m
+[92mclass Child(Mom,Dad):
+    var3="hey im new"
+    name="vina"
+    def change(self, v="hey im mother"):
+        print "in change:", self.var1
+        self.var1 = v
+        print "in change:", self.var1
+    [0m
+[92mchildObj=Child()[0m
+in Mom __init__, but self argument is child!!! <color.Child object at 0x7f12d012f8d0>
+[92mchildObj.change()[0m
+in change: hey im mom
+in change: hey im mother
+[92mprint childObj.var1[0m
+hey im mother
+[92mprint childObj.var2[0m
+hey im dad
+[92mprint childObj.var3[0m
+hey im new
+[92mprint childObj.name[0m
+linda
+
+
+[91m========= __init__(), __new__() =========[0m
+[92m##__new__ has to create the instance first, so __init__ can initialize it[0m
+[94m#[0m
+[92m##__new__ [0m
+[94m#  when you need to control the creation of a new instance.[0m
+[94m#  it's the first step --> return a new instance of your class[0m
+[94m#  static class method[0m
+[94m#  #do not override __new__ unless you're subclassing an immutable type like str, int, unicode or tuple.[0m
+[92m[0m
+[92m##__init__ [0m
+[94m#  when you need to control initialization of a new instance.[0m
+[94m#  it's the second step --> doesn't return anything, only initiallizing the instance the __new__ returned[0m
+[94m#  instance method[0m
+[94m#  __init__ takes self as parameter[0m
+[92m[0m
+[92mclass A(object): pass[0m
+[92mclass B(): pass[0m
+[92mprint hasattr(A, "__new__"), hasattr(A, "__init__")[0m
+True True
+[92mprint hasattr(B, "__new__"), hasattr(B, "__init__")[0m
+False False
+
+
+[91m========= @classmethod, @staticmethod =========[0m
+[92m##Difference between @staticmethod and @classmethod in Python:[0m
+[94m#[0m
+[94m#classmethods, [0m
+[94m#    the class of the object instance is implicitly passed as the first argument instead of self.[0m
+[94m#staticmethods, [0m
+[94m#    neither self (the object instance) nor cls (the class) is implicitly passed as the first argument. [0m
+[94m#    They behave like plain functions except that you can call them from an instance or the class:[0m
+[94m#[0m
+[92m##in short term[0m
+[94m#    an instance method knows its instance (and from that, its class)[0m
+[94m#    a class method     knows its class[0m
+[94m#    a static method    doesn't know its class or instance[0m
+[92m[0m
+[92mimport dis[0m
+[92mclass A(object):
+    def foo(self,x):                                  #self --> <__main__.A object at 0xffd7ea8c>
+        print "instane method's first argument self is: %s" % (self)
+    @classmethod
+    def class_foo(cls,x):                             #cls ---> <class '__main__.A'>
+        print "class   method's first argument cls  is: %s" % (cls)
+    @staticmethod
+    def static_foo(x):
+        print "static  method has no self or cls as first argument"[0m
+[92ma=A()[0m
+[92ma.foo(1)[0m
+instane method's first argument self is: <color.A object at 0x7f12d012f750>
+[92ma.class_foo(1)[0m
+class   method's first argument cls  is: <class 'color.A'>
+[92mA.class_foo(1)[0m
+class   method's first argument cls  is: <class 'color.A'>
+[92ma.static_foo(1)[0m
+static  method has no self or cls as first argument
+[92mA.static_foo(1)[0m
+static  method has no self or cls as first argument
+[92mdis.dis(A)[0m
+Disassembly of foo:
+  3           0 LOAD_CONST               1 ("instane method's first argument self is: %s")
+              3 LOAD_FAST                0 (self)
+              6 BINARY_MODULO       
+              7 PRINT_ITEM          
+              8 PRINT_NEWLINE       
+              9 LOAD_CONST               0 (None)
+             12 RETURN_VALUE        
+
+
+
+[91m========= singleton =========[0m
+[0;33m[0m
+[0;32m## getinstance is same as Myclass,    they are class [0m
+[0;32m## geinstance() is same as Myclass(), they are instance[0m
+[0;33mdef singleton(class_):[0m
+[0;33m  instances = {}[0m
+[0;33m  def getinstance(*args, **kwargs):[0m
+[0;33m    if class_ not in instances:[0m
+[0;33m        instances[class_] = class_(*args, **kwargs)[0m
+[0;33m        print "-->instance created here with id: %s" % id(instances[class_]) [0m
+[0;33m    return instances[class_][0m
+[0;33m  print "-->class created here with id: %s" % id(getinstance)[0m
+[0;33m  return getinstance[0m
+[0;33m[0m
+[0;33m@singleton[0m
+[0;33mclass Myclass(object):[0m
+[0;33m  pass[0m
+-->class created here with id: 140053237894096
+[0;33m[0m
+[0;33mc=Myclass[0m
+[0;33ma=Myclass(); print id(a)[0m
+-->instance created here with id: 140053237910352
+140053237910352
+[0;33mb=Myclass(); print id(b)[0m
+140053237910352
+[0;33m[0m
+
+
+[91m========= type: two ways to make a class =========[0m
+[92m## metaclass: [0m
+[94m#  metaclass is the class of a class[0m
+[94m#    #[].__class__    -->   <type 'list'>[0m
+[94m#    #list.__class__  -->   <type 'type'>[0m
+[94m#    so 'type' is a metaclass[0m
+[94m#  Any class whose instances are themselves classes[0m
+[94m#    list is type's instance[0m
+[94m#    list is a class[0m
+[94m#    so 'type' is a metaclass[0m
+[92m[0m
+[92m##two ways to create a class[0m
+[94m#1. Class1 defined[0m
+[92mclass Class1(object):
+    foo = 2
+    bar = 4[0m
+[92ma1 = Class1[0m
+[92mprint a1, a1.foo, a1.bar[0m
+<class 'color.Class1'> 2 4
+[92mb1 = a1()[0m
+[92mprint b1, b1.foo, b1.bar[0m
+<color.Class1 object at 0x7f12d012fb50> 2 4
+[92mprint b1.__class__[0m
+<class 'color.Class1'>
+[92mprint a1.__class__[0m
+<type 'type'>
+[92mprint Class1.__class__[0m
+<type 'type'>
+[92m[0m
+[94m#2. Class2 created at runtime[0m
+[92mdef make_a_class(**attrs):
+    return type('Class2', (object,), dict(**attrs))[0m
+[92m###              ^^^^^^\  ^^^^^^^^^^\ ^^^^^^^^^^^^^^-class attributes in a dict[0m
+[92m###                     \            \-class parents[0m
+[92m###                      \-class name[0m
+[92ma2 = Class2 = make_a_class(foo=2, bar=4)[0m
+[92mprint a2, a2.foo, a2.bar[0m
+<class 'color.Class2'> 2 4
+[92mb2 = a2()[0m
+[92mprint b2, b2.foo, b2.bar[0m
+<color.Class2 object at 0x7f12d012fad0> 2 4
+[92mprint b2.__class__[0m
+<class 'color.Class2'>
+[92mprint a2.__class__[0m
+<type 'type'>
+[92mprint Class2.__class__[0m
+<type 'type'>
+
+
+[91m========= metaclass is the class of a class =========[0m
+[94m#metaclass is the class of a class[0m
+[94m#metaclass is a instance's class's class[0m
+[92mprint type('1'), type(type('1'))[0m
+<type 'str'> <type 'type'>
+[94m#or[0m
+[92mprint '1'.__class__, '1'.__class__.__class__[0m
+<type 'str'> <type 'type'>
+
+
+[91m========= define_metaclass-__new__-__init__-__call__ =========[0m
+[92m## 1.How do we determine the metaclass of a class[0m
+[94m#  if a class or its base has a __metaclass__ attribute, it's taken as the metaclass.[0m
+[94m#  Otherwise, type is the metaclass.[0m
+[92m## 2.How to define a class that has a metaclass other than 'type'[0m
+[94m#  class Class1(object):[0m
+[94m#      __metaclass__ = MyMeta[0m
+[92m## 3.How to create a class that has a metaclass other then 'type'[0m
+[94m#  a1 = MyMeta(Class1, bases, dict)[0m
+[92m## 4.Metaclass's __new__ and __init__[0m
+[94m#  __new__ should be implemented when you want to control the creation of a new class[0m
+[94m#           __new__() will return class1 , aka the instance of MyMeta[0m
+[94m#  __init__ should be implemented when you want to control the initialization of the new object after it has been created[0m
+[94m#  __call__ is called when the already-created class is "called" to instantiate a new object.[0m
+[94m#           x.__call__(...) <==> x(...), [0m
+[94m#           __call__() will return the instance of class1[0m
+
+
+[91m========= dis function =========[0m
+[92mimport dis[0m
+[92mdef hello():
+    print "hello"
+    return True[0m
+[92mdis.dis(hello)[0m
+  2           0 LOAD_CONST               1 ('hello')
+              3 PRINT_ITEM          
+              4 PRINT_NEWLINE       
+
+  3           5 LOAD_GLOBAL              0 (True)
+              8 RETURN_VALUE        
+[92m[0m
+[92mdef plus():
+    a = 11
+    b = 99
+    c = a + b
+    print c
+    return str(a)[0m
+[92mdis.dis(plus)[0m
+  2           0 LOAD_CONST               1 (11)
+              3 STORE_FAST               0 (a)
+
+  3           6 LOAD_CONST               2 (99)
+              9 STORE_FAST               1 (b)
+
+  4          12 LOAD_FAST                0 (a)
+             15 LOAD_FAST                1 (b)
+             18 BINARY_ADD          
+             19 STORE_FAST               2 (c)
+
+  5          22 LOAD_FAST                2 (c)
+             25 PRINT_ITEM          
+             26 PRINT_NEWLINE       
+
+  6          27 LOAD_GLOBAL              0 (str)
+             30 LOAD_FAST                0 (a)
+             33 CALL_FUNCTION            1
+             36 RETURN_VALUE        
+[92m[0m
+[92mdef concat(a, b):
+    return a + b[0m
+[92mdis.dis(concat)[0m
+  2           0 LOAD_FAST                0 (a)
+              3 LOAD_FAST                1 (b)
+              6 BINARY_ADD          
+              7 RETURN_VALUE        
+[92m[0m
+[92mdef loop():
+    for i in xrange(5):
+        print i[0m
+[92mdis.dis(loop)[0m
+  2           0 SETUP_LOOP              25 (to 28)
+              3 LOAD_GLOBAL              0 (xrange)
+              6 LOAD_CONST               1 (5)
+              9 CALL_FUNCTION            1
+             12 GET_ITER            
+        >>   13 FOR_ITER                11 (to 27)
+             16 STORE_FAST               0 (i)
+
+  3          19 LOAD_FAST                0 (i)
+             22 PRINT_ITEM          
+             23 PRINT_NEWLINE       
+             24 JUMP_ABSOLUTE           13
+        >>   27 POP_BLOCK           
+        >>   28 LOAD_CONST               0 (None)
+             31 RETURN_VALUE        
+
+
+[91m========= dis class =========[0m
+[92mimport dis[0m
+[92mclass Parrot:
+    name = "Mars bird"
+    def __init__(self):
+        self.kind = "Norwegian Blue"
+        self.fowner, self.lowner = 'Evan','Liu'
+    def is_dead(self):
+        return False
+    def sing(self, v):
+        return self.name +" says: " + v[0m
+[92mdis.dis(Parrot)[0m
+Disassembly of __init__:
+  4           0 LOAD_CONST               1 ('Norwegian Blue')
+              3 LOAD_FAST                0 (self)
+              6 STORE_ATTR               0 (kind)
+
+  5           9 LOAD_CONST               4 (('Evan', 'Liu'))
+             12 UNPACK_SEQUENCE          2
+             15 LOAD_FAST                0 (self)
+             18 STORE_ATTR               1 (fowner)
+             21 LOAD_FAST                0 (self)
+             24 STORE_ATTR               2 (lowner)
+             27 LOAD_CONST               0 (None)
+             30 RETURN_VALUE        
+
+Disassembly of is_dead:
+  7           0 LOAD_GLOBAL              0 (False)
+              3 RETURN_VALUE        
+
+Disassembly of sing:
+  9           0 LOAD_FAST                0 (self)
+              3 LOAD_ATTR                0 (name)
+              6 LOAD_CONST               1 (' says: ')
+              9 BINARY_ADD          
+             10 LOAD_FAST                1 (v)
+             13 BINARY_ADD          
+             14 RETURN_VALUE        
+
+[92mprint Parrot().sing("hello")[0m
+Mars bird says: hello
+[92mdis.dis("long long")[0m
+          0 IMPORT_NAME     28271 (28271)
+          3 BUILD_LIST      27680
+          6 JUMP_IF_FALSE_OR_POP 26478
+
+[91mtimer: Test2: Fri Feb 14 23:51:52 2020[0m
+[91mtimer: Test2: Fri Feb 14 23:51:52 2020[0m
+[93mtimer: Test1: Fri Feb 14 23:51:52 2020[0m
+[93mtimer: Test1: Fri Feb 14 23:51:52 2020[0m
+[93mtimer: Test1: Fri Feb 14 23:51:53 2020[0m
+[93mTimer: Test1 Completed[0m
+[93mtimer: Test1: Fri Feb 14 23:51:53 2020[0m
+[93mTimer: Test1 Completed[0m
+[91mtimer: Test2: Fri Feb 14 23:51:54 2020[0m
+[91mtimer: Test2: Fri Feb 14 23:51:54 2020[0m
+[91mtimer: Test2: Fri Feb 14 23:51:56 2020[0m
+[91mtimer: Test2: Fri Feb 14 23:51:56 2020[0m
+[91mtimer: Test2: Fri Feb 14 23:51:58 2020[0m
+[91mTimer: Test2 Completed[0m
+[91mtimer: Test2: Fri Feb 14 23:51:58 2020[0m
+[91mTimer: Test2 Completed[0m
