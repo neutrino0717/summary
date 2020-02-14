@@ -23,7 +23,7 @@ EOF
     print subprocess.check_output(str, shell=True)
 
 def peep(head, str, way=eep, run=True):
-    if not run: return
+    if run: return
     pp(head)
     way(str)
 
@@ -199,7 +199,8 @@ def signal_handler(signal, frame):
 signal.signal(signal.SIGINT, signal_handler)
 print('Press Ctrl+C')
 print signal.pause.__doc__
-signal.pause()
+#uncomment this line to test
+#signal.pause()
 """, ebrun, 0)
 #sys.exit()
 
@@ -2248,7 +2249,7 @@ class Myclass(object):
 c=Myclass
 a=Myclass(); print id(a)
 b=Myclass(); print id(b)
-""", ebrun, 0)
+""", eep, 0)
 
 peep("type: two ways to make a class", """
 ## metaclass: 
