@@ -4,4 +4,14 @@ pygmentize -g <<"EOF"
 # c-b :source-file ~/.tmux.conf   #reload config
 # tmux source-file ~/.tmux.conf   #reload config
 
+#############################
+
+    Ctrl+b c — create a new window.
+    Ctrl+b " — split pane horizontally.
+    Ctrl+b % — split pane vertically.
+    Ctrl+b arrow key — switch pane.
+    Hold Ctrl+b, don’t release it and hold one of the arrow keys — resize pane.
+    Ctrl+b n — move to the (n)ext window.
+    Ctrl+b p — move to the (p)revious window.
+
 EOF

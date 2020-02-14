@@ -17,4 +17,10 @@ perl  #: slightly different
 #\S           = [^ \t\n\r\f]
 #\b           match word boundary
 #\B,\<,\>     not at word boundary
+#
+#xxxxxx(?=abc)       lookahead
+#xxxxxx(?!abc)       lookahead negative
+#(?<=abc)xxxxx       lookbehind
+#(?<!abc)xxxxx       lookbehind negative
+#
 EON

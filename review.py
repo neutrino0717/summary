@@ -28,27 +28,21 @@ def peep(head, str, way=eep, run=True):
     way(str)
 
 ####################################### decorator #####################################################
-pp("multilayer decorator")
+peep("multilayer decorator", '''
 def strong_decorate(func):  # get_text = strong_decorate(get_text)
     def func_wrapper(name):
         return "<strong>{0}</strong>".format(func(name))
-
     return func_wrapper
-
 
 def p_decorate(func):
     def func_wrapper(name):
         return "<p>{0}</p>".format(func(name))
-
     return func_wrapper
-
 
 def div_decorate(func):
     def func_wrapper(name):
         return "<div>{0}</div>".format(func(name))
-
     return func_wrapper
-
 
 # get_text = strong_decorate(get_text)
 # get_text = p_decorate(get_text)
@@ -59,24 +53,18 @@ def div_decorate(func):
 def get_text(name):
     return "Hello " + name
 
+print(get_text("John"))     ## <div><p><strong>Hello John</strong></p></div>
+''', eep, 0)
 
-print(get_text("John"))
-# <div><p><strong>Hello John</strong></p></div>
-
-pp("Passing arguments to decorators")
-
-
+peep("Passing arguments to decorators", '''
 # from functools import wraps
 def tags(tag_name):
     def tags_decorator(func):
         # @wraps(func)       #--> get_text.__name__, get_text.__doc__, get_text.__module__ will return correct values
         def func_wrapper(name):
             return "<{1}>{0}</{1}>".format(func(name), tag_name)
-
         return func_wrapper
-
     return tags_decorator
-
 
 @tags("div")
 @tags("p")
@@ -84,17 +72,14 @@ def tags(tag_name):
 def get_text(name):
     return "Hello " + name
 
-
 # get_text = tags("strong")(get_text)
 # get_text = tags("p")(get_text)
 # get_text = tags("div")(get_text)
-print(get_text("John"))
-# <div><p><strong>Hello John</strong></p></div>
+print(get_text("John"))  ## <div><p><strong>Hello John</strong></p></div>
+''', eep, 0)
 
 ########################### namemangle ################################
-pp("namemangle to prevent accidental access")
-
-
+peep("namemangle to prevent accidental access", '''
 # _var, _func():       semiprivate and meant just for convention
 # __var, __func():     namemangle to prevent accidental access,
 #                     __var changed to _cls__var by interpreter to ensure that the name will not overlap
@@ -105,39 +90,37 @@ class Test(object):
         self._a = 'a'
         self.__b = 'b'
         self.__c__ = 'c'
-
-
 t = Test()
 print t._a  # a  ## _a is a private variable
 print t.__c__  # c  ## __c__ is a private variable, and in my view only for buildin, but it's OK if you use it
 # print t.__b         ## __b not exist namemangling, use _Test__b instead
 print t._Test__b  # b
+''', eep, 0)
 
-pp("object.__dict__")
+peep("object.__dict__", """
 from pprint import pprint
-
-
+import logging
 class A:
-    pass
-ep("pprint(A.__dict__)")
+    a1 = 1
+    def __init__(self):
+        self.a2 = 2
+pprint(A.__dict__)
 
 class B(object):
     pass
-ep("pprint(dict(object.__dict__))")
-ep("pprint(dict(B.__dict__))")
-
-
+pprint(dict(object.__dict__))
+pprint(dict(B.__dict__))
 a = A()
 b = B()
-ep("print(B.__dict__['__dict__'])")
-ep("pprint(a.__dict__)")
-ep("pprint(b.__dict__)")
+print(B.__dict__['__dict__'])
+pprint(a.__dict__)
+pprint(b.__dict__)
 
-pp("object.__file__")
-ep("print [ i for i in dir(os) if '__' in i ]")
-ep("print os.__file__, os.__name__, __name__")
-ep("print re.__file__")
-ep("print logging.__file__")
+print [ i for i in dir(os) if '__' in i ]
+print os.__file__, os.__name__, __name__
+print re.__file__
+print logging.__file__
+""", ebrun, 0)
 
 '''
 #__init__.py will run when you import a package.
@@ -166,44 +149,39 @@ from .submodule_impl import CustomClass
 from mymodule.submodule import CustomClass
 '''
 
-pp("__init__.py")
-
+peep("__init__.py", """
 # for example below:
 # 1. import unitest will run __init__.py automaticaly
 # 2. in __init__.py, result.py is importted
 # 3. as a result all classes in result.py can be used now
 import unittest
 
-ep("print unittest.__file__")
-ep("print [x for x in open(unittest.__file__[0:-1]) if 'from .result' in x]")
-ep("print next(x for x in open(unittest.__file__[0:-1]) if 'from .result' in x)")
-ep("print unittest")
-ep("print unittest.result")
-ep("print unittest.TestResult")
+print unittest.__file__
+print [x for x in open(unittest.__file__[0:-1]) if 'from .result' in x]
+print next(x for x in open(unittest.__file__[0:-1]) if 'from .result' in x)
+print unittest
+print unittest.result
+print unittest.TestResult
+""", eep, 0)
 
+assert True, "it is True, so no output"
+assert 'tough' in 'toughtough'
 
 ############################ atexit, signal ####################################################################
-pp("atexit")
+peep("atexit, decorator", '''
 import atexit
-ep('assert True, "it is True, so no output"')
-ep("assert 'tough' in 'toughtough'")
-
 # Below will throw out AssertionError exception, and exit
 # assert False, "the result is False."
 # print "this will not be executed"
-
-'''
-pp("atexit decorator")
 
 @atexit.register
 def goodbye():
     print 'Goodbye, no more message will be displayed'
 
-
 print "before run sys.exit()"
-# sys.exit()        #uncomment this to test
+#sys.exit()        #uncomment this to test
 print "after run sys.exit()"
-'''
+''', eep, 0)
 
 peep("signal", """
 import signal
@@ -264,29 +242,26 @@ print False ==1, False ==0, False ==2
 """, ebrun, 0)
 #sys.exit()
 
-pp("tenary")
-ebrun('''
+peep("tenary", '''
 x='021'; y =(x=='021' and "SH" or "not SH"); print y; #SH
 x='021'; y = x=='021' and "SH" or "not SH";  print y; #SH
 x='010'; y = x=='021' and "SH" or "not SH";  print y; #not SH
 y = 1        and "SH" or "not SH";  print y; #SH
 y = 0        and "SH" or "not SH";  print y; #not SH
-''')
+''', eep, 0)
 
 
 
-pp("cmp")
-ebrun('''
+peep("cmp", '''
 print dir(cmp)
 print cmp.__doc__
 print cmp.__class__
 print cmp(5,10)
 print cmp(10,10)
 print cmp(10,5)
-''')
+''', eep, 0)
 
-pp("for break continue else")
-ebrun('''
+peep("for break continue else", '''
 def func(p1):
     for i in xrange(p1+1):
         if i==7: print "break out!"; break
@@ -296,10 +271,9 @@ def func(p1):
         print "done!"
 func(10)
 func(5)
-''')
+''', eep, 0)
 
-pp("try except else")
-ebrun('''
+peep("try except else", '''
 def func(*a_list):
     try:
         print 'the list is:', a_list
@@ -310,31 +284,26 @@ def func(*a_list):
         print 'no error in try-block'
 func()
 func(1,2,3)
-''')
+''', eep, 0)
 
-pp("while else")
-erun('''
+peep("while else", '''
 i = 0
 while i < 2:
     print 'in while: ', i
     i += 1
 else:
     print 'in else: ', i   
-''')
+''', erun, 0)
 
-pp("for else")
-erun('''
+peep("for else", '''
 for i in range(2):
     print 'in while: ', i
 else:
     print 'in else: ', i
-   
-''')
+#
+''', erun, 0)
 
-pp("deepcopy")
-import copy
-
-ebrun('''
+peep("deepcopy", '''
 a = [[1,2,3],[4,5,6]]
 b = a
 a.append(7); print a; print b           #make change to a; b also changed
@@ -362,7 +331,7 @@ print id(aa), id(bb), id(cc)
 aa.append(4)
 print aa, bb, cc
 #dict deep copy
-''')
+''', eep, 0)
 
 ################################ collections ##################################################################################
 
@@ -437,9 +406,7 @@ for n in xrange(7):
 ''', ebrun, 0)
 #sys.exit()
 
-pp("collections.deque")
-
-ebrun('''
+peep("collections.deque as stack or queue", '''
 ###Deques support thread-safe, memory efficient appends and pops from either side of the deque
 ###Deques are a generalization of stacks and queues the name is pronounced "deck" and is short for "double-ended queue"
 
@@ -478,11 +445,10 @@ print 'o' in d
 ##clear
 d.clear();
 print d
-''')
+''', ebrun, 0)
 #sys.exit()
 
-pp("collections.namedtuple")
-ebrun("""
+peep("collections.namedtuple", """
 from collections import namedtuple
 ###Named tuples assign meaning to each position in a tuple and allow for more readable, self-documenting code. 
 ###they add the ability to access fields by name instead of position index.
@@ -502,13 +468,10 @@ print p.x + p.y
 print p                       
 ##others
 x, y = p; print x, y
-
-""")
-#sys.exit()
+""", ebrun, 0)
 
 
-pp("collections.Counter")
-ebrun('''
+peep("collections.Counter", '''
 from collections import Counter
 import inspect
 
@@ -545,12 +508,15 @@ print c + d                       # add two counters together:  c[x] + d[x]
 print c - d                       # subtract (keeping only positive counts)
 print c & d                       # intersection:  min(c[x], d[x])
 print c | d                       # union:  max(c[x], d[x])
-''')
+''', ebrun, 0)
 #sys.exit()
 
 ############################ StringIO ######################################################
 ###when you need to build a huge string, please use cStringIO
 ###myview: cStringIO is similiar to StringBuffer in Java
+##io.StringIO       is a class. It handles Unicode. It reflects the preferred Python 3 library structure.
+##StringIO.StringIO is a class. It handles strings. It reflects the legacy Python 2 library struct
+##cStringIO.StringIO  is faster version of StringIO.StringIO
 peep("cStringIO", '''
 import cStringIO
 
@@ -569,10 +535,6 @@ output.close()''', ebrun, 0)
 #sys.exit()
 
 peep("StringIO", """
-##io.StringIO       is a class. It handles Unicode. It reflects the preferred Python 3 library structure.
-##StringIO.StringIO is a class. It handles strings. It reflects the legacy Python 2 library struct
-##cStringIO.StringIO  is faster version of StringIO.StringIO
-
 import timeit
 test_join='''a=[]
 for i in range(100):
@@ -597,8 +559,7 @@ print(timeit.timeit(test_cStringIO, number=1))
 #sys.exit()
 
 ##################################### dict ############################################################################
-pp("use dict to store list")
-ebrun('''
+peep("use dict to store list", '''
 ### if elements in dict are list, how to give default value '[]' 
 ##1. when use dict, no default value build in for dict
 contxt = {}
@@ -608,19 +569,17 @@ if True:
     else:
         contxt["name_list"] = ["Fiona"]
 print contxt
-''')
+''', ebrun, 0)
 
-pp("use defaultdict to store list")
-ebrun('''
+peep("use defaultdict to store list", '''
 ##2. when use defaultdict, default value is available for all elements
 from collections import defaultdict
 contxt = defaultdict(list)
 contxt["name_list"].append("Fiona")
 print contxt
-''')
+''', ebrun, 0)
 
-pp("use dict setdefault")
-ebrun('''
+peep("use dict setdefault", '''
 ##3. use setdefault to set default for only one element
 contxt = {}
 contxt.setdefault("name_list", []).append("Fiona")
@@ -629,10 +588,9 @@ print contxt
 contxt = {}
 print contxt.get("name_list", [])
 print contxt.get("name_list")
-''')
+''', ebrun, 0)
 
-pp("use fromkeys")
-ebrun('''
+peep("use fromkeys", '''
 ##4. use fromkeys to set default for multiple elements
 #   fromkeys() creates a new dictionary with keys from seq and values set to value.
 #   dict.fromkeys(seq[, value]))
@@ -643,15 +601,13 @@ print contxt
 contxt['name_list'].append("Fiona")
 print contxt
 #                ^^^^^^                  ^^^^^^^
-''')
+''', ebrun, 0)
 
-pp("make dict with two list")
-ebrun('''
+peep("make dict with two list", '''
 keys = ['a', 'b', 'c']
 values = [1, 2, 3]
-print zip(keys, values)
-dd = dict(zip(keys, values))
-print dd
+dd = dict(zip(keys, values)); print dd
+dd = {k:v for k,v in zip(keys,values)}; print dd
 #reverse dict
 print {v: k for k, v in dd.items()}
 #another way to reverse dict
@@ -662,16 +618,21 @@ print      zip(*(zip(*dd.items())[::-1]))
 print dict(zip(*(zip(*dd.items())[::-1])))
 #the 3rd way
 print dict(zip(dd.values(), dd.keys()))
-''')
-#sys.exit()
+''', ebrun, 0)
 
-
-pp("dir")
-ebrun('''
+peep("dir", '''
 ###dir() function
 ##dir() is the most important function when doing introspection. The function returns a sorted list of attributes and methods belonging to an object
 ###why dir() doesn't display __dict__ attribute
 print dir.__doc__
+class Bar(object):
+    def __init__(self):
+        self.a = "bar"
+        self.b = 4711
+global b
+b=Bar()
+print type(Bar), dir(Bar)
+print type(b),   dir(b)
 
 class Foo:
     def __init__(self):
@@ -684,11 +645,10 @@ print type(a),   dir(a)
 print a; print a.__class__; print a.__class__.__name__
 print type(1),   dir(1)
 print type(int), dir(int)
-''')
+''', ebrun, 0)
 #sys.exit()
 
-pp("__dict__")
-ebrun('''
+peep("__dict__", '''
 class Base():
     def __init__(self, conf):
         print self
@@ -711,13 +671,10 @@ print t.__dict__
 ##dir() contains __dict_ and class attribues,etc
 print dir(t)
 
+''', ebrun, 0)
+#sys.exit()
 
-''')
-
-
-
-pp("eval and exec")
-ebrun('''
+peep("eval and exec", '''
 #eval and exec have these two differences:
 #eval: take a single expression, return a value
 #exec: take a block,             return None 
@@ -730,21 +687,17 @@ ebrun('''
 a=5; a = eval('37 + a'); print a          #42
 a=5; exec('a = 37 + a'); print a          #42 
 #a=5; eval('a = 37 + a')                   #SyntaxError: invalid syntax, you cannot evaluate a statement with eval
-''')
+''', ebrun, 0)
 
-pp("try except raise")
+peep("try except raise", """
 ###1. the way to capture multiple exceptions is use a tuple as the first parmamter of except
 ###2. and always use 'as', for both python 2&3 support it
-erun("""
 try:
     l = ["a", "b"]
     int(l[2])
 except (ValueError, IndexError) as e:  
     print "expection captured"
 
-""")
-
-erun("""
 ##raise an exception
 #raise NameError('HiThere')
 
@@ -753,17 +706,17 @@ try:
     raise NameError('HiThere1')
 except NameError:
     print 'An exception captured!'
-""")
 
-erun("""
+
 ##re-raise the same exception
 #If you need to determine whether an exception was raised but don't intend to handle it, a simpler form of the raise statement allows you to re-raise the same exception:
 try:
     raise NameError('HiThere2')
-except NameError:
+except:
     print 'An exception flew by!'
     #raise    #comment out the raise NameError
-""")
+""", erun, 0)
+
 ################################### filter, map, reduce #######################################################
 peep("filter and map", """
 ##The function filter(function, list) offers an elegant way to print out all the elements of a list, that for which the function function returns True. 
@@ -805,7 +758,7 @@ print map(lambda x, y: x*y, a, b)
 alist = ["scala", "akka", "play framework", "sbt", "typesafe"]
 print map(lambda x: x in "This is an example tweet talking about scala and sbt.".split(), alist)
 print [ x in "This is an example tweet talking about scala and sbt.".split() for x in alist ]          #[True, False, False, False, False]
-""", ebrun, 1)
+""", ebrun, 0)
 #sys.exit()
 
 
@@ -818,8 +771,7 @@ peep("reduce", """
 ##.....
 
 ##the largest number
-f = lambda a,b: a if (a > b) else b
-result=reduce(f, [47,11,42,102,13]); print result
+result=reduce(lambda a,b: a if (a > b) else b, [47,11,42,102,13]); print result
 
 ##1 + 2 + 3 ...+ 10
 result=reduce(lambda x, y: x+y, range(1,10)); print result
@@ -833,8 +785,7 @@ result=reduce(list.__add__,[[1, 2, 3], [4, 5], [6, 7, 8]]); print result
 #sys.exit()
 
 ########################### arguments ####################################################
-pp("positional arguments and named arguments")
-ebrun("""
+peep("positional arguments and named arguments", """
 ##use individual parameters
 def func(p1,p2): 
     print(p1, p2)
@@ -844,9 +795,10 @@ func("param1","param2")
 func(*tup)
 
 ##The single star * unpacks the sequence/collection into positional arguments, use tuple as parmaters instead
-def func(*t): print(t)
+def func(*t):
+    print(t)
 tup=("one", 2, 3.0)
-func("one", 2, 3.0)
+#func("one", 2, 3.0)
 func(*tup)
 
 ##The double star ** does the same, only using a dictionary and thus named arguments, use dict as parameter
@@ -876,8 +828,7 @@ def profile(first, last, *numbers, **items):
     print items
 profile('bucky', 'roberts', 1,2,3,4,5, bacon=4, saus=64)
 
-""")
-
+""", ebrun, 0)
 
 ############################################ inspect ###########################################
 peep("id", """
@@ -897,8 +848,7 @@ for i in list2: print id(i),
 #sys.exit()
 
 
-pp("locals(), vars(), globals()")
-ebrun("""
+peep("locals(), vars(), globals()", """
 ##globals() returns the dictionary of the module namespace
 ##          global variables can be accessed inside functions, but cann't be modified inside functions
 ##locals()  returns a dictionary of the current namespace
@@ -936,10 +886,9 @@ foo()
 print '''-->global variabls '''
 print globals()
 
-""")
+""", ebrun, 0)
 
-pp("callable() function. The function checks if an object is a callable object. Or in other words, if an object is a function. ")
-ebrun('''
+peep("callable() function. The function checks if an object is a callable object. Or in other words, if an object is a function. ", '''
 print callable.__doc__
 class Car:
     def setName(self, name):
@@ -950,7 +899,7 @@ def fun(): pass
 print callable(fun)
 print callable([])
 print callable(1)
-''')
+''', ebrun, 0)
 
 peep("hasattr", """
 ##The hasattr() function checks if an object has an attribute. The getattr() function returns the contents of an attribute if there are some.
@@ -997,6 +946,7 @@ m={'d':'dd', 'e':'ee'}
 print inspect.getcallargs(f,7,2,'a','b','c',**m)
 """, ebrun, 0)
 
+#sys.exit()
 peep("inspect.getmembers()", """
 import pprint
 ##All functions of the module re:
@@ -1021,11 +971,10 @@ print inspect.getmro(B)
 print B.__base__
 print B.__base__.__base__
 print B.__base__.__base__.__base__
-""", ebrun, 1)
+""", ebrun, 0)
 #sys.exit()
 
-pp("isinstance()")
-ebrun("""
+peep("isinstance", """
 ##isinstance(object, classinfo)
 ##  check if the object argument is an instance of the classinfo argument
 ##  classinfo need to be a class object nor a type object
@@ -1039,10 +988,10 @@ print isinstance(u'foo', (str,basestring))
 print isinstance(u'foo', (str,unicode))
 print isinstance([], list)
 print isinstance((), tuple)
-""")
+""", ebrun, 0)
 
-pp("issubclass()")
-ebrun("""
+
+peep("issubclass", """
 class MyObject():
    def __init__(self):
       pass
@@ -1054,11 +1003,10 @@ print issubclass(MyObject, MyObject)
 print issubclass(MyObject, Wall)
 print issubclass(Wall, MyObject)
 print issubclass(Wall, Wall)
-""")
+""", ebrun, 0)
 #sys.exit()
 
-pp("inspect.currentframe().f_code.co_name, magic")
-ebrun("""
+peep("inspect.currentframe().f_code.co_name, magic", """
 #e1 = Employee('evan' 'liu',10000)
 #
 #str(e1)     --> call e1.__str__()
@@ -1085,11 +1033,10 @@ e2 = Employee()
 print str(e1)            #__str__ called
 print repr(e2)           #__repr__ called
 print e1 + e2            #__add__ called
-""")
-#sys.exit()
+""", ebrun, 0)
+
 ############################## iterator, generator, enumerate #####################################################
-pp("iterator")
-ebrun("""
+peep("iterator", """
 ##what is iterable: 
 #An iterable is an object that you can get an iterator from.
 #list, str, xrange, dict, file are iterable
@@ -1153,11 +1100,10 @@ for k in {"feng":36, "yu":25, "zhong":27}.items(): print k
 with open("/etc/hosts") as f:
     print type(f) 
     for line in f: print line,
-""")
-#sys.exit()
+""", ebrun,0)
 
 
-pp("enumerate")
+peep("enumerate", """
 
 ##enumerate(sequence, start=0)
 #Return an enumerate object. sequence must be a sequence, an iterator, or some other object which supports iteration. The next() method of the iterator returned by enumerate() returns a tuple containing a count (from start which defaults to 0) and the values obtained from iterating over sequence:
@@ -1169,7 +1115,6 @@ pp("enumerate")
 #However, enumerate is actually implemented in C, not pure Python, so there's no yield involved. You can find the source here: http://hg.python.org/cpython/file/2.7/Objects/enumobject.c
 #
 
-ebrun('''
 def my_enumerate(sequence, start=0):
     n = start
     for elem in sequence:
@@ -1193,10 +1138,9 @@ e=enumerate    (["spring", "summer","fall" ,"winter"])
 for i in e: print i
 e=my_enumerate (["spring", "summer","fall" ,"winter"])
 for i in e: print i
-''')
+""", ebrun, 0)
 
-pp("generator")
-ebrun("""
+peep("generator", """
 #myview:
 #1. creating a function with yield statement in it
 #2. then the function would return a generator object
@@ -1231,32 +1175,28 @@ print g.next()
 print g.next()
 g2=[x for x in glob.glob('/etc/*.conf')]
 print g2
-""")
-
-
+""", ebrun, 0)
 
 ########################################## itertools ###########################################
-pp("itertools.chain(),count(),repeat(),cycle()")
-ebrun("""
+peep("itertools.chain(),count(),repeat(),cycle()", """
 import itertools
+print list(itertools.repeat(7, 5))  #[7] * 5
+
 ##1. itertools.chain(*iterables)
 print [ i for i in itertools.chain('ABC', 'DEF','XYZ') ]
-
 #user defined equivelent
 #chain('ABC', 'DEF') --> A B C D E F
-
+#same as 
 def chain(*iterables):
     for it in iterables:
         for element in it:
             yield element
 
 ##2. itertools.count(start=0, step=1: once for each integer, Infinite!
-for num in xrange(10008):
+for num in xrange(10008):      #not good
     if num < 10000: continue
     print num,
-
-#same as below
-for num in itertools.count():
+for num in itertools.count():  #good
     if num < 10000: continue
     if num > 10007: break
     print num,
@@ -1269,14 +1209,12 @@ print seq
 for count, num in enumerate(seq):
     if count > 20: break
     print num,
-""")
-#sys.exit()
+""", ebrun, 0)
 
 
 ################################# text ####################################
 
-pp("re")
-eep("""
+peep("re", """
 import re
 with open('/etc/passwd') as f: c = f.read()
 print c
@@ -1318,8 +1256,7 @@ print re.split(r'[^a-zA-Z0-9_]+', c)       #['root', 'x', '0', '0', 'root', 'roo
 print re.split(r'\W+'           , c, 1)    #['root', 'x:0:0:root:/root...\\n]
 print re.split(r'\W+'           , c, 2)    #['root', 'x', '0:0:root:/root...\\n']
 print re.split(r'(\W+)'         , c, 2)    #['root', ':', 'x', ':', '0:0:root...\\n']
-
-""")
+""", ebrun, 0)
 
 
 peep("str repr backtick", """
@@ -1343,11 +1280,10 @@ print repr.__class__              #<type 'builtin_function_or_method'>
 print "my mom is " + `29`              #my mom is 29
 print "my mom is " + repr(29)          #my mom is 29
 print "my mom is " + str(29)           #my mom is 29
-""")
+""", ebrun, 0)
 #sys.exit()
 
-pp("join")
-ebrun("""
+peep("join", """
 print ":".join(["a", "b", "c"])
 print list("python")
 print "".join(list("python"))
@@ -1356,18 +1292,18 @@ map={"guo":36, "zhi":25, "shang":27}
 print list(map)
 print "--".join(map)
 print "--".join(list(map))
-""")
+""", ebrun ,0)
 
-pp("json.load()")
-ebrun("""
+peep("json.load()", """
 import json
 from pprint import pprint
 
 cmd='''cat > AAT.conf <<EOF
-{
+{ "test": {
     "data"              : "/home/eenmliu/aat/data01",
     "backup"            : "/home/eenmliu/aat/backup",
-    "log-dir"           : "/home/eenmliu/aat/logs"
+    "log-dir"           : "/home/eenmliu/aat/logs" 
+    }
 }
 EOF
 '''
@@ -1377,13 +1313,12 @@ with open('AAT.conf') as f:
     f.seek(0)
     data = json.load(f)
 print type(data)
-print data[u'log-dir']
-print data['log-dir']
+print data[u'test'][u'log-dir']
+print data[u'test']['log-dir']
 pprint(data)
-""")
+""", ebrun, 0)
 
-pp("Lambda")
-ebrun("""
+peep("Lambda", """
 ###Lambda expressions are a shorthand to create anonymous functions; yields a function object. 
 ## lambda
 #  lambda arguments: expression 
@@ -1414,12 +1349,9 @@ def makeGetter(attrName):
 aaa = makeGetter('name')
 print aaa(A)
 
-""")
+""", ebrun,0 )
 
-
-
-pp("logging stream=sys.stdout")
-ebrun("""
+peep("logging stream=sys.stdout", """
 ### stream=sys.stdout
 lightyear={'Sun':0,'Sirius':8.6}
 import logging
@@ -1456,13 +1388,12 @@ logger.warn ('the distance of nearby stars: %s ' % lightyear)
 logger.info ('the distance of nearby stars: %s ' % lightyear)
 logger.debug('the distance of nearby stars: %s ' % lightyear)
 with open('/tmp/stars2.log', 'r') as f: print f.read()
-""")
+""", ebrun, 0)
 
 ############################ math ##########################
-pp("ord and chr")
-eep("""
-print ord.__doc__
-print chr.__doc__
+peep("ord and chr", """
+print ord.__doc__                  #string to integer oridnal
+print chr.__doc__                  #intgger to char
 print ord('a'), chr(ord('a'))
 print ord('1'), chr(ord('a'))
 
@@ -1479,12 +1410,11 @@ print [ chr(x) for x in xrange(ord('a'), ord('z')+1)]
 g = ( chr(x) for x in xrange(ord('a'), ord('z')+1))
 print g
 print list(g)
-""")
+""", ebrun, 0)
 
 
 
-pp("dec and hex");
-ebrun("""
+peep("dec and hex", """
 #dec to hex
 print hex(16)           #0x10
 print "%X"     % 16     #10
@@ -1493,12 +1423,6 @@ print "0x%x"   % 16     #0x10
 print "0x%x"   % 1616   #0x650
 print "0x%2x"  % 1616   #0x650
 print "0x%17x" % 1616   #0x              650
-
-print ord.__doc__
-print chr.__doc__
-
-print ord('a'), chr(ord('a'))  #97 a
-print ord('1'), chr(ord('a'))  #49 a
 
 s = "Hello world!"
 print ":".join(            str(ord(x))for x in s)  #72:101:108:108:111:32:119:111:114:108:100:33
@@ -1512,11 +1436,10 @@ print ":".join(            hex(ord(x)) for x in s) #0x48:0x65:0x6c:0x6c:0x6f:0x2
 print map(lambda x: chr(x), xrange(ord('A'),ord('E')+1))     #['A', 'B', 'C', 'D', 'E']
 print    [ chr(x) for x in xrange(ord('A'), ord('E')+1)]     #['A', 'B', 'C', 'D', 'E']
 print    ( chr(x) for x in xrange(ord('a'), ord('z')+1))     #<generator object <genexpr> at 0x7f16f2c915f0>
-""")
+""", ebrun ,0)
 
 
-pp("math")
-ebrun("""
+peep("math", """
 import math
 #square root
 print math.sqrt(81)
@@ -1529,11 +1452,10 @@ for i in dir(math):
     #exec "print math.%s.__doc__" % i
     print "math.%s.__doc__" % i
     print
-""")
+""", ebrun, 0)
 
 ###################################### subprocess ############################################
-pp("os and subprocess")
-ebrun("""
+peep("os and subprocess", """
 ###           errorcode                                output
 # --------------------------------------------------------------------------------
 ##  shell     os.system("ls -al")                      os.popen(ls -al).read()
@@ -1565,7 +1487,7 @@ output=subprocess.check_output('uname -a', shell=True); print output
 output=subprocess.check_output(['uname', '-a']);        print output
 errorcode=subprocess.call('uname -a', shell=True);      print errorcode
 errorcode=subprocess.call(['uname', '-a']);             print errorcode
-""")
+""", ebrun, 0)
 
 ####################################### threading ######################################
 
@@ -1615,28 +1537,27 @@ threading.Thread(target=timer, args=("Test2", 2, 5)).start()
 print "Main Complete"
 """, ebrun, 0)
 
-
 #global not supported by ebrun
-'''
-pp("threading: lock")
-global tLock
-tLock = threading.Lock()
+
+peep("threading: lock", '''
+#global tLock
+#tLock = threading.Lock()
 def timer(name, delay, repeat):
     c=colors.YELLOW
     if name=="Test2": c=colors.RED
     print c + 'timer: ' + name + " Started"+colors.ENDC
-    tLock.acquire(); print(c + name + " has acquired lock to some codes")
+    #tLock.acquire(); print(c + name + " has acquired lock to some codes")
     while repeat > 0:
         time.sleep(delay)
         print c + 'timer: ' + name +": " + str(time.ctime(time.time())) + colors.ENDC
         repeat -= 1
-    tLock.release(); print(c + name + " released lock to the codes")
+    #tLock.release(); print(c + name + " released lock to the codes")
     print c + "Timer: " + name + " Completed"+colors.ENDC
 
 threading.Thread(target=timer, args=("Test1", 1, 5)).start()
 threading.Thread(target=timer, args=("Test2", 2, 5)).start()
 print "Main Complete"
-'''
+''', ebrun, 0)
 
 peep("threading: inherent", """
 import threading
@@ -1677,8 +1598,7 @@ print "actual time used: %d" % actual
 """, ebrun, 0)
 
 ########################################## multiprocessing #################################
-pp("multiprocessing.Queue")
-eep("""
+peep("multiprocessing.Queue", """
 # multiprocessing.Queue, a near clone of Queue.Queue, thread and process safe
 from multiprocessing import Process, Queue
 def f(q):
@@ -1688,11 +1608,9 @@ p = Process(target=f, args=(q,))
 p.start()
 print q.get()                        #[42, None, 'hello'], #data retrieved from the subprocess by queue.
 p.join()
-""")
-#sys.exit()
+""", ebrun, 0)
 
-pp("multiprocessing.Pipe")
-ebrun("""
+peep("multiprocessing.Pipe", """
 #multiprocessing.Pipe, a pipe which by default is duplex (two-way)
 from multiprocessing import Process, Pipe
 def f(conn):
@@ -1703,18 +1621,18 @@ p = Process(target=f, args=(child_conn,))
 p.start()
 print parent_conn.recv()            #[42, None, 'hello'],  #data retrieved from the subprocess by pipe.
 p.join()
-""")
-#sys.exit()
+""", ebrun, 0)
 
-pp("multiprocessing.Pool")  
-eep("""
+peep("multiprocessing.Pool", """
 #start multiple new processes
 ##return value from all the processes will be in a list as Pool.map() function's return value
 import multiprocessing
 def f1(x): 
     return x*x
 print multiprocessing.Pool(processes=4).map(f1,range(1,11))
+""", eep, 0)
 
+peep("multiprocessing.Pool", """
 #start multiple new processes
 from multiprocessing import Process
 from multiprocessing import Pool
@@ -1733,12 +1651,9 @@ p.join()                   #    start a new process, parent process: 43003, proc
 p2 = Pool(5)               #    start multiple new processes ....
 result = p2.map(f, ['function call {} in pool'.format(x) for x in xrange(7)])
 print result
+""", eep, 0)
 
-""")
-#sys.exit()
-
-pp("multiprocessing.Lock")
-eep("""
+peep("multiprocessing.Lock", """
 import multiprocessing
 l = multiprocessing.Lock()
 def timer(tLock, name, delay, repeat):
@@ -1748,7 +1663,8 @@ def timer(tLock, name, delay, repeat):
 multiprocessing.Process(target=timer, args=(l, "Test1", 1, 5)).start()
 multiprocessing.Process(target=timer, args=(l, "Test2", 2, 4)).start()
 
-""")
+""", eep, 0)
+
 #sys.exit()
 
 
@@ -1778,8 +1694,7 @@ for sfile in glob.glob("/etc/r*.conf"):
 
 #sys.exit()
 
-pp("open")
-eep("""
+peep("open", """
 #mode can be 
 #'r'     when the file will only be read,it's default with omitted
 #'w'     for only writing (an existing file with the same name will be erased)
@@ -1811,19 +1726,15 @@ fo = open('/etc/hosts','r')
 arr = fo.readlines(); fo.close()
 print type(arr)
 for i in arr: print i,
-""")
+""", eep, 0)
 
-pp("readlines()")
-eep("""
+peep("readlines()", """
 ##read file into list
 with  open("/etc/hosts") as f: print f.readlines()
 print open("/etc/hosts").readlines()
-""")
+""", eep, 0)
 
-
-
-pp("os")
-eep("""
+peep("os", """
 ###os.name is 'posix', 'nt', 'os2', 'ce' or 'riscos'
 ###os.curdir is a string representing the current directory ('.' or ':')
 ###os.pardir is a string representing the parent directory ('..' or '::')
@@ -1884,10 +1795,9 @@ print os.utime.__doc__
 print os.symlink.__doc__
 print os.link.__doc__
 print os.chown.__doc__
-""")
+""", eep, 0)
 
-pp("os.path")
-eep("""
+peep("os.path", """
 ###1. os.path is not a submodule of os "package"
 ###2. actually both os and os.path are modules
 
@@ -1934,10 +1844,8 @@ print os.path.expandvars.__doc__
 print os.path.getmtime.__doc__
 print os.listdir.__doc__
 print os.getcwd.__doc__
-""")
-
-pp("os.walk")
-eep("""
+""", eep, 0)
+peep("os.walk", """
 from os.path import expanduser
 home = expanduser("~")
 print "home dir: " + home
@@ -1956,10 +1864,9 @@ for root, dirs, files in os.walk(os.path.join(home, 'graduation/javascript/'), t
 ##list the roots(directories), topdown is True
 for root, dirs, files in os.walk(os.path.join(home, 'graduation/javascript/')):
     print ('----> root: ') + root
-""")
+""", eep, 0)
 
-pp("pickle")
-eep("""
+peep("pickle", """
 ###called when being pickled: __getstate__
 ###called when being unpickled: __setstate__
 ##unless you need to override how a class is pickled or unpickled you shouldn't need to worry about it.
@@ -1982,10 +1889,9 @@ f = Foo(); print f.val
 f_string = pickle.dumps(f)
 print f_string
 f_new = pickle.loads(f_string); print f_new.val
-""")
+""", eep, 0)
 
-pp("random")
-eep("""
+peep("random", """
 import random
 print random.random()        # Random float x, 0.0 <= x < 1.0
 print random.uniform(1, 10)  # Random float x, 1.0 <= x < 10.0
@@ -1995,8 +1901,7 @@ print random.choice('abcdefghij')  # Choose a random element
 items = [1, 2, 3, 4, 5, 6, 7]; print random.shuffle(items); print items
 print random.sample([1, 2, 3, 4, 5],  3)  # Choose 3 elements
 print random.sample(xrange(10000000), 7)  # Choose 3 samples
-""")
-
+""", eep, 0)
 
 ##################### input #############################
 peep('raw_input', """
@@ -2028,7 +1933,7 @@ print o
 print e
 if (i):
     print "You said", sys.stdin.readline().strip()
-""", ebrun, 1)
+""", ebrun, 0)
 
 ################################ sequence #############################
 peep('list',"""
@@ -2266,7 +2171,7 @@ print childObj.var1
 print childObj.var2
 print childObj.var3
 print childObj.name
-""", ebrun, 1)
+""", ebrun, 0)
 
 peep("__init__(), __new__()", """
 ##__new__ has to create the instance first, so __init__ can initialize it
@@ -2410,4 +2315,43 @@ peep("define_metaclass-__new__-__init__-__call__", """
 #  __call__ is called when the already-created class is "called" to instantiate a new object.
 #           x.__call__(...) <==> x(...), 
 #           __call__() will return the instance of class1
-""", ebrun ,1)
+""", ebrun ,0)
+
+peep('dis function', """
+import dis
+def hello():
+    print "hello"
+    return True
+dis.dis(hello)
+
+def plus():
+    a = 11
+    b = 99
+    c = a + b
+    print c
+    return str(a)
+dis.dis(plus)
+
+def concat(a, b):
+    return a + b
+dis.dis(concat)
+
+def loop():
+    for i in xrange(5):
+        print i
+dis.dis(loop)""", ebrun, 0)
+
+peep('dis class', '''
+import dis
+class Parrot:
+    name = "Mars bird"
+    def __init__(self):
+        self.kind = "Norwegian Blue"
+        self.fowner, self.lowner = 'Evan','Liu'
+    def is_dead(self):
+        return False
+    def sing(self, v):
+        return self.name +" says: " + v
+dis.dis(Parrot)
+print Parrot().sing("hello")
+dis.dis("long long")''', ebrun, 0)
