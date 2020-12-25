@@ -1,0 +1,8 @@
+pygmentize -l bash <<"EOF"
+
+rpm -ivh 
+rpm -e
+rpm -Uvh
+rpm -qpR zabbix-agent-5.0.1-1.el7.x86_64.rpm  #dependency
+ldd /usr/sbin/zabbix_agentd
+EOF

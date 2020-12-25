@@ -1,0 +1,6 @@
+pygmentize -l bash <<"EOF"
+sudo -u zabbix du -h  #run as user zabbix
+
+sudo su -   #su as root
+sudo -i     #su as root
+EOF

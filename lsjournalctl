@@ -1,0 +1,4 @@
+pygmentize -l bash <<"EOF"
+journalctl -u kafka
+journalctl -xe
+EOF

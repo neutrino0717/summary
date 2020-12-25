@@ -1,0 +1,4 @@
+pygmentize -g <<"EOF"
+yum whatprovides netstat
+yum info openssl
+EOF

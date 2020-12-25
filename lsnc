@@ -1,0 +1,4 @@
+pygmentize -l bash <<"EOF"
+nc -zv 127.0.0.1 22
+nc -v 10.196.131.99 10051
+EOF

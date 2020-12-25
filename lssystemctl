@@ -1,4 +1,5 @@
 pygmentize -g <<"EOF"
+systemctl list-unit-files --type=service
 systemctl list-units --type service -all #service --status-all
                                          #chkconfig --list
 systemctl status  sshd.service            #service sshd status

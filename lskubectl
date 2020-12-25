@@ -1,0 +1,3 @@
+pygmentize -l bash <<"EOF"
+kubectl get all --all-namespaces=truekubectl get all --all-namespaces=true
+EOF

@@ -1,0 +1,5 @@
+pygmentize -g <<"EOF"
+du -shx /   #single file system
+du -shx /*  #  
+
+EOF
