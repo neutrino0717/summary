@@ -1,0 +1,11 @@
+#list
+ArrayList is essentially an array. it's performance on add and remove is better that LinkedList
+LinkedList is implemented as a double linked list. Its performance on add and remove is better than Arraylist, 
+Vector is legacy, is similar with ArrayList, but it is synchronized.
+
+#set
+3 commonly used implementations of Set in Java: HashSet, TreeSet and LinkedHashSet
+if we want a fast set, we should use HashSet
+if we need a sorted set, then TreeSet should be used
+if we want a set that can be read by following its insertion order, LinkedHashSet should be used. 
+

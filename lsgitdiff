@@ -1,5 +1,5 @@
-#pygmentize -g  <<"EOF"
-vim - <<"EOF"
+pygmentize -g  <<"EOF"
+#vim - <<"EOF"
 ##1. diff before stage  (local <---> stage)
 git diff
 
@@ -19,4 +19,8 @@ git diff origin/master
 git fetch origin        #get a cache of the state of branches from the remote repository
 git log HEAD..origin    #or maybe git diff newlayout origin/newlayout
 #git merge origin
+#
+#
+##5. diff commit with last commit
+git diff HEAD^
 EOF

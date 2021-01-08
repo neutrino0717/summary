@@ -1,0 +1,34 @@
+#!/usr/bin/expect -f
+#checks if any arguments have been given to the script
+if {[llength $argv] == 0} {
+  send_user "Usage: $argv0 \'password\'\n"
+  exit 1
+}
+
+
+# set variables
+set ipaddress "evencoding.com" 
+set username  "neutrino0717"
+set password  [lindex $argv 0]
+set prompt "*]"
+# wait five seconds for a response
+set timeout 7
+spawn ssh $username@$ipaddress
+expect {
+	    "*want to continue connecting*"  { send -- "yes\r"; exp_continue }
+	    "*assword:*"  { send -- "$password\r"; exp_continue}
+	    $prompt { send -- "\r" }
+}
+#exp_internal 1
+#expect: does "\u001b[33m$\r\r\n\u001b(B\u001b[m\r\n\u001b[1m\u001b[31m[\u001b[36mneutrino0717\u001b[32m@\u001b[34mwelove \u001b[35m~\u001b[31m]\u001b[33m$\r\r\n\u001b(B\u001b[m" (spawn_id exp4) match regular expression "\[.+@"? Gate "\[*@"? gate=yes re=yes
+expect -re {\[.+@}
+#cannot be single quote '', must be ""
+send "echo '1. \[userid@' expected\r"
+#escape dollar,
+#How do you escape a string value containing a dollar sign to avoid TCL attempting to treat it as a variable.
+#The \{\} protect a string from the Tcl interpretation of \$.
+expect -re {$}
+send "echo 2. '$' escaped with curly brace\r"
+expect {$}
+send "echo 3. '$' excapted again\r"
+expect eof {exit}

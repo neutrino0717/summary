@@ -1,0 +1,4 @@
+pygmentize -l bash <<"EOF"
+#kill all processes of a user
+killall -u zabbix
+EOF

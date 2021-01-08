@@ -1,0 +1,7 @@
+sudo apt-get install mercurial
+hg clone https://hg.python.org/cpython
+#sudo apt-get build-dep python3.5   #not avaible
+sudo apt-get build-dep python3.4
+./configure --help
+./configure --with-pydebug
+

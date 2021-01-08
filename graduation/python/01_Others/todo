@@ -1,0 +1,27 @@
+1.
+startTime = datetime.now()
+print "\nCreation finished : %s  " % (datetime.now()-startTime)
+
+
+2.
+1. class PageElement(object): in bs4
+    @property
+    def stripped_strings(self):
+        for string in self._all_strings(True):
+            yield string
+for i in soup_form_input:
+    if i.has_attr('value'):
+        dicot[i['name']] = i['value']
+
+3.
+-> argv = [strutils.safe_decode(a) for a in sys.argv[1:]]
+(Pdb) p argv
+*** NameError: NameError("name 'argv' is not defined",)
+(Pdb) n
+> /usr/lib/python2.7/dist-packages/novaclient/shell.py(799)main()
+-> OpenStackComputeShell().main(argv)
+(Pdb) p argv
+[u'list']
+
+
+4.

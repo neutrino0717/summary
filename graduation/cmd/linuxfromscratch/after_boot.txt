@@ -1,0 +1,21 @@
+#as neutrino0717
+export LFS=/mnt/lfs
+
+
+#sudo
+#mount [-fnrsvw] [-t vfstype] [-o options] device dir
+sudo mount /dev/sdb2 $LFS
+sudo mount -v --bind /dev $LFS/dev
+sudo mount -vt devpts devpts $LFS/dev/pts -o gid=5,mode=620
+sudo mount -vt proc proc $LFS/proc
+sudo mount -vt sysfs sysfs $LFS/sys
+sudo mount -vt tmpfs tmpfs $LFS/run
+sudo mount | column -t
+
+sudo chroot "$LFS" /tools/bin/env -i \
+    HOME=/root                  \
+    TERM="$TERM"                \
+    PS1='\u:\w\$ '              \
+    PATH=/bin:/usr/bin:/sbin:/usr/sbin:/tools/bin \
+    /tools/bin/bash --login +h
+

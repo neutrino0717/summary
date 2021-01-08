@@ -1,0 +1,4 @@
+#install vundle (vim plugin manager)
+git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim  #no sudo!!, else permission issue in .vim/
+cd ~; ln -s graduation/cmd/vimrc_vundle .vimrc
+vim +PluginInstall +qall

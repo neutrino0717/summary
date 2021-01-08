@@ -1,0 +1,19 @@
+getopt: 
+    very primitive, the original one
+    C-style parser for command line options
+optparse:
+    higher level parsing
+    deprecated in python 2.7, replaced by argparse
+
+argparse:
+    is better for all the reasons listed on its original page (http://code.google.com/p/argparse/):
+    handling positional arguments
+    supporting sub-commands
+    allowing alternative option prefixes like + and /
+    handling zero-or-more and one-or-more style arguments
+    producing more informative usage messages
+    providing a much simpler interface for custom types and actions
+
+
+https://ttboj.wordpress.com/2010/02/03/getopt-vs-optparse-vs-argparse/
+

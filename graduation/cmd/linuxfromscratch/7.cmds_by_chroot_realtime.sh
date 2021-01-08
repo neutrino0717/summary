@@ -1,0 +1,1 @@
+/mnt/lfs/7.cmds_by_chroot_realtime.sh

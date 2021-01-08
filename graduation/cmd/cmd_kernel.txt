@@ -1,0 +1,5 @@
+apt-get update
+#if you want to download the source into the current directory use:
+cd /data/ && apt-get source linux-image-$(uname -r)
+#if you want the source to be installed in the system directory use:
+#apt-get install linux-source-$(uname -r)

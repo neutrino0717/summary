@@ -1,0 +1,13 @@
+#https://www.gnu.org/software/make/manual/html_node/Special-Variables.html
+#MAKEFILE_LIST
+#    Contains the name of each makefile that is parsed by make, in the order in which it was parsed.
+name1 := $(lastword $(MAKEFILE_LIST))
+
+include dump.mk
+
+name2 := $(lastword $(MAKEFILE_LIST))
+
+all:
+	@echo name1 = $(name1)
+	@echo name2 = $(name2)
+	echo $(MAKEFILE_LIST)

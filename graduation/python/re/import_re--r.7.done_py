@@ -1,0 +1,7 @@
+#!/usr/bin/env eepython
+### r'pattern' raw string to avoid problems with python
+### There are various characters, which would have special meaning when they are used in regular expression. To avoid any confusion while dealing with regular expressions, we would use Raw Strings as r'expression'. 
+
+str=r'this is \n a dog';  print str
+str= 'this is \n a dog';  print str
+str="""this is \n a dog""";  print str

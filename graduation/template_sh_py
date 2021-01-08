@@ -1,0 +1,29 @@
+#!/bin/bash
+#########################################################################################
+#
+#     SCRIPT Name  : 
+#     PURPOSE      : get SCTP association status
+#     Author       : Evan Liu (evan.liu@ericsson.com)
+#     Website      : http://www.evencoding.com
+#     History      : 2016-01-28 eenmliu V.1. Created
+#                  : 2016-01-28 eenmliu V.2. Xxxxxxx
+#
+#########################################################################################
+
+rdir=`dirname $0`; adir=`(cd $rdir; pwd)`; . ${adir}/common.sh
+
+
+#!/usr/bin/python
+#########################################################################################
+#
+#     SCRIPT Name  : 
+#     PURPOSE      : get RNC status
+#     Author       : Evan Liu (evan.liu@ericsson.com)
+#     Website      : http://www.evencoding.com
+#     History      : 2016-01-28 eenmliu V.1. Created
+#                  : 2016-01-28 eenmliu V.2. Xxxxxxx
+#
+#########################################################################################
+
+
+

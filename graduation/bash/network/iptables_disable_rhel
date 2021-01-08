@@ -1,0 +1,13 @@
+#to disable iptables completely
+#iptables -F
+#/etc/init.d/iptables save
+#/etc/init.d/iptables stop
+#chkconfig iptables off
+
+#or
+#Clean and save the firewall setting:
+#[root@aat]# su root
+#[root@aat]# iptables -L
+#[root@aat]# iptables -F
+#[root@aat]# iptables-save
+#[root@aat]# iptables -L

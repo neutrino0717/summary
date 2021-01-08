@@ -1,0 +1,4 @@
+for f in *.py; do echo "`head -n 1 $f`   ->$f"; done
+sed -n 's|env epython|env eepython|p' *.py
+sed -i 's|env epython|env eepython|g' *.py
+https://docs.python.org/2/library/index.html

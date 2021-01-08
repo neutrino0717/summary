@@ -1,0 +1,18 @@
+What is WebSocket?
+  WebSocket is a new communication protocol introduced with HTML5
+  Unlike HTTP connections, a WebSocket connection is a permanent, bi-directional communication channel between a client and the server,
+  WebSocket connections are useful for games or web sites that need to display live information with very low latency.
+
+What is SocketIO?
+  SocketIO is a cross-browser Javascript library 
+  SocketIO provides the same interface for WebSocket, flash, and so on
+
+What about Flask-Sockets?
+  Flask-Sockets, an extension for Flask that makes the use of WebSocket accessible to Flask applications.
+
+What is Flask-SocketsIO
+  The main difference between Flask-Sockets and Flask-SocketIO is that the former wraps the native WebSocket protocol (through the use of the gevent-websocket project), so it can only be used by the most modern browsers that have native support. 
+  Flask-SocketIO transparently downgrades itself for older browsers.
+  Another difference is that Flask-SocketIO implements the message passing protocol exposed by the SocketIO Javascript library. Flask-Sockets just implements the communication channel, what is sent on it is entirely up to the application.
+
+Flask-SocketIO also creates an environment for event handlers that is close to that of regular view functions, including the creation of application and request contexts. There are some important exceptions to this explained in the documentation, however.

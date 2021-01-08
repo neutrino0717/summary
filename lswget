@@ -1,0 +1,3 @@
+pygmentize -l bash <<"EOF"
+wget -c https://archive.org/download/rhel-server-6.9-x86_64-dvd/rhel-server-6.9-x86_64-dvd.iso
+EOF

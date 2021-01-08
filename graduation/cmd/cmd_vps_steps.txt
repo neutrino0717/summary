@@ -1,0 +1,71 @@
+useradd neutrino0717 -m -s /bin/bash
+passwd neutrino0717
+visudoer
+su - neutrino0717
+
+sudo apt-get install ssh
+ssh-keygen -t rsa -b 4096 -C "liuenmao@hotmail.com"
+ssh-agent -s
+ssh-add ~/.ssh/id_rsa
+#put ~/.ssh/id_rsa.pub to
+#https://bitbucket.org/account/user/neutrino0717/ssh-keys/
+#git remote set-url origin git@bitbucket.org:neutrino0717/graduation.git
+
+sudo apt-get remove -y --purge libreoffice*
+sudo apt-get clean -y
+sudo apt-get autoremove -y
+
+#
+#change to aliyun source if chinese host
+cat > /etc/apt/sources.list <<"EOF"
+# deb cdrom:[Ubuntu 16.04 LTS _Xenial Xerus_ - Release amd64 (20160420.1)]/ xenial main restricted  
+deb-src http://archive.ubuntu.com/ubuntu xenial main restricted #Added by software-properties  
+deb http://mirrors.aliyun.com/ubuntu/ xenial main restricted  
+deb-src http://mirrors.aliyun.com/ubuntu/ xenial main restricted multiverse universe #Added by software-properties  
+deb http://mirrors.aliyun.com/ubuntu/ xenial-updates main restricted  
+deb-src http://mirrors.aliyun.com/ubuntu/ xenial-updates main restricted multiverse universe #Added by software-properties  
+deb http://mirrors.aliyun.com/ubuntu/ xenial universe  
+deb http://mirrors.aliyun.com/ubuntu/ xenial-updates universe  
+deb http://mirrors.aliyun.com/ubuntu/ xenial multiverse  
+deb http://mirrors.aliyun.com/ubuntu/ xenial-updates multiverse  
+deb http://mirrors.aliyun.com/ubuntu/ xenial-backports main restricted universe multiverse  
+deb-src http://mirrors.aliyun.com/ubuntu/ xenial-backports main restricted universe multiverse #Added by software-properties  
+deb http://archive.canonical.com/ubuntu xenial partner  
+deb-src http://archive.canonical.com/ubuntu xenial partner  
+deb http://mirrors.aliyun.com/ubuntu/ xenial-security main restricted  
+deb-src http://mirrors.aliyun.com/ubuntu/ xenial-security main restricted multiverse universe #Added by software-properties  
+deb http://mirrors.aliyun.com/ubuntu/ xenial-security universe  
+deb http://mirrors.aliyun.com/ubuntu/ xenial-security multiverse  
+EOF
+
+
+sudo apt-get update && sudo apt-get install git git-gui git-cola gitg
+git config --global user.name neutrino0717
+ssh -L 8888:127.0.0.1:8888 neutrino0717@evencoding.com
+export https_proxy=http://127.0.0.1:8888 http_proxy=http://127.0.0.1:8888 
+#git config --global http.proxy 'socks5://192.168.226.1:1082'
+#git clone https://neutrino0717@bitbucket.org/neutrino0717/graduation.git
+#git clone https://neutrino0717@bitbucket.org/neutrino0717/bash4u.git
+git clone git@bitbucket.org:neutrino0717/graduation.git
+git clone git@bitbucket.org:neutrino0717/bash4u.git
+#https --> ssh, use "git remote set-url origin git@bitbucket.org:neutrino0717/graduation.git"
+
+
+sudo ln -sf  ~/graduation/bash/esh /bin/esh
+sudo ln -sf  ~/graduation/python/epython /usr/bin/epython
+ln -sf ~/graduation/.bash_aliases
+ln -sf ~/graduation/bash
+ln -sf ~/graduation/python
+ln -sf ~/graduation/java
+
+#for local linux only
+ln -sf ~/graduation/expect/autoconn_elite_crontab_home.sh
+
+#setup vpn
+sudo  ~/graduation/projects/3rd/setuppptp.sh
+
+#setup bash_perl_python
+~/bash4u/setup.sh
+
+#setup vim4python
+~/graduation/vim4python.sh

@@ -1,0 +1,7 @@
+##### on mac book ####
+-D 1081 -L 8888:127.0.0.1:8888 -L 8088:127.0.0.1:8088 -L 2022:127.0.0.1:2022
+# -D 1081 --> sock5 via evencoding.com
+# -L 8888 --> http via vencoding.com
+# -L 8088 --> http via Ericsson India
+# -L 2022 --> ssh to E laptop
+

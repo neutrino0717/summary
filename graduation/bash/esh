@@ -1,0 +1,85 @@
+#!/bin/bash
+if [ ! "$1" ]; then echo usagee: $0 scriptname; exit 1; fi
+green='\e[0;32m'; blue='\e[0;34m'; red='\e[31m'; yellow='\e[0;33m'; endColor='\e[0m'
+#allow alias expansion in non-interactive shells.
+shopt -s expand_aliases
+
+alias grep_grey="GREP_COLOR='1;30' grep --color=always"
+alias grep_red="GREP_COLOR='1;31' grep --color=always"
+alias grep_green="GREP_COLOR='1;32' grep --color=always"
+alias grep_yellow="GREP_COLOR='1;33' grep --color=always"
+alias grep_blue="GREP_COLOR='1;34' grep --color=always"
+alias grep_magenta="GREP_COLOR='1;35' grep --color=always"
+alias grep_cyan="GREP_COLOR='1;36' grep --color=always"
+alias grep_white="GREP_COLOR='1;37' grep --color=always"
+alias egrep_grey="GREP_COLOR='1;30' egrep --color=always"
+alias egrep_red="GREP_COLOR='1;31' egrep --color=always"
+alias egrep_green="GREP_COLOR='1;32' egrep --color=always"
+alias egrep_yellow="GREP_COLOR='1;33' egrep --color=always"
+alias egrep_blue="GREP_COLOR='1;34' egrep --color=always"
+alias egrep_magenta="GREP_COLOR='1;35' egrep --color=always"
+alias egrep_cyan="GREP_COLOR='1;36' egrep --color=always"
+alias egrep_white="GREP_COLOR='1;37' egrep --color=always"
+
+eprtdoc() {
+  while read -r linp; do
+    if [ "${linp:0:3}" == "###" ]; then
+      echo -e "${red}$linp${endColor}"
+    elif [ "${linp:0:2}" == "##" ]; then
+      echo -e "${yellow}$linp${endColor}"
+    elif [ "${linp:0:1}" == "#" ]; then
+      echo -e "${blue}$linp${endColor}"
+    else
+      echo -e "${green}$linp${endColor}"
+    fi
+  done
+}
+
+ebrun(){
+  stckpttrn='^\S' 
+  stckdpth=0
+  stckcntnt=''
+  stcknl=$'\n'
+  cntnt=`cat "$1"`
+
+
+  #mybe useful to prevent leading whitespace get lost
+  export IFS=
+
+  while read -r stcklnp; do   #without -r, slash will get lost such as \n in file
+    #echo "-->$stcklnp"
+    #echo r"-->$stcklnp"
+    #if [ -z "$stcklnp" ]; then echo; continue; fi
+    if egrep "(^\s*$|^\w)" -q <<<"$stcklnp"; then  #if empty line or start with [a-zA-Z0-9]
+      if [ $stckdpth -eq 0 ]; then
+	((stckdpth++))
+        stckcntnt="$stcklnp"
+      elif [ $stckdpth -eq 1 ]; then
+        erun_nocolor "$stckcntnt"
+        stckcntnt="$stcklnp"
+      else
+        stckcntnt="$stckcntnt$stcknl$stcklnp"
+        erun_nocolor "$stckcntnt"
+	stckdpth=0
+        stckcntnt=''
+      fi
+    else
+      ((stckdpth++))
+      stckcntnt="$stckcntnt$stcknl$stcklnp"
+    fi
+  done <"$1"
+  #done <<<"$cntnt"
+
+  if [ -n "$stckcntnt" ]; then erun_nocolor "$stckcntnt"; fi
+}
+
+erun_nocolor(){
+#pygmentize -l bash <<EOF
+#$*
+#EOF
+#echo -e "${green}$*${endColor}"; 
+eprtdoc <<<"-->$*<--"
+eval "$*"; #echo 
+}
+
+ebrun "$1"

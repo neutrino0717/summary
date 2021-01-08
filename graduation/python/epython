@@ -1,0 +1,174 @@
+#!/usr/bin/env python
+import re
+import time
+import os
+import sys
+from random import randint
+import threading
+import inspect
+import glob
+from os.path import expanduser
+#import stack
+#import binaryTree
+
+#HEADER = '\033[95m'
+#BLUE = '\033[94m'
+#GREEN = '\033[92m'
+#YELLOW = '\033[93m'
+#RED = '\033[91m'
+#ENDC = '\033[0m'
+class colors:
+    #HEADER = '\033[95m'
+    #BLUE = '\033[94m'
+    #GREEN = '\033[92m'
+    #YELLOW = '\033[93m'
+    #RED = '\033[91m'
+    #ENDC = '\033[0m'
+    
+    #BLUE='\033[0;34m'
+    BLUE='\033[1;34m'  #light blue
+    GREEN='\033[0;32m'
+    YELLOW='\033[0;33m'
+    RED='\033[31m'
+    ENDC='\033[0m'
+
+
+global sfile
+global ll
+global ll_len
+sfile = None
+ll = None
+
+#print colors.GREEN + "OK, it's green" + colors.ENDC
+#print colors.YELLOW + "it's WARNING color" + colors.END
+
+def eprtdoc(p1):
+    for line in  p1.split('\n'):
+        #if line[0:1] == "#":
+        if re.match('^\s*(##|print)', line):
+            print colors.BLUE + line + colors.ENDC
+        elif re.match('^\s*#', line):
+            print colors.YELLOW + line + colors.ENDC
+        else:
+            print colors.RED + line + colors.ENDC
+
+def eprtline(line):
+    #if line[0:2] == "##":
+    if re.match('^\s*###', line):
+        print colors.RED + line + colors.ENDC 
+    elif re.match('^\s*##', line):
+        print colors.YELLOW + line + colors.ENDC
+    elif re.match('^\s*#', line):
+        print colors.BLUE + line + colors.ENDC
+    else:
+        print colors.GREEN + line + colors.ENDC
+
+def ebrun(fname):
+    with open(fname) as f:
+        p1 = f.read()
+    p1=p1.strip()
+    #b=''
+    start=True
+    b_now = None
+    b_next = None
+    lcomment = False
+    inblock = False
+    execute = False
+    decorator = False
+    for linep in re.split(r'\n', p1):
+        if decorator:
+            b_now = b_now + '\n' + linep
+            inblock = True
+            decorator = False #change state to in block, and handle as in block 
+        elif lcomment:                                       #---->inside the long comment
+            if re.match(r'''['"]{3}''', linep):            #end of the long comment
+                b_now =b_now +'\n'+linep 
+                execute = True
+		b_next = None
+		lcomment = False    
+                #print b
+            else:
+                b_now = (not b_now == None) and b_now + '\n' + linep or linep
+                b_next = None
+        else:  #not a long comment ''' '''
+            if inblock:
+                if re.match(r'\s', linep):
+                    b_now = (not b_now == None) and b_now + '\n' + linep or linep
+                    b_next = None
+                else:                   #end of a block 
+                    execute = True
+                    b_next = linep      #############new change
+                    inblock = False
+                    if re.match(r'^@', linep):
+                        decorator = True
+  	            elif re.match(r'''[a-zA-Z0-9]*\s*=\s*['"]{3}''', linep):
+                        lcomment = True 
+                    
+            else:     #not in a block
+  	        if re.match(r'''[a-zA-Z0-9]*\s*=\s*['"]{3}''', linep): #match abc=''', not verified
+                    lcomment = True
+	            execute = True
+	            b_next = linep
+                elif re.match(r'^\s*$', linep):   #match a empty line 
+                    execute = True
+                    b_next = linep
+	        elif re.match(r'\s', linep):      #start with whitespace ---->inside a block
+	            b_now = (not b_now == None) and b_now + '\n' + linep or linep
+	            execute = False
+	            inblock = True
+                    b_next = None
+                elif re.match(r'^@', linep): #in decorator
+                    execute = True
+                    decorator = True      #handle the next line as decorator
+                    b_next = linep
+	        else:                             #match a line not start with space
+                    execute = True
+	            b_next = linep
+
+	if execute:
+	    if not b_now == None:
+                eprtline(b_now)
+                #http://stackoverflow.com/questions/2083353/cannot-change-global-variables-in-a-function-through-an-exec-statement
+                #http://stackoverflow.com/questions/20670295/how-to-solve-global-name-not-defined-with-exec-python
+                #exec b_now
+                exec(b_now, globals())
+            b_now = b_next
+	    b_next = None
+	    execute = False
+    if not b_now == None:
+        eprtline(b_now)
+        #exec b_now
+        exec(b_now, globals()) 
+
+    if not b_next == None: 
+	b_now = b_next;
+	#print (colors.YELLOW if b_now[0:1]=='#' else colors.GREEN) + b_now + colors.ENDC
+        eprtline(b_now)
+        #exec b_now
+        exec(b_now, globals()) 
+
+    print
+
+ebrun(sys.argv[1])
+'''
+class Foo:
+    def __init__(self):
+        self.a = "bar"
+        self.b = 4711
+global a
+a=Foo();
+print type(Foo), dir(Foo)
+print type(a),   dir(a)
+print type(1),   dir(1)
+print type(int), dir(int)
+'''
+
+
+
+"""
+elrun('''
+a='abc'; print a
+b_now='abc';
+print b_now
+''')
+"""

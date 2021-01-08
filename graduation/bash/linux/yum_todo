@@ -1,0 +1,5 @@
+install a group
+yum grouplist -v | grep -i platform
+yum install server-platform-devel
+yum groupinstall server-platform-devel
+

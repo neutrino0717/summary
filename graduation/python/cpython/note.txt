@@ -1,0 +1,3 @@
+#A pure python parser generator
+#https://rply.readthedocs.io/en/latest/
+pip install rply

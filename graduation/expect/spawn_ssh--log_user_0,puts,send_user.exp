@@ -1,0 +1,32 @@
+#!/usr/bin/expect -f
+# exp_internal 1
+
+# set variables
+set ipaddress "evencoding.com" 
+set username  "neutrino0717"
+set password  "password"
+set prompt "*]"
+# wait five seconds for a response
+set timeout 600
+set timer 1
+puts "difference between puts and send_user:"
+send_user "1. puts automatically appends a newline and send_user does not. In this regard, puts -nonewline is more analagous to send_user\n"
+send_user "2. if you're using log_file, statements sent via send_user will make it into the logfile, whereas puts do not\n"
+puts "log_user 0    #turns off the output to STDOUT. If we remove this line you will see the whole login process."
+log_user 0
+spawn ssh $username@$ipaddress
+expect {
+	    "*want to continue connecting*"  { send -- "yes\r"; exp_continue }
+	    "*assword:*"  { send -- "$password\r"; exp_continue}
+	    $prompt { send -- "\r" }
+}
+
+expect $prompt
+
+puts "log_user 1    #turns on the output to STDOUT. now you will see all of the output."
+log_user 1
+#cannot be single quote '', must be ""
+send "uname -a\r"
+expect $prompt
+#interact
+

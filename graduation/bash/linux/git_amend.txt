@@ -1,0 +1,12 @@
+#test 1, amend a change
+echo "add a change to txt" >> git_sample.txt
+git add git_sample.txt
+git commit -a -m "git_sample changed"
+git log
+cat git_sample.txt
+git commit amend -m "git_sample changed"
+git log 
+cat git_sample.txt
+
+#only change the comment
+git commit amend -m "git_sample changed"

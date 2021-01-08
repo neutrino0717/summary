@@ -1,0 +1,5 @@
+#http://stackoverflow.com/questions/8519585/removing-new-line-after-a-particular-text-via-bash-awk-sed-perl
+#the basic format is awk '/some_pat/ { /* if pat is true */ } { /* if pat is false */ }'
+awk '/foo$/ { printf("%s\t", $0); next } 1'
+awk '/foo$/ { printf("%s\t", $0); next } { print $0 }'
+                                 ~~~~~myview: means not to handle the tail {print $0}

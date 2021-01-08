@@ -1,0 +1,18 @@
+
+sudo apt-get install graphviz python
+#cgywin install graphviz by setup_x64.exe
+
+git clone https://github.com/vak/makefile2dot.git
+cd makefile2dot 
+#then
+python makefile2dot <Makefile >out.dot
+#or
+python makefile2dot <Makefile |dot -Tpng > out.png
+
+
+python makefile2dot.py </cygdrive/c/green/aat/aat/Makefile            > aat_makefile.dot
+python makefile2dot.py </cygdrive/c/green/aat/aat/Makefile |dot -Tpng > aat_makefile.png
+
+
+python makefile2dot.py <Makefile            > aat_Makefile.dot
+python makefile2dot.py <Makefile |dot -Tpng > aat_Makefile.png

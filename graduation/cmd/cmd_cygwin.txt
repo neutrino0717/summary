@@ -1,0 +1,12 @@
+ssh -R 8081:150.236.159.44:8080 root@157.7.48.242
+cat ericsson.cfg |awk '/^context|^ interface|^  ip address/{print $NF}' | awk '{if(NR % 3) print("%s ", $0) else print("$s\n", $0) }
+C:\project\dallas\op106\autott_pre13A\R1B11 
+
+ln -s /cygdrive/c/project/log
+ln -s /cygdrive/c/green/Dropbox/ericsson/config
+ln -s /cygdrive/c/green/Dropbox/ericsson/scripts
+ln -s  scripts/eenmliu/cmd.txt
+ln -s /cygdrive/c/green/Dropbox/ericsson/scripts/dallas/dconf
+ln -s /home/eenmliu/script/eenmliu/taskkills.sh
+ln -s /home/eenmliu/script/eenmliu/gold.sh
+ln -s /cygdrive/c/project/dallas/op106/gtec106-10-m320/scripts autott

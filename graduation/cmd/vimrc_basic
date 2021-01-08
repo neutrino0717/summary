@@ -1,0 +1,13 @@
+syntax on
+filetype plugin indent on
+set number
+set tabstop=4 shiftwidth=4 expandtab "tab is 4 space; indent 4 spaces; indent change to space
+set ruler                            "show the cursor position all the time
+set showmatch                        "highlight matching brackets
+set incsearch                        "do incremental searching while typing
+set hls is                           "hightlight search pattern
+set history=50                       "keey 50 lines of command line history
+"display invisical characters
+:set listchars=eol:$,tab:>-,trail:~,extends:>,precedes:<
+set background=dark
+

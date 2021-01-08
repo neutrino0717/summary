@@ -1,0 +1,27 @@
+#!/usr/bin/expect -f
+# exp_internal 1
+
+# set variables
+#set ipaddress [lrange $argv 0 0]
+#set username  [lrange $argv 1 1]
+#set password  [lrange $argv 2 2]
+#set cmd  [lrange $argv 3 10]
+lassign $argv ipaddress username password cmd
+set prompt "*]"
+# wait five seconds for a response
+set timeout 10
+set timer 1
+spawn ssh $username@$ipaddress
+expect {
+	    "*want to continue connecting*"  { send -- "yes\r"; exp_continue }
+	    "*assword:*"  { send -- "$password\r"; exp_continue}
+	    $prompt { send -- "\r" }
+}
+
+expect $prompt
+#cannot be single quote '', must be ""
+send "$cmd\r"
+expect $prompt
+
+#interact
+

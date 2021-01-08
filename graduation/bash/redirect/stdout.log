@@ -1,0 +1,11 @@
+==> /etc/group <==
+sambashare:x:111:sys7i24
+scanner:x:112:
+colord:x:113:
+neutrino0717:x:1001:
+utempter:x:114:
+ssl-cert:x:115:
+mysql:x:116:
+puppet:x:117:
+postfix:x:118:
+postdrop:x:119:

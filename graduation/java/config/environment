@@ -1,0 +1,5 @@
+PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games"
+JAVA_HOME="/usr/lib/jvm/java-7-openjdk-amd64/bin"
+export JAVA_HOME
+CLASSPATH=".:/usr/lib/jvm/java-7-openjdk-amd64/lib:~/java/bsh-2.0b2.jar"
+export CLASSPATH

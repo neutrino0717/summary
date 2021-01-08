@@ -1,0 +1,8 @@
+pygmentize -l bash <<"EOF"
+#centos7 disable iptables
+systemctl status firewalld
+systemctl stop firewalld
+systemctl disable firewalld
+firewall-cmd --state
+iptables -L
+EOF

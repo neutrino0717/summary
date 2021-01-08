@@ -1,0 +1,12 @@
+#http://stackoverflow.com/questions/13716658/how-to-delete-all-commit-history-in-github
+git checkout --orphan tmpbranch
+git add -A
+#git status
+git commit -am "commit message"
+#git branch
+git branch -D master
+git branch -m master
+git push -f origin master
+#git log
+#git status
+

@@ -1,0 +1,7 @@
+#InputStream --> Java Byte      streams are used to perform input and output of 8-bit bytes, 
+   #DataOutputStream --> lets you write the primitives to an output source.
+   #ByteArrayInputStream --> allows a buffer in the memory to be used as an InputStream. The input source is a byte array.
+#Reader      --> Java Character streams are used to perform input and output for 16-bit unicode. 
+   #InputStreamReader ---------> for console
+    /|\
+     |-----FileReader ---------> for txt(unicode) file  

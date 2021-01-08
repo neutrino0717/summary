@@ -1,0 +1,5 @@
+MYDIR := /user/bin/sample.cpp
+.PHONE: $(MYDIR)
+$(MYDIR):
+	@echo "filname:                  $(notdir $@) "
+	@echo "filname withou extention: $(basename $(notdir $@)) "

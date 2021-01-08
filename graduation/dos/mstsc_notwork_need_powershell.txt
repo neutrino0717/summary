@@ -1,0 +1,3 @@
+cmdkey /add:127.0.20.76 /user:"ETE\selnre076usr01" /pass:einn4OPEEpq
+mstsc /v:127.0.20.76:43389
+cmdkey /delete:127.0.20.76

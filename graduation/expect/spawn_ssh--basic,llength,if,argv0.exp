@@ -1,0 +1,28 @@
+#!/usr/bin/expect -f
+#checks if any arguments have been given to the script
+if {[llength $argv] == 0} {
+  send_user "Usage: $argv0 \'password\'\n"
+  exit 1
+}
+
+
+# set variables
+set ipaddress "evencoding.com" 
+set username  "neutrino0717"
+set password  [lindex $argv 0]
+set prompt "*]"
+# wait five seconds for a response
+set timeout 600
+set timer 1
+spawn ssh $username@$ipaddress
+expect {
+	    "*want to continue connecting*"  { send -- "yes\r"; exp_continue }
+	    "*assword:*"  { send -- "$password\r"; exp_continue}
+	    $prompt { send -- "\r" }
+}
+
+expect $prompt
+#cannot be single quote '', must be ""
+send "uname -a\r"
+interact
+

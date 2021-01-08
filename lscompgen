@@ -1,0 +1,10 @@
+pygmentize -l bash <<"EOF"
+#all command contains grep
+compgen -c |grep grep
+
+#all aliases
+compgen -a
+
+#all bash functions
+compgen -A function
+EOF

@@ -1,0 +1,42 @@
+#!/usr/bin/env eepython
+### defaultdict is a subclass of the built-in dict
+### The first argument provides the initial value for the default_factory attribute
+from collections import defaultdict
+from collections import Counter
+import itertools
+
+##defaultdict(list)
+##  When each key is encountered for the first time, it is not already in the mapping; 
+##  so an entry is automatically created using the default_factory function which returns an empty list.
+d = defaultdict(list)
+s = [('yellow', 1), ('blue', 2), ('yellow', 3), ('blue', 4), ('red', 1)]
+for k, v in s: d[k].append(v)
+print d.items(); print d
+
+
+##defaultdict(int)
+##  Setting the default_factory to int makes the defaultdict useful for counting (like a bag or multiset in other languages):
+d = defaultdict(int)
+for k in 'mississippi': d[k] += 1
+print d
+#  or using Counter
+c = Counter('mississippi')
+print c
+
+##define a constant_factory 
+##  The function int() which always returns zero is just a special case of constant functions. 
+##  A faster and more flexible way to create constant functions is to use itertools.repeat() 
+##  which can supply any constant value (not just zero)
+def constant_factory(value):
+    return itertools.repeat(value).next
+d = defaultdict(constant_factory('default site'))
+d.update(name='John', action='ran')
+print '%(name)s %(action)s to %(object)s' % d
+
+
+##defaultdict(set)
+##  default_factory to set makes the defaultdict useful for building a dictionary of sets
+d = defaultdict(set)
+s = [('red', 1), ('blue', 2), ('red', 3), ('blue', 4), ('red', 1), ('blue', 4)]
+for k, v in s: d[k].add(v)
+print d.items()

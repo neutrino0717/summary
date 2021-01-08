@@ -1,0 +1,14 @@
+#!/usr/bin/expect
+exp_internal 0
+
+#set cmd [lrange $argv 0 0]
+set cmd [lindex $argv 0]
+set timeout  5
+#log_user 0
+spawn ssh -q -o "StrictHostKeyChecking=no" -o "CheckHostIP=no" -o "NumberOfPasswordPrompts 1" -o "ServerAliveCountMax 1" root@evencoding.com
+expect "assword:"
+send "password\r"
+expect -re {.*#}
+send "$cmd\r"
+interact
+

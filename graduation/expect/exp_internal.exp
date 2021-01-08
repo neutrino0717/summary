@@ -1,0 +1,22 @@
+#!/usr/bin/expect
+set script_name $argv0
+#set cmd_arg01 [lindex $argv 0]
+#set cmd_arg02 [lindex $argv 1]
+puts "script_name = '$script_name'"
+#puts "cmd_arg01   = '$cmd_arg01'"
+#puts "cmd_arg02   = '$cmd_arg02'"
+puts "\n\n1. first run"
+spawn ${script_name}.c.o
+expect "enter:"
+send "25\r"
+interact
+
+puts "\n\n2. second run, set 'exp_internal 1' to debug"
+puts "####Use debug mode by putting the line 'exp_internal 1' at the top of your script. It will help you see any of the special characters or spaces that you might be missing in your matches"
+exp_internal 1
+spawn ${script_name}.c.o
+expect "enter:"
+send "25\r"
+interact
+
+
