@@ -1,0 +1,4 @@
+pygmentize -l bash <<"EOF"
+#create a file 5G in size 
+dd if=/dev/zero of=/tmp/fill_zeros.log bs=1G count=5
+EOF
