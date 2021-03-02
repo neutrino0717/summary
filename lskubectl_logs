@@ -1,0 +1,5 @@
+pygmentize -l bash <<"EOF"
+kubectl get pod
+kubectl logs podname
+kubectl logs -h
+EOF

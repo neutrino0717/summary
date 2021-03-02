@@ -1,0 +1,6 @@
+pygmentize -l bash <<"EOF"
+kubectl cluster-info
+kubectl cluster-info dump
+kubectl config view
+kubectl config get-contexts
+EOF

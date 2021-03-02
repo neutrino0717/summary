@@ -1,0 +1,11 @@
+pygmentize -l bash <<"EOF"
+kubectl -n swtest get pods
+kubectl -n swtest delete pod pod1
+kubectl -n swtest delete pod pod1 --force --grace-period=0
+
+kubectl delete -f myVol -Pod.yaml --force --grace-period=0
+
+kubectl -n swtest delete pvc --all
+
+
+EOF

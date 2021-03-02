@@ -1,0 +1,7 @@
+pygmentize -l bash <<"EOF"
+kubectl -n skywalking exec -it podname -- /bin/bash
+kubectl -n skywalking exec     podname -- ls
+kubectl -n skywalking exec [-it] <pod name> [-c CONTAINER] -- COMMAND [args...]
+-i option will pass stdin to the container
+-t option will specify stdin is a tty
+EOF

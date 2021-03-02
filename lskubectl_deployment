@@ -1,0 +1,8 @@
+pygmentize -l bash <<"EOF"
+kubectl create deployment hello-minikube --image=k8s.gcr.io/echoserver:1.10
+#expose deployment as a service
+kubectl expose deployment hello-minikube --type=NodePort --port=8080
+kubectl get pod
+
+
+EOF

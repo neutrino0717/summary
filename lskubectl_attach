@@ -1,0 +1,5 @@
+pygmentize -l bash <<"EOF"
+kubectl get pods -n skywalking
+kubectl attach mysky-skywalking-skywalking-ui-856d55544b-ws28z -i -n skywalking
+
+EOF

@@ -1,0 +1,4 @@
+pygmentize -l bash <<"EOF"
+kubectl -n kubesphere-system edit cm ks-installer 
+kubectl -n kubesphere-system edit cm/ks-installer
+EOF

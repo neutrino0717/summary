@@ -1,0 +1,16 @@
+pygmentize -l bash <<"EOF"
+kubectl get all --all-namespaces=true
+
+kubectl get deployment
+kubectl get services
+kubectl get pods --field-selector=status.phase!=Running --all-namespaces=true
+
+kubectl get nodes --show-labels
+
+kubectl get events --all-namespaces=true
+kubectl get cm --all-namespaces=true
+
+kubectl get sc     #storage class
+kubectl get pv
+
+EOF

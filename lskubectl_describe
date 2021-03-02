@@ -1,0 +1,7 @@
+pygmentize -l bash <<"EOF"
+kubectl -n swtest describe node
+kubectl -n swtest describe pod
+kubectl -n swtest describe service
+kubectl -n swtest describe deployment |grep Name:
+
+EOF
