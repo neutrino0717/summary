@@ -1,0 +1,20 @@
+pygmentize -l bash <<"EOF"
+
+docker run busybox
+docker attach container_id
+
+docker run -it busybox
+
+docker create -t -i fedora bash
+docker ps -a       #status: created
+docker start -a -i 6d8af538ec5
+
+#create container named dbstore1
+docker run -v /dbdata --name dbstore1 ubuntu /bin/bash  
+#created a new container, mount the same volume as dbstore1
+#Mount a local host directory as /backup
+#backup /dbdata to /backup
+docker run --rm --volumes-from dbstore -v $(pwd):/backup ubuntu tar cvf /backup/backup.tar /dbdata
+
+
+EOF

@@ -7,4 +7,10 @@ rpm -qpR zabbix-agent-5.0.1-1.el7.x86_64.rpm  #dependency
 ldd /usr/sbin/zabbix_agentd
 
 rpm -q --scripts zabbix-agent
+
+#list package owned files
+rpm -q zabbix-agent
+rpm -ql zabbix-agent
+
+
 EOF

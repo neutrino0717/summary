@@ -31,4 +31,7 @@ ps alx                                        #F   UID   PID  PPID PRI  NI    VS
 ps aux wwf
 ps alx fww  
 ps axo pid,cmd,wchan,stat
+
+ps aux --sort=-pmem
+ps aux --sort=-pcpu
 EON

@@ -1,0 +1,17 @@
+pygmentize -l bash <<"EOF"
+sudo apt install nodejs npm
+git clone  https://github.com/wardviaene/docker-demo
+cd docker-demo/
+cat Dockerfile
+  FROM node:12
+  WORKDIR /app
+  ADD . /app
+  RUN npm install
+  EXPOSE 3000
+  CMD npm start
+docker build .
+docker images
+docker run -p 3000:3000 -it image_id
+curl localhost:3000
+
+EOF

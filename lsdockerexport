@@ -1,0 +1,13 @@
+pygmentize -l bash <<"EOF"
+#save and export are both used for sharing tar files. 
+#save is used for images and can save multiple images into a tar file with all the layers and history. 
+#export is used for containers without any history or layers.
+
+docker export --output abc.tar 9be359ce119b        #container --> tar(an image)
+docker import abc.tar                              #tar(an image) --> local repo image
+
+docker save -o my_ubuntu_v3.tar runoob/ubuntu:v3   #multip images --> tar(an image)
+docker save ubuntu:load >/root/ubuntu.tar
+docker load<ubuntu.tar                             #tar(an image) --> local repo image 
+
+EOF

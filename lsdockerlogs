@@ -1,0 +1,5 @@
+pygmentize -l bash <<"EOF"
+docker ps
+docker logs    container_id
+docker inspect container_id
+EOF

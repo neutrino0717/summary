@@ -1,0 +1,12 @@
+#!/bin/bash
+repo=gcr.io/heptio-images/eventrouter;ver=latest
+
+pygmentize -l bash <<EOF
+docker pull $repo:$ver
+docker tag  $repo:$ver 172.28.13.187/library/${repo##*/}:$ver
+docker images |grep $ver
+docker login http://172.28.13.187  #admin/Harbor12345
+docker push 172.28.13.187/library/${repo##*/}:$ver
+EOF
+echo "--set mage.repository=172.28.13.187/library/${repo##*/}"
+

@@ -4,4 +4,8 @@ yum provides /usr/bin/ansible-test #Find packages that provide the queried file
 yum info openssl  #Display information about a package
 yum info mysql-community-client
 yum search mysql  #Search package names and descriptions for a term
+
+#download ntp package only
+yum install yum-plugin-downloadonly
+yum --downloadonly --downloaddir=tmp/ reinstall ntp
 EOF

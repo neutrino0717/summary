@@ -1,0 +1,7 @@
+pygmentize -l bash <<"EOF"
+cat /etc/docker/daemon.json
+{
+  "insecure-registries": ["registry.access.redhat.com","quay.io","172.28.13.187"]
+}
+docker info
+EOF

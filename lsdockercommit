@@ -1,0 +1,6 @@
+pygmentize -l bash <<"EOF"
+docker ps -a                                #get container id
+docker commit container_id enmaoliu/ubuntu  #commit to repository enmaoliu/ubuntu
+docker images                               #display repository and image
+docker rmi enmaoliu/ubuntu
+EOF

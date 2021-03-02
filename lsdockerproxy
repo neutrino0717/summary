@@ -1,0 +1,6 @@
+pygmentize -l bash <<"EOF"
+echo -e '[Service]\nEnvironment="HTTP_PROXY=http://10.196.58.10:10792" "HTTPS_PROXY=http://10.196.58.10:10792"' > /etc/systemd/system/docker.service.d/http-proxy.conf
+
+systemctl daemon-reload
+systemctl restart docker
+EOF

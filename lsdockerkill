@@ -1,0 +1,7 @@
+pygmentize -l bash <<"EOF"
+docker ps
+docker stop containerid   #send SIGTERM + 10s + SIGKILL
+docker kill containerid   #send SIGKILL
+docker rm   containerid   #clean up the container which display with 'docker ps -a'
+docker rm $(docker ps -qa --filter status=exited)
+EOF

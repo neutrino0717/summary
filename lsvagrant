@@ -1,0 +1,5 @@
+pygmentize -l bash <<"EOF"
+Kubernetes Setup Using Ansible and Vagrant
+https://gist.github.com/hi1280/69a76141450ff047764801a3d3db05b4
+
+EOF

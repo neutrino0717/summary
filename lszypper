@@ -13,10 +13,20 @@ zypper update
 
 zypper search libseccomp
 
-
-
 cnf mysql
 #  * mariadb-client [ path: /usr/bin/mysql, repository: zypp (SUSE-Linux-12-SP5) ]
 # Try installing with: zypper install mariadb-client
 zypper install mariadb-client
+
+#add repo
+sudo zypper ar  https://download.opensuse.org/repositories/Virtualization:containers/SLE_12_SP5/Virtualization:containers.repo
+zypper repos
+zypper refresh
+zypper install docker
+systemctl start docker
+docker run -p 9200:9200 -p 9300:9300 -e "discovery.type=single-node" docker.elastic.co/elasticsearch/elasticsearch:7.8.0
+
+
+
+
 EOF

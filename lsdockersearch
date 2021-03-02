@@ -1,0 +1,4 @@
+pygmentize -l bash <<"EOF"
+docker search elasticsearch
+docker search redis
+EOF

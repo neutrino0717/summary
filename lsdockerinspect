@@ -1,0 +1,3 @@
+pygmentize -l bash <<"EOF"
+docker inspect docker_id
+EOF
