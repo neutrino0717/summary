@@ -34,4 +34,6 @@ ps axo pid,cmd,wchan,stat
 
 ps aux --sort=-pmem
 ps aux --sort=-pcpu
+
+ps -f -u zabbix   #user zabbix
 EON

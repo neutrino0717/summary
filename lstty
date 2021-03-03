@@ -1,0 +1,9 @@
+pygmentize -l bash <<"EOF"
+who
+tty
+
+stty -a
+kill -l
+
+ps -f -u zabbix   #user zabbix
+EOF

@@ -1,0 +1,6 @@
+pygmentize -l bash <<"EOF"
+TZ='Asia/Shanghai' date
+env TZ=America/New_York date
+date -u +%y%m%d%H%M%S #170208074137
+
+EOF

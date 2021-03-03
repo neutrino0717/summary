@@ -1,10 +1,15 @@
 pygmentize -g <<"EOF"
-$ man rsync |grep -P '^\s+\-((a|z|v)|\-stats|\-progress)'
-        -v, --verbose               increase verbosity
-        -a, --archive               archive mode; equals -rlptgoD (no -H,-A,-X)
-        -z, --compress              compress file data during the transfer
-            --stats                 give some file-transfer stats
-            --progress              show progress during transfer
-
+man rsync |grep -P '^\s+\-((a|z|v)|\-stats|\-progress)'
+#        -v, --verbose               increase verbosity
+#        -a, --archive               archive mode; equals -rlptgoD (no -H,-A,-X)
+#        -z, --compress              compress file data during the transfer
+#            --stats                 give some file-transfer stats
+#            --progress              show progress during transfer
+#
 rysnc -av --progress srcdir dstdir --exc
+
+#if files with the same name exist in both directories, the command by defualt will overwrite
+#--ignore-existing: If you want to always keep the version in ~/automme.bak, add the option 
+#--remove-source-files: Delete Source File After Transfer
+rsync  -a automme/ automme.bak/ --remove-source-files
 EOF

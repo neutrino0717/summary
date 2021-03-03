@@ -1,0 +1,23 @@
+pygmentize -l bash <<"EOF"
+#installation
+yum install jq -y
+VERSION=v4.6.1; BINARY=yq_linux_amd64
+wget https://github.com/mikefarah/yq/releases/download/${VERSION}/${BINARY}.tar.gz -O - | tar zxv && mv ${BINARY} /usr/bin/yq
+
+#help
+tldr jq
+tldr yq
+
+#format json
+echo '{"foo": 0}' | jq .
+
+#yaml to json
+yq eval -j <<EOD
+bob:
+  item1:
+    cats: bananas
+  item2:
+    cats: apples
+EOD
+
+EOF

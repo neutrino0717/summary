@@ -2,4 +2,7 @@ pygmentize -g <<"EOF"
 du -shx /   #single file system
 du -shx /*  #  
 
+#found top 10 directories that use the most disck space
+du -shx * | sort -h | tail -n 10
+
 EOF

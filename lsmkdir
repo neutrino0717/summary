@@ -1,0 +1,6 @@
+pygmentize -l bash <<"EOF"
+mkdir -p /tmp/project/{lib/ext,bin,src,doc/{html,info,pdf},demo/stat/a}
+tree -p /tmp/project
+
+mktemp /tmp/installer_XXXXXX  #/tmp/installer_wN3zBj
+EOF

@@ -1,5 +1,5 @@
 #!/bin/bash
-if [ -z "$1" ]; then echo "Need comment for git commit!"; exit 1; fi 
+if [ -z "$1" ]; then echo "Need comment for git commit!"; set -- "`date +'%Y-%m-%d %H:%M:%S'`"; fi 
 cd `dirname $0`
 echo "git pull" |bash -x
 echo "git status"|bash -x

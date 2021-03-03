@@ -1,6 +1,10 @@
 pygmentize -l bash <<"EOF"
 #kill all processes of a user
+ps -f -e zabbix
 killall -u zabbix
 #kiall all processes of a user
 pkill -u -9 zabbix
+
+kill -l
+
 EOF

@@ -1,0 +1,5 @@
+pygmentize -l bash <<"EOF"
+df -h
+lsblk
+
+EOF

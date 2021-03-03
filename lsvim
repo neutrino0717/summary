@@ -21,4 +21,9 @@ v :w test.txt      select, save as test.txt
 
 shift Z Z          save the exit
 shitf Z Q          exit
+
+ctrl-f 	page down
+ctrl-b 	page up
+%       go to the corresponding (){}[]
+''   	the last position
 EOF

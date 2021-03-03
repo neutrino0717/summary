@@ -7,8 +7,19 @@ systemctl status  sshd.service            #service sshd status
 systemctl restart sshd.service            #service sshd restart
 systemctl enable  named.service           #chkconfig named on
 systemctl disable named.service           #chkconfig named off
+systemctl is-enabled ssh.service
 
 systemctl daemon-reload
 systemctl restart docker
+
+systemctl list-dependencies sshd.service
+systemctl show elasticsearch
+systemctl --failed
+
+##reboot the system
+systemctl reboot
+systemctl poweroff
+systemctl suspend(hiberate)
+
 
 EOF

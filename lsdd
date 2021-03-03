@@ -1,4 +1,14 @@
 pygmentize -l bash <<"EOF"
 #create a file 5G in size 
 dd if=/dev/zero of=/tmp/fill_zeros.log bs=1G count=5
+dd if=/dev/zero of=upload_test         bs=file_size count=1
+
+#create a file that will occupy all free disk 
+dd if=/dev/zero of=zerofillfile bs=1M
+    #if=            specifies the input file;
+    #/dev/zero      indicates a bit-stream of zeros
+    #of=            specifies the output file
+    #zerofillfile   name of the file containing the bit-stream of zeros
+    #bs=            indicates the block size
+    #1M             indicates that the block size will be 1 megabyte
 EOF
