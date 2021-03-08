@@ -4,6 +4,7 @@ kubectl get all --all-namespaces=true
 kubectl get deployment
 kubectl get services
 kubectl get pods --field-selector=status.phase!=Running --all-namespaces=true
+kubectl get pods --all-namespaces -o jsonpath='{range ..containerStatuses[*]}{@.containerID}{" "}{@.image}{" "}{@.name}{" "}{@.ready}{" "}{@.started}{"\n"}{end}
 
 kubectl get nodes --show-labels
 

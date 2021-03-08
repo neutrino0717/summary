@@ -1,0 +1,11 @@
+pygmentize -l bash <<"EOF"
+[root@cn000vm3950 _8__awxdemo]# cat test.yml
+---
+- name: Connection test
+  hosts: win
+  gather_facts: yes
+  tasks:
+    - name: ping test
+      win_ping:
+
+EOF

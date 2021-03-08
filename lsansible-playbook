@@ -1,0 +1,30 @@
+pygmentize -l bash <<"EOF"
+ansible-playbook zabbix_agent.yml -i hosts --list-hosts
+ansible-playbook zabbix_agent.yml -i hosts --syntax-check
+ansible-playbook -i hosts.yml --limit 10.196.131.150 linux_setup.yml --tags role_ntp`
+
+#### aliyun
+ansible-playbook zabbix_linux.yml -i hosts_aliyun --limit 172.30.210.244 --forks=10 --tags common,new,zabbix
+ansible-playbook zabbix_linux.yml -i hosts_aliyun --limit 172.30.210.252,172.30.210.253,172.30.210.254,172.30.210.244, --forks=10 --tags probe_zabbix_agent
+ansible-playbook zabbix_linux.yml -i hosts_aliyun --limit 172.30.210.252,172.30.210.253,172.30.210.254,172.30.210.244, --forks=10 --tags probe_zabbix_config
+ansible-playbook -i hosts.yml --limit aliyun linux_setup.yml --tags zabbix_agentd.conf,systemctl
+ansible-playbook -i hosts.yml --limit aliyun linux_setup.yml
+
+#### rancher
+ansible-playbook -i hosts_k8s rancher_kubectl_docker_diff.yml --limit=rancher
+
+#### windows
+ansible-playbook -i hosts_test2 test.yml --limit 10.111.164.109
+ansible -i hosts_win_neishi 10.196.131.213 -m raw -a 'hostname'
+
+#### es ####
+ansible-playbook elasticsearch_setup.yml -i hosts.yml --limit es
+
+#### ntp ####
+ansible-playbook -i hosts.yml --limit 172.28.18.125 ntp.yml
+
+#### riverside3 ####
+ansible-playbook win_setup.yml -i hosts_riverside.yml --limit=10.17.128.121
+
+
+EOF

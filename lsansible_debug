@@ -1,0 +1,19 @@
+pygmentize -l bash <<"EOF"
+    - name: Block for probing zabbix agent
+      block:
+        - name: Gather the package facts
+          package_facts:
+            manager: auto
+        - name: Print the package facts
+          debug:
+            var: ansible_facts.packages['zabbix-agent']
+        - name: Check zabbix configuration
+          shell: egrep -v '#|^$' /etc/zabbix/zabbix_agentd.conf
+          register: zbxcfg
+          tags: probe_zabbix_config
+        - debug:
+            var: zbxcfg.stdout_lines
+      tags:
+        - probe_zabbix
+
+EOF

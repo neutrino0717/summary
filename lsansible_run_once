@@ -1,0 +1,16 @@
+pygmentize -l bash <<"EOF"
+- name: diff the result and send mail
+  hosts: all
+  gather_facts: no
+  tasks:
+    - name: run python diff script
+      shell: ./rancher_kubectl_docker_diff.py
+      run_once: true
+      delegate_to: localhost
+      register: mail_body
+    - debug:
+        var: mail_body.stdout
+  tags:
+    - diff
+
+EOF

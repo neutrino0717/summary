@@ -1,0 +1,25 @@
+pygmentize -l bash <<"EOF"
+- name: docker container info
+  hosts: all
+  serial: 1
+  gather_facts: no
+  become: yes
+  tasks:
+    - name: Block for infos on docker host
+      block:
+        - name: Get info on docker host
+          shell: docker ps |grep -v 'CONTAINER ID' | awk -v host={{ inventory_hostname }} '{print  host"   "$0}'
+          register: container_list
+        #- debug:
+        #    var: container_list.stdout
+        - name: append
+          lineinfile:
+            create: yes
+            dest: /tmp/rancher_docker.log
+            line: "{{ container_list.stdout }}"
+            insertafter: EOF
+          delegate_to: localhost
+      tags:
+        - a2
+
+EOF

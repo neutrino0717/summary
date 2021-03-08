@@ -1,0 +1,33 @@
+pygmentize -l bash <<"EOF"
+[agents]
+172.28.13.140 ansible_connection=ssh ansible_user=root ansible_password=China1234
+172.28.13.120 ansible_connection=ssh ansible_user=root ansible_password=China1234
+172.28.13.134 ansible_connection=ssh ansible_user=root ansible_password=China1234
+172.28.13.138 ansible_connection=ssh ansible_user=root ansible_password=China1234
+
+[rancher]
+k8s-master-01 ansible_ssh_host='172.28.18.198'
+k8s-master-02 ansible_ssh_host='172.28.18.199'
+k8s-master-03 ansible_ssh_host='172.28.18.200'
+k8s-worker-01 ansible_ssh_host='172.28.18.232'
+k8s-worker-02 ansible_ssh_host='172.28.18.233'
+k8s-worker-03 ansible_ssh_host='172.28.18.234'
+k8s-worker-04 ansible_ssh_host='172.28.18.235'
+
+[rancher:vars]
+ansible_user=root
+ansible_password=123456
+
+[kubesphere]
+master1 ansible_ssh_host='172.28.13.73'
+master2 ansible_ssh_host='172.28.13.74'
+
+[kubesphere:vars]
+ansible_user=root
+ansible_password=China1234
+
+[all:vars]
+env=prod
+ansible_connection=ssh
+
+EOF

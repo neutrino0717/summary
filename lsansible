@@ -1,0 +1,6 @@
+pygmentize -l bash <<"EOF"
+ansible -m ping  -i ./hosts.yml all -vvv
+ansible -a uname -i ./hosts.yml liuzhou
+ansible all -i 172.28.13.134, -m ping  --extra-vars "ansible_user=root ansible_password=China1234"
+
+EOF

@@ -1,0 +1,6 @@
+pygmentize -l bash <<"EOF"
+## You add a taint to a node using kubectl taint
+kubectl taint nodes node1 key=value:NoSchedule
+## To remove the taint added by the command above, you can run:
+kubectl taint nodes node1 key:NoSchedule-
+EOF

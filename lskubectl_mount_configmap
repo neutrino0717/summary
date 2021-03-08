@@ -1,0 +1,2 @@
+pygmentize -l bash <<"EOF"
+EOF

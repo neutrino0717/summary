@@ -1,0 +1,7 @@
+pygmentize -l bash <<"EOF"
+    - name: Block for new installation
+      block:
+        - name: Transfer rpm
+          copy: src=repo/zabbix/{{ install_rpm_name }} dest=/tmp/ mode=0777
+
+EOF

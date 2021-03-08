@@ -1,0 +1,11 @@
+pygmentize -l bash <<"EOF"
+- name: Check zabbix agent block
+  block:
+    - name: Gather the package facts
+      package_facts:
+        manager: auto
+    - name: Print the package facts
+      debug:
+        var: ansible_facts.packages['zabbix-agent']
+
+EOF

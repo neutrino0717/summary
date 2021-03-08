@@ -1,0 +1,27 @@
+pygmentize -l bash <<"EOF"
+helm3 delete swdev  -n swdev
+helm3 delete swprod -n swprod
+helm3 delete swtest -n swtest
+helm3 delete swuat  -n swuat
+helm3 delete sky1   -n sky1
+
+helm2 install --name elk1 . --namespace yftest 
+helm2 delete sky1 --purge
+
+helm3 delete         elk1   --namespace elktest
+helm3 upgrade        elk1 . --namespace elktest
+helm3 install        elk1 . --namespace elktest
+
+helm3 install skywalking9 . -n skywalking \
+  --set elasticsearch.enabled=false --set elasticsearch.config.host=172.28.13.120 --set elasticsearch.config.port.http=9200
+
+#generate the yaml only
+helm template .
+helm2 template mychart
+helm lint
+
+helm3 version --short
+
+
+
+EOF

@@ -1,0 +1,17 @@
+pygmentize -l bash <<"EOF"
+[root@cn000vm3950 _8__awxdemo]# cat linux_setup.yml
+---
+- hosts: all
+  gather_facts: yes
+  become: yes
+  environment:
+    http_proxy: ""
+    https_proxy: ""
+  roles:
+    - {role: 'roles/ntp', tags: 'role_ntp'}
+    - roles/zabbix_agent_new
+    - roles/zabbix_agent_update
+    - roles/zabbix_agent_check
+    - roles/zabbix_server_add_host
+
+EOF

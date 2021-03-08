@@ -1,0 +1,21 @@
+pygmentize -l bash <<"EOF"
+- name: kubectl container info
+  hosts: k8s-master-01,master1
+  gather_facts: no
+  become: yes
+  tasks:
+    - name: Block for pod
+      block:
+        - name: Search for all running pods
+          shell: kubectl get pods --all-namespaces -o jsonpath='{range ..containerStatuses[*]}{@.containerID}{" "}{@.image}{" "}{@.name}{" "}{@.ready}{" "}{@.started}{"\n"}{end}'
+          register: pod_container_list
+        #- debug:
+        #    var: pod_container_list.stdout_lines
+        - local_action:
+            module: copy
+            content: "{{ pod_container_list.stdout }}"
+            dest: /tmp/rancher_kubectl.log
+      tags:
+        - a3
+
+EOF

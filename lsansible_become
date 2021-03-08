@@ -1,0 +1,15 @@
+pygmentize -l bash <<"EOF"
+#become root
+- name: Ensure the httpd service is running
+  service:
+    name: httpd
+    state: started
+  become: yes
+
+
+#become apache
+- name: Run a command as the apache user
+  command: somecommand
+  become: yes
+  become_user: apache
+EOF

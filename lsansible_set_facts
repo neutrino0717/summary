@@ -1,0 +1,22 @@
+pygmentize -l bash <<"EOF"
+  tasks:
+    - name: Block for seting fact for linux
+      block:
+        - name: Set fact for CentOS 7
+          set_fact:
+            install_rpm_name: "zabbix-agent-5.0.1-1.el7.x86_64.rpm"
+          when: ansible_distribution == "CentOS" and ansible_distribution_major_version == "7"
+        - name: Set fact for SELS 12
+          set_fact:
+            install_rpm_name: "zabbix-agent-5.0.1-1.el12.x86_64.rpm"
+          when: ansible_distribution == "SLES" and ansible_distribution_major_version == "12"
+        - debug:
+            msg: "{{ install_rpm_name }}"
+      tags:
+        - common
+
+    - name: Block for new installation
+      block:
+        - name: Transfer rpm
+          copy: src=repo/zabbix/{{ install_rpm_name }} dest=/tmp/ mode=0777
+EOF

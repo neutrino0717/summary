@@ -1,0 +1,9 @@
+pygmentize -l bash <<"EOF"
+[root@cn000vm3950 _8__awxdemo]# cat roles/zabbix_agent_check/tasks/main.yml
+---
+- import_tasks: linux_zabbix.yml
+  when: ansible_facts['os_family']|lower == 'redhat' or ansible_facts['os_family']|lower == 'suse'
+- import_tasks: windows_zabbix.yml
+  when: ansible_facts['os_family']|lower == 'windows'
+
+EOF

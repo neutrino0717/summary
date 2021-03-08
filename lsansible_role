@@ -1,0 +1,77 @@
+pygmentize -l bash <<"EOF"
+[root@cn000vm3950 zabbix_agent_check]# grep -r ^ .
+./tasks/main.yml:---
+./tasks/main.yml:- import_tasks: linux_zabbix.yml
+./tasks/main.yml:  when: ansible_facts['os_family']|lower == 'redhat' or ansible_facts['os_family']|lower == 'suse'
+./tasks/main.yml:- import_tasks: windows_zabbix.yml
+./tasks/main.yml:  when: ansible_facts['os_family']|lower == 'windows'
+
+./tasks/linux_zabbix.yml:---
+./tasks/linux_zabbix.yml:- name: Check zabbix agent block
+./tasks/linux_zabbix.yml:  block:
+./tasks/linux_zabbix.yml:    - name: Gather the package facts
+./tasks/linux_zabbix.yml:      package_facts:
+./tasks/linux_zabbix.yml:        manager: auto
+./tasks/linux_zabbix.yml:    - name: Print the package facts
+./tasks/linux_zabbix.yml:      debug:
+./tasks/linux_zabbix.yml:        var: ansible_facts.packages['zabbix-agent']
+./tasks/linux_zabbix.yml:    - name: Check zabbix configuration
+./tasks/linux_zabbix.yml:      shell: egrep -v '^#|^$' /etc/zabbix/zabbix_agentd.conf
+./tasks/linux_zabbix.yml:      register: zbxcfg1
+./tasks/linux_zabbix.yml:    - debug:
+./tasks/linux_zabbix.yml:        var: zbxcfg1.stdout_lines
+./tasks/linux_zabbix.yml:    - name: Check zabbix configuration zabbix_agentd.d
+./tasks/linux_zabbix.yml:      shell: egrep -v '^#|^$' /etc/zabbix/zabbix_agentd.d/*.conf
+./tasks/linux_zabbix.yml:      register: zbxcfg2
+./tasks/linux_zabbix.yml:    - debug:
+./tasks/linux_zabbix.yml:        var: zbxcfg2.stdout_lines
+./tasks/windows_zabbix.yml:---
+./tasks/windows_zabbix.yml:- name: Determine if hosts are up
+./tasks/windows_zabbix.yml:  block:
+./tasks/windows_zabbix.yml:    #- name: Determine hosts that are up
+./tasks/windows_zabbix.yml:    #  wait_for_connection:
+./tasks/windows_zabbix.yml:    #    timeout: 5
+./tasks/windows_zabbix.yml:    #  register: connection_result
+./tasks/windows_zabbix.yml:    - name: copy ps1 script to remote
+./tasks/windows_zabbix.yml:      win_copy:
+./tasks/windows_zabbix.yml:        src: zabbix_win_check_config
+./tasks/windows_zabbix.yml:        dest: C:\zabbix_win_check_config.ps1
+./tasks/windows_zabbix.yml:
+./tasks/windows_zabbix.yml:    - name: get zabbix agent status
+./tasks/windows_zabbix.yml:      win_service:
+./tasks/windows_zabbix.yml:        name: "Zabbix Agent"
+./tasks/windows_zabbix.yml:      register: zabbixagentstate
+./tasks/windows_zabbix.yml:    - debug:
+./tasks/windows_zabbix.yml:        var: zabbixagentstate
+./tasks/windows_zabbix.yml:    - name: run ps1
+./tasks/windows_zabbix.yml:      win_command: powershell.exe C:\zabbix_win_check_config.ps1
+./tasks/windows_zabbix.yml:      register: psresult
+./tasks/windows_zabbix.yml:    #- name: delete ps1 file
+./tasks/windows_zabbix.yml:    #  win_file:
+./tasks/windows_zabbix.yml:    #    path: C:\zabbix_win_check_config.ps1
+./tasks/windows_zabbix.yml:    #    state: absent
+./tasks/windows_zabbix.yml:
+./tasks/windows_zabbix.yml:    - debug:
+./tasks/windows_zabbix.yml:        var: psresult.stdout_lines
+./tasks/windows_zabbix.yml:
+./files/zabbix_win_check_config:$ErrorActionPreference= 'silentlycontinue'
+./files/zabbix_win_check_config:$service=get-wmiobject -query 'select * from win32_service where name="Zabbix Agent"'
+./files/zabbix_win_check_config:if ($null -eq $service) {
+./files/zabbix_win_check_config:    'Error, zabbix agent not installed, exit!'
+./files/zabbix_win_check_config:     exit 1
+./files/zabbix_win_check_config:}
+./files/zabbix_win_check_config:
+./files/zabbix_win_check_config:$result=$service.pathname
+./files/zabbix_win_check_config:$zabbixagentconfPath="$result".Split('"') |findstr /e ".conf"
+./files/zabbix_win_check_config:
+./files/zabbix_win_check_config:$service2 = Get-Service -Name "Zabbix Agent"
+./files/zabbix_win_check_config:if ($service2.Status -ne 'Running'){
+./files/zabbix_win_check_config:   "Error, Zabbix Agent is not running "
+./files/zabbix_win_check_config:}
+./files/zabbix_win_check_config:
+./files/zabbix_win_check_config:#Get-Content $zabbixagentconfPath |findstr "^Server=.*$ip_new.*"
+./files/zabbix_win_check_config:#Get-Content $zabbixagentconfPath |findstr "^ServerActive=.*$ip_new.*"
+./files/zabbix_win_check_config:#Get-Content $zabbixagentconfPath |findstr "^Hostname=.*"
+./files/zabbix_win_check_config:Get-Content $zabbixagentconfPath | select-string -notmatch  "^#|^$"
+
+EOF
