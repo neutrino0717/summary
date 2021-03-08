@@ -1,89 +1,140 @@
 ### create configmap from a propertiy file        
 #keyword: app.properties, appconfig, 
-#         configvolume, driver, hierarchy         #use configmap via volume                   #use configmap via env variables
-$ cat <<EOF > app.properties                      apiversion: v1                              apiversion: v1
-driver=jdbc                                       kind:Pod                                    kind:Pod
-database=postgres                                 metadata:                                   metadata:
-lookandfeel=1                                       name: nodehelloworld.example.com            name: nodehelloworld.example.com
-otherparams=xyz                                     labels:                                     labels:
-param.with.hierarchy=xyz                              app: helloworld                             app: helloworld
-EOF                                               spec:                                       spec:
-                                                    containers:                                 containers:
-kubectl create configmap appconfig \               - name: k8S-demo                             - name: k85-demo
-  --from-file=app.properties                          image: wardviaene/k8s-demo                  image: wardviaene/k8s-demo
-                                                      ports:                                      ports:
-                                                      - containerPort: 3000                       - containerPort: 3000
-                                                      volumeMounts:                               env:
-                                                      - name: configvolume                          - name: DRIVER
-                                                  #The config values will be stored in files:         valueFrom:
-                                                  #/etc/config/driver                                 configMapKeyRef:
-                                                  #/etc/config/param/with/hierarchy                     name: appconfig
-                                                        mountPath: /etc/config                          key: driver
-                                                    volumes:                                        - name: DATABASE
-                                                    - name: configvolume                              [...]
-                                                      configMap:
-                                                        name: appconfig
+#         configvolume, driver, hierarchy
+
+                                                 
+           $ cat <<EOF > app.properties  <---------------------------|                   
+              driver=jdbc                                            |
+              database=postgres                                      |
+              lookandfeel=1                                          |
+              otherparams=xyz                                        |
+              param.with.hierarchy=xyz                               |
+              EOF                                                    |
+              													     |
+           $ kubectl create configmap appconfig --from-file=app.properties                     
+									 	   /|\
+											|
+											|               #use configmap via volume         
+											|               apiversion: v1                    
+#use configmap via env variables            |               kind:Pod                          
+apiversion: v1                              |               metadata:                         
+kind:Pod                                    |                 name: nodehelloworld.example.com
+metadata:                                   |                 labels:                         
+  name: nodehelloworld.example.com          |                   app: helloworld               
+  labels:                                   |               spec:                             
+    app: helloworld                         |                 containers:                     
+spec:                                       |                - name: k8S-demo                 
+  containers:                               |                   image: wardviaene/k8s-demo    
+  - name: k85-demo                          |                   ports:                        
+    image: wardviaene/k8s-demo              |                   - containerPort: 3000         
+    ports:                                  |                   volumeMounts:                 
+    - containerPort: 3000                   |                   - name: configvolume              #The values will be stored in files:  
+    env:                                    |                     mountPath: /etc/config          #/etc/config/driver                  **                  
+      - name: DRIVER                        |                 volumes:                            #/etc/config/param/with/hierarchy    ***
+        valueFrom:                          |                 - name: configvolume            
+        configMapKeyRef:                    |                   configMap:                    
+          name: appconfig  -----------------|-------------------  name: appconfig             
+          key: driver                                       
+      - name: DATABASE                                      
+        [...]                     
 
 
+---------------------------------------------------------------------------------------------------------------------------------------------------- 
 
 ########inject reverseproxy.conf to nginx container    
 keywords: reverseproxy, nginxconfig, configvolume                             
-                                                       
-													   $ kubectl get configmap nginxconfig -o yaml
-                                                       apiversion: v1
-                                                       data:
-$ cat reverseproxy.conf                                  reverseproxy.conf: |    #key: value
-server {                                                   server {
-    listen       80;                                           listen 80;
-    server_name  localhost;                                    server_name localhost;
-    location / {                                               location / {
-        proxy_bind 127.0.0.1;                                      proxy_bind 127.0.0.1;
-        proxy_pass http://127.0.0.1:3000;                          proxy_pass http://127.0.0.1:3000;
-    }                                                          }
-    error_page   500 502 503 504  /50x.html;                   error_page 500 502 503 504 /50x.html;
-    location = /50x.html {                                     location = /50x.html {
-        root   /usr/share/nginx/html;                              root /usr/share/nginx/html;
-    }                                                          }
-}                                                          }
-kubectl create configmap nginxconfig \                 kind: ConfigMap
-  --from-file=reverseproxy.conf                        metadata:
-                                                         creationTimestamp: 2016—11—23T11:37:47Z
-                                                         name: nginx—config
-                                                         namespace: default
-                                                         resourceVersion: "191697"
-                                                         selfLink: /api/v1/namespaces/default/configmaps/nginxconfig
-                                                         uid: 420e27af-b171—11e6—a2e9—7ed96877147c
+
+
+$ cat reverseproxy.conf       -----------------------------|                          
+	server {                                               |
+		listen       80;                                   |
+		server_name  localhost;                            |
+		location / {                                       |
+			proxy_bind 127.0.0.1;                          |
+			proxy_pass http://127.0.0.1:3000;              |
+		}                                                  |
+		error_page   500 502 503 504  /50x.html;           |
+		location = /50x.html {                             |
+			root   /usr/share/nginx/html;                  |
+		}                                                  |
+	}                                                      |
+														  \|/
+$ kubectl create configmap nginxconfig --from-file=reverseproxy.conf                        
+														   |
+														   |
+														   |
+$ kubectl get configmap nginxconfig -o yaml                |                                       
+	apiversion: v1                                         |
+	data:                                                  |
+	  reverseproxy.conf: |    #key: value    <-------------|        <------------------------------------------------- |
+		server {                                                                                                       |
+			listen 80;                                                                                                 |
+			server_name localhost;                                                                                     |
+			location / {                                                                                               |
+				proxy_bind 127.0.0.1;                                                                                  |
+				proxy_pass http://127.0.0.1:3000;                                                                      |
+			}                                                                                                          |
+			error_page 500 502 503 504 /50x.html;                                                                      |
+			location = /50x.html {                                                                                     |
+				root /usr/share/nginx/html;                                                                            |
+			}                                                                                                          |
+		}                                                                                                              |
+	kind: ConfigMap                                                                                                    |
+	metadata:                                                                                                          |
+	  creationTimestamp: 2016—11—23T11:37:47Z                                                                          |
+	  name: nginxconfig     <------------------------------------------------------------------------------------------|---|
+	  namespace: default                                                                                               |   |
+	  resourceVersion: "191697"                                                                                        |   |
+	  selfLink: /api/v1/namespaces/default/configmaps/nginxconfig                                                      |   |
+	  uid: 420e27af-b171—11e6—a2e9—7ed96877147c                                                                        |   |
+																													   |   |
+																													   |   |
+																													   |   |
+## create the service                                                                                                  |   |
+apiVersion: v1                                                                                                         |   |
+kind: Service                                                                                                          |   |
+metadata:                                                                                                              |   |
+  name: helloworld-nginx-service         ##create the pod                                                              |   |
+spec:                                    apiVersion: v1                                                                |   |
+  ports:                                 kind: Pod                                                                     |   |
+  - port: 80                             metadata:                                                                     |   |
+    protocol: TCP                          name: helloworldnginx                                                       |   |
+  selector:                                labels:                                                                     |   |
+    app: helloworldnginx   ---------->       app: helloworldnginx                                                      |   |
+  type: NodePort                         spec:                                                                         |   |
+                                           containers:                                                                 |   |
+                                           - name: nginx                                                               |   |
+                                             image: nginx:1.11                                                         |   |
+                                             ports:                                                                    |   |
+                                             - containerPort: 80                                                       |   |
+                                             volumeMounts:                                                             |   |
+                                             - name: configvolume                                                      |   |
+                                               mountPath: /etc/nginx/conf.d   --> /etc/nginx/conf.d/reverseproxy.conf  |   |
+                                           - name: k8s-demo                                                  /|\       |   |
+                                             image: wardviaene/k8s-demo                                       |        |   |
+                                             ports:                                                           |        |   |
+                                             - containerPort: 3000                                            |        |   |
+                                           volumes:                                                           |        |   |
+                                             - name: configvolume                                             |        |   |
+                                               configMap:                                                     |        |   |
+                                                 name: nginxconfig -------------------------------------------|--------|---|
+                                                 items:                                                       |        |   |
+                                                 - key: reverseproxy.conf  #get the value from key  ----------|--------|-- |
+                                                   path: reverseproxy.conf  #the filename in volumeMounts ----|
 
 
 
-##create the pod                                          ## create the service 
-apiVersion: v1                                            apiVersion: v1
-kind: Pod                                                 kind: Service
-metadata:                                                 metadata:
-  name: helloworldnginx                                     name: helloworld-nginx-service
-  labels:                                                 spec:
-    app: helloworldnginx                                    ports:
-spec:                                                       - port: 80
-  containers:                                                 protocol: TCP
-  - name: nginx                                             selector:
-    image: nginx:1.11                                         app: helloworldnginx
-    ports:                                                  type: NodePort
-    - containerPort: 80
-    volumeMounts:
-    - name: configvolume
-#result: /etc/nginx/conf.d/reverseproxy.conf
-      mountPath: /etc/nginx/conf.d        
-  - name: k8s-demo
-    image: wardviaene/k8s-demo
-    ports:
-    - containerPort: 3000
-  volumes:
-    - name: configvolume
-      configMap:
-        name: nginxconfig
-        items:
-        - key: reverseproxy.conf  #get the value from key
-          path: reverseproxy.conf  #the file name in volumeMounts
+
+
+
+
+
+
+
+
+
+
+
 
 
 
