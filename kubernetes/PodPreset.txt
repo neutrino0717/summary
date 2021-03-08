@@ -1,0 +1,110 @@
+Pod presets can inject information into pods at runtime
+  Pod Presets are used to inject Kubernetes Resources like Secrets, ConfiglVlaps, Volumes and Environment variables
+Imagine you have 20 applications you want to deploy, and they all need to get aspecific credential
+  You can edit the 20 specifications and add the credential, or 
+  You can use presets to create 1 Preset object, which will inject an environment variable or config file to all matching pods
+When injecting Environment variables and VolumeMounts, the Pod Preset will apply the chances to all containers within the pod
+
+
+keyword: myapp      ##any pods with label app: myapp will be injected
+         deployment1
+         sharevolume
+
+apiVersion: apps/v1                        apiVersion: apps/v1
+kind: Deployment                           kind: Deployment
+metadata:                                  metadata:
+  name: deployment1                          name: deployment2
+spec:                                      spec:
+  replicas: 3                                replicas: 3
+  selector:                                  selector:
+    matchLabels:                               matchLabels:
+      app: myapp                                 app: myapp2
+  template:                                  template:
+    metadata:                                  metadata:
+      labels:                                    labels:
+        app: myapp                                 app: myapp2
+    spec:                                      spec:
+      containers:                                containers:
+      - name: k8s-demo                           - name: k8s-demo
+        image: wardviaene/k8s-demo                 image: wardviaene/k8s-demo
+        ports:                                     ports:
+        - name: nodejs-port                        - name: nodejs-port
+          containerPort: 3000                        containerPort: 3000
+
+
+
+apiVersion: settings.k8s.io/v1alpha1
+kind: PodPreset
+metadata:
+  name: share-credential
+spec:
+  selector:
+    matchLabels:
+      app: myapp
+  env:
+    - name: MY_SECRET
+      value: "123456"
+  volumeMounts:
+    - mountPath: /share
+      name: sharevolume
+  volumes:
+    - name: sharevolume
+      emptyDir: {}
+
+
+$kubectl describe pod deployment1-Gb844d46fd-805md
+Name:         deployment1-Gb844d46fd-805md
+Namespace:    default
+Node:         ip-172-20-52—44.eu-west-l.compute.internal/172.20.52.44
+Start Time:   Mon, 13 Aug 2018 13:44:58 +0000
+Labels:       app=myapp
+              pod—template—hash=2640080298
+Annotations:  kubernetes.io/limit—ranger=LimitRanger plugin set: cpu request for container k8s—demo
+              podpreset.admission.kubernetes.io/podpreset—share—credential=677
+Status:       Pending
+IP:
+Controlled By: ReplicaSet/deployment—1—6b844d46fd
+  Containers:
+  k8s—demo:
+    Container ID:
+    Image: wardviaene/kBS—demo
+    Image ID:
+    Port: 3000/TCP
+    Host Pbrt: 0/TCP
+    State: Waiting
+      Reason: ContainerCreating
+    Ready: False
+    Restart Count: 0
+    Requests:
+      cpu: 100m
+    Environment:
+      MY_SECRET: 123456
+    Mounts:
+      /share from sharevolume (rw)
+      /var/run/secrets/kubernetes.io/serviceaccount from default-token-Sbcdl (ro)
+Conditions:
+  Type          Status
+  Initialized   True
+  Ready         False
+  PodScheduled  True
+Volumes:
+  sharevolume:
+    Type:     EmptyDir (a temporary directory that shares a pod's lifetime)
+    Medium:
+  default-token-Sbcdl:
+    Type: Secret (a volume populated by a Secret)
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+

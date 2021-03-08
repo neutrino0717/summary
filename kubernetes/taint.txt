@@ -1,0 +1,21 @@
+keywords: noSchedule, key
+
+[root@master1 ~]# k get node master1 -o yaml |grep -i taints -C 2
+  podCIDRs:
+  - 10.233.64.0/24
+  taints:
+  - effect: NoSchedule
+    key: node-role.kubernetes.io/master
+
+[root@master1 ~]# k get pod/elk1-filebeat-7wl7q -n elk -o yaml |grep -i tolerations -A 4
+  tolerations:
+  - effect: NoSchedule
+    key: node-role.kubernetes.io/master
+    operator: Exists
+
+
+[root@master1 elastic-stack]# cat charts/filebeat/values.yaml |grep -i tolerations -A 3
+tolerations:
+  - key: "node-role.kubernetes.io/master"
+    operator: "Exists"
+    effect: "NoSchedule"

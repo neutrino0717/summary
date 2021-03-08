@@ -1,0 +1,124 @@
+keywords: data, usr_share_elasticsearch_data， nfs-client, 30Gi
+
+sh-4.2# df -h
+Filesystem                                                                                                      Size  Used Avail Use% Mounted on
+overlay                                                                                                         150G   57G   94G  38% /
+tmpfs                                                                                                            64M     0   64M   0% /dev
+tmpfs                                                                                                            16G     0   16G   0% /sys/fs/cgroup
+/dev/mapper/centos-root                                                                                         150G   57G   94G  38% /etc/hosts
+shm                                                                                                              64M     0   64M   0% /dev/shm
+172.28.13.106:/home/kubesphere-nfs/elk-data-elk1-elasticsearch-data-1-pvc-15ceb029-36c3-4880-a170-9dbf2c0cb3c3  541G  107G  435G  20% /usr/share/elasticsearch/data   #usr_share_elasticsearch_data
+tmpfs                                                                                                            16G   12K   16G   1% /run/secrets/kubernetes.io/serviceaccount
+tmpfs                                                                                                            16G     0   16G   0% /proc/acpi
+tmpfs                                                                                                            16G     0   16G   0% /proc/scsi
+tmpfs                                                                                                            16G     0   16G   0% /sys/firmware
+sh-4.2#
+#stateset  																								   [root@master1 elastic-stack]# k get storageclass -o yaml
+  volumeClaimTemplates:                                                                                        apiVersion: v1
+    - metadata:                                                                                                items:
+        name: data                                                                                             - allowVolumeExpansion: true
+        creationTimestamp: null                                                                                  apiVersion: storage.k8s.io/v1
+      spec:                                                                                                      kind: StorageClass
+        accessModes:                                                                                             metadata:
+          - ReadWriteOnce                                                                                          annotations:
+        resources:                                                                                                   storageclass.kubernetes.io/is-default-class: "true"
+          requests:                                                                                                  storageclass.kubesphere.io/supported_access_modes: '["ReadWriteOnce","ReadOnlyMany","ReadWriteMany"]'
+            storage: 30Gi                                                                                          creationTimestamp: "2020-06-29T03:03:49Z"
+        storageClassName: nfs-client                                                                               labels:
+        volumeMode: Filesystem                                                                                       app: nfs-client-provisioner
+      status:                                                                                                        chart: nfs-client-provisioner-1.1.2
+        phase: Pending                                                                                               heritage: Tiller
+		                                                                                                             release: nfs-client
+		                                                                                                           name: nfs-client
+          volumeMounts:                                                                                            resourceVersion: "3208"
+            - name: data                                                                                           selfLink: /apis/storage.k8s.io/v1/storageclasses/nfs-client
+              mountPath: /usr/share/elasticsearch/data     #usr_share_elasticsearch_data                           uid: e94aac50-d037-4fba-b8eb-8a086eba78a3
+            - name: config                                                                                       parameters:
+              mountPath: /usr/share/elasticsearch/config/elasticsearch.yml                                         archiveOnDelete: "false"
+              subPath: elasticsearch.yml                                                                         provisioner: cluster.local/nfs-client-nfs-client-provisioner
+                                                                                                                 reclaimPolicy: Delete
+                                                                                                                 volumeBindingMode: Immediate
+                                                                                                               kind: List
+                                                                                                               metadata:
+                                                                                                                 resourceVersion: ""
+                                                                                                                 selfLink: ""
+# PVC object created
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: data-elk1-elasticsearch-data-0
+  namespace: elk
+  labels:
+    app: elasticsearch
+    release: elk1
+  annotations:
+    pv.kubernetes.io/bind-completed: 'yes'
+    pv.kubernetes.io/bound-by-controller: 'yes'
+    volume.beta.kubernetes.io/storage-provisioner: cluster.local/nfs-client-nfs-client-provisioner
+  finalizers:
+    - kubernetes.io/pvc-protection
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 30Gi
+  volumeName: pvc-301437ad-ede1-4637-add6-f9c64ac1df64
+  storageClassName: nfs-client
+  volumeMode: Filesystem
+
+
+
+
+
+
+[root@master1 elastic-stack]# k get storageclass
+NAME                   PROVISIONER                                       AGE
+nfs-client (default)   cluster.local/nfs-client-nfs-client-provisioner   17d
+[root@master1 elastic-stack]# k get storageclass -o yaml
+apiVersion: v1
+items:
+- allowVolumeExpansion: true
+  apiVersion: storage.k8s.io/v1
+  kind: StorageClass
+  metadata:
+    annotations:
+      storageclass.kubernetes.io/is-default-class: "true"
+      storageclass.kubesphere.io/supported_access_modes: '["ReadWriteOnce","ReadOnlyMany","ReadWriteMany"]'
+    creationTimestamp: "2020-06-29T03:03:49Z"
+    labels:
+      app: nfs-client-provisioner
+      chart: nfs-client-provisioner-1.1.2
+      heritage: Tiller
+      release: nfs-client
+    name: nfs-client
+    resourceVersion: "3208"
+    selfLink: /apis/storage.k8s.io/v1/storageclasses/nfs-client
+    uid: e94aac50-d037-4fba-b8eb-8a086eba78a3
+  parameters:
+    archiveOnDelete: "false"
+  provisioner: cluster.local/nfs-client-nfs-client-provisioner
+  reclaimPolicy: Delete
+  volumeBindingMode: Immediate
+kind: List
+metadata:
+  resourceVersion: ""
+  selfLink: ""
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+=======================================================================================================================

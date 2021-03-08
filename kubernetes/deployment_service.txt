@@ -1,0 +1,130 @@
+
+#############app --> db ##################
+keywords: databaseservice(service discovery)
+          helloworlddbservice
+          helloworldsecrets
+
+
+
+								
+								#app depoyment               
+                                apiVersion: apps/v1          
+                                kind: Deployment             
+                                metadata:                    
+                                  name: helloworld-deployment
+                                spec:                        
+                                  replicas: 3                
+                                  selector:                  
+                                    matchLabels:             
+                                      app: helloworlddb      
+Service: helloworlddbservice      template:                   
+spec:	                            metadata:                
+  selector:                           labels:  
+    app: helloworlddb   ------>         app: helloworlddb   
+  type: NodePort	                spec:    
+									  containers:    
+                                      - name: k8s-demo    
+                                        image: wardviaene/k8s-demo    
+                                        command: ["node", "index-db.js"] 
+                                        ports:        
+                                        - name: nodejs-port    
+                                          containerPort: 3000    
+                                        env:    
+                                          - name: MYSQL_HOST    
+                                            value: databaseservice  --->  Service: databaseservice
+                                          - name: MYSQL_USER                spec:                       pod: database
+                                            value: root                       selector:                   labels:
+                                          - name: MYSQL_PASSWORD          	  app: database   -->       app: database
+                                            valueFrom:                    	                            spec:							  
+                                              secretKeyRef:               							      container:
+                                                name: helloworldsecrets                                 	  env:
+                                                key: rootPassword                                       	    valueFrom:
+                                          - name: MYSQL_DATABASE                                        		  secretKeyRef:
+                                            valueFrom:                                                  		    name: helloworldsecrets  --> Secret: helloworldsecrets
+                                              secretKeyRef:                                             			  key: rootPassword            metadata:                       
+                                                name: helloworldsecrets                                                                            name: helloworldsecrets       
+                                                key: database                                                                                    type: Opaque                    
+                                                                                                                                                 data:                           
+                                                                                                                                                   username: aGVsbG93b3JsZA==    
+                                                                                                                                                   password: cGFzc3dvcmQ=        
+                                                                                                                                                   rootPassword: cm9vdHBhc3N3b3Jk
+                                                                                                                                                   database: aGVsbG93b3JsZA==    
+   
+-------- review --------
+
+#db deployment                          #db service                      #app depoyment                     #app service
+apiVersion: v1                          apiVersion: v1                   apiVersion: apps/v1                apiVersion: v1
+kind: Pod                               kind: Service                    kind: Deployment                   kind: Service
+metadata:                               metadata:                        metadata:                          metadata:
+  name: database                          name: databaseservice            name: helloworld-deployment        name: helloworlddbservice
+  labels:                               spec:                            spec:                              spec:
+    app: database                         ports:                           replicas: 3                        ports:
+spec:                                     - port: 3306                     selector:                          - port: 3000
+  containers:                               protocol: TCP                    matchLabels:                       protocol: TCP
+  - name: mysql                           selector:                            app: helloworlddb              selector:
+    image: mysql:5.7                        app: database                  template:                            app: helloworlddb
+    ports:                                type: NodePort                     metadata:                        type: NodePort
+    - name: mysql-port                   ------------------                    labels:
+      containerPort: 3306               apiVersion: v1                           app: helloworlddb 
+    env:                                kind: Secret                         spec:
+      - name: MYSQL_ROOT_PASSWORD       metadata:                              containers:
+        valueFrom:                        name: helloworldsecrets              - name: k8s-demo
+          secretKeyRef:                 type: Opaque                             image: wardviaene/k8s-demo
+            name: helloworldsecrets     data:                                    command: ["node", "index-db.js"]
+            key: rootPassword             username: aGVsbG93b3JsZA==             ports:
+      - name: MYSQL_USER                  password: cGFzc3dvcmQ=                 - name: nodejs-port
+        valueFrom:                        rootPassword: cm9vdHBhc3N3b3Jk           containerPort: 3000
+          secretKeyRef:                   database: aGVsbG93b3JsZA==             env:
+            name: helloworldsecrets                                                - name: MYSQL_HOST
+            key: username                                                            value: databaseservice
+      - name: MYSQL_PASSWORD                                                       - name: MYSQL_USER
+        valueFrom:                                                                   value: root
+          secretKeyRef:                                                            - name: MYSQL_PASSWORD
+            name: helloworldsecrets                                                  valueFrom:
+            key: password                                                              secretKeyRef:
+      - name: MYSQL_DATABASE                                                             name: helloworldsecrets
+        valueFrom:                                                                       key: rootPassword
+          secretKeyRef:                                                            - name: MYSQL_DATABASE
+            name: helloworldsecrets                                                  valueFrom:
+            key: database                                                              secretKeyRef:
+                                                                                         name: helloworldsecrets
+                                                                                         key: database
+
+$ kubectl get pod
+NAME                                   READY STATUS  RESTARTS AGE
+database                               1/1   Running 0        2m
+helloworld-deployment-3839364794-awgaw 1/1   Running 0        315
+helloworld-deployment-3839364794-jszc  1/1   Running 0        315
+helloworld-deployment-3839364794-qk3cg 1/1   Running 0        315
+
+$ kubectl logs helloworld-deployment-3839364794-awgaw
+Example app listening at http://:::3000
+Connectibn to db established 
+
+$ kubectl exec database -it -- mysql -u root -p
+Enter password:
+Welcome to the MySQL monitor. Commands end with ; or \g.
+mysql> 
+
+$ kubectl get svc
+NAME                    CLUSTER-IP EXTERNAL-IF PORT(S)  AGE
+databaseservice         10.0.0.123 <nodes>     3306/TCP 7m
+helloworlddbservice     10.0.0.52  <nodes>     3000/TCP 5m
+kubernetes              10.0.0.1   <none>      443/TCP  4d
+
+$ kubectl run -i --tty busybox --image=busybox --restart=Never -- sh
+Waiting for pod default/busybox to be running, status is Pending, pod ready: false
+If you don't see a command prompt, try pressing enter.
+
+# nslookup helloworlddbservice
+Server: 10.0.0.10
+Address 1: 10.0.0.10 kube—dns.kube—system.svc.cluster.local
+Name: helloworlddbservice
+Address 1: 10.0.0.52 helloworlddbservice.default.svc.cluster.local
+
+# nslookup databaseservice
+Server: 10.0.0.10
+Address 1: 10.0.0.10 kube-dns.kube—system.svc.cluster.local
+Name: databaseservice
+Address 1: 10.0.0.123 database—service.default.svc.cluster.local
+

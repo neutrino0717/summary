@@ -1,0 +1,270 @@
+###################################
+##### filebeat: 172.28.13.134 #####
+###################################
+cat /etc/filebeat/filebeat.yml
+##start up filebeat for test: 
+
+curl -XDELETE 172.28.13.120:9200/qad_monitor_cpu-20200803
+curl -XGET    172.28.13.120:9200/qad_monitor_cpu-20200803?pretty
+rm -rf /var/lib/filebeat/registry && filebeat -e -c /etc/filebeat/filebeat.yml -d "publish"
+
+
+##start up filebeat as a service:
+systemctl status filebeat -l
+
+##the configuration:
+[root@cn000vm3732 filebeat]# cat /etc/filebeat/filebeat.yml
+    filebeat.inputs:
+    - type: log
+      paths:
+        - /log_export_172.31.5.99/*/*.top
+      tags: ["log_type_top"]
+    - type: log
+      paths:
+        - /log_export_172.31.5.99/*/*.cpu.ps
+      tags: ["log_type_cpu"]
+    - type: log
+      paths:
+        - /log_export_172.31.5.99/*/*.mem.ps
+      tags: ["log_type_mem"]
+    - type: log
+      paths:
+        - /log_export_172.31.5.99/*/*.processnames
+      tags: ["log_type_processnames"]
+    - type: log
+      paths:
+        - /log_export_172.31.5.99/*/*.iostat-x
+      tags: ["log_type_iostat-x"]
+    - type: log
+      paths:
+        - /log_export_172.31.5.99/*/*.iostat-p
+      tags: ["log_type_iostat-p"]
+    - type: log
+      paths:
+        - /log_export_172.31.5.99/*/*.vmstat
+      tags: ["log_type_vmstat"]
+    - type: log
+      paths:
+        - /log_export_172.31.5.99/*/*.users
+      tags: ["log_type_users"]
+    - type: log
+      paths:
+        - /log_export_172.31.5.99/*/*.dbactivity.csv
+      tags: ["log_type_dbactivity"]
+    - type: log
+      paths:
+        - /log_export_172.31.5.99/*/*.activityPW.csv
+      tags: ["log_type_activityPW"]
+    - type: log
+      paths:
+        - /log_export_172.31.5.99/*/*.areaDetails.csv
+      tags: ["log_type_areaDetails"]
+    - type: log
+      paths:
+        - /log_export_172.31.5.99/*/*.tableReadDetails.csv
+      tags: ["log_type_tableReadDetails"]
+    - type: log
+      paths:
+        - /log_export_172.31.5.99/*/*.appservers
+      tags: ["log_type_appservers"]
+    
+    output.logstash:
+      #hosts: ["172.28.13.120:5044"]
+      hosts: ["172.28.13.138:5044"]
+
+###################################
+##### logstash: 172.28.13.138 #####
+###################################
+#start up the logstah
+#cd /root/logstash-7.1.0 
+#nohup bin/logstash -f config/logstash.yml --config.reload.automatic &
+/opt/logstash-7.1.0/bin/logstash -f /opt/logstash-7.1.0/config/logstash.conf --config.reload.automatic
+
+
+##the logstash configuration
+[root@cn000vm3733 config]# cat logstash.yml |egrep -v  '^#'
+    input {
+        beats {
+            port => "5044"
+        }
+    }
+    
+    filter {
+      if "log_type_dbactivity" in [tags]{
+         csv {
+             separator => ","
+             columns => ["date time","%BufferHits","%APW_Writes","%BIW_Writes","%AIW_Writes","RecReads","RecUpd","RecCreate","RecDel","RecLocks","RecWaits","DB_Reads","DB_Writes","BI_Writes","Transactions","Checkpoints"]
+         }
+         #grok {
+         #    match => ["path","/%{GREEDYDATA}/%{GREEDYDATA}/%{GREEDYDATA}-%{WORD:DBNAME}%{GREEDYDATA}"]
+         #}
+      }
+      else if "log_type_activityPW" in [tags]{
+         csv {
+             separator => ","
+             columns => ["date time","bfs_checkpointed","apw_db_writes","flushed","total_writes"]
+         }
+      }
+      else if "log_type_areaDetails" in [tags]{
+         csv {
+             separator => ","
+             columns => ["date time","PID","LockRecID","LOCK>>User_name","UserID","ConnectionType","TableName?","RecordID","LockChain","LockType","LockFlags"]
+         }
+      }
+      else if "log_type_tableReadDetails" in [tags]{
+         csv {
+             separator => ","
+             columns => ["TotalReads","1660131420"]
+         }
+      }
+      else if "log_type_appservers" in [tags]{
+         csv {
+             separator => ","
+             columns => ["time"]
+         }
+      }
+      else if "log_type_top" in [tags]{
+         csv {
+             separator => " "
+             columns => ["PID","USER","PR","NI","VIRT","RES","SHR","S","%CPU","%MEM","TIME+","COMMAND"]
+         }
+      }
+      else if "log_type_cpu" in [tags]{
+         grok {
+             match => { "message" => "%{INT:PID}\s+%{INT:PPID}\s+%{NUMBER:pcup}\s+(?<Time>[0-9:\-]+)\s+(?<CPUTime>[0-9:\-]+)\s+%{GREEDYDATA:Args}" }
+         }
+      }
+      else if "log_type_mem" in [tags]{
+         grok {
+             match => { "message" => "%{INT:PID}\s+%{INT:PhyPages}\s+%{INT:VirtkB}\s+%{NUMBER:MEM}\s+(?<CPUTime>[0-9:\-]+)\s+%{USER:User}\s+%{GREEDYDATA:Args}" }
+         }
+      }
+      else if "log_type_processnames" in [tags]{
+         grok {
+             match => { "message" => "%{INT:PID}\s+%{INT:PPID}\s+%{NOTSPACE:COMMAND}\s+%{GREEDYDATA:COMMANDFULL}" }
+         }
+      }
+      else if "log_type_iostat-x" in [tags]{
+         csv {
+             separator => " "
+             columns => ["Device:","rrqm/s","wrqm/s","r/s","w/s","rkB/s","wkB/s","avgrq-sz","avgqu-sz","await","r_await","w_await","svctm","%util"]
+         }
+      }
+      else if "log_type_iostat-p" in [tags]{
+         csv {
+             separator => " "
+             columns => ["Device:","tps","kB_read/s","kB_wrtn/s","kB_read","kB_wrtn"]
+         }
+      }
+      else if "log_type_vmstat" in [tags]{
+         csv {
+             separator => " "
+             columns => ["r","b","swpd","free","buff","cache","si","so","bi","bo","in","cs","us","sy","id","wa","st"]
+         }
+      }
+      else if "log_type_users" in [tags]{
+         grok {
+             match => { "message" => "(?<time>[0-9:]+ \w+ \d+ \d+ \w+)\s+USERS:\s+%{USER:user}" }
+         }
+      }
+    }
+    
+    output {
+      if "log_type_dbactivity" in [tags]{
+        #stdout { codec => rubydebug }
+        elasticsearch {
+            hosts => [ "localhost:9200" ]
+            index => "qad_monitor_dbactivity-%{+YYYYMMdd}"
+        }
+      }
+      else if "log_type_activityPW" in [tags]{
+        elasticsearch {
+            hosts => [ "localhost:9200" ]
+            index => "qad_monitor_activitypw-%{+YYYYMMdd}"
+        }
+      }
+      else if "log_type_areaDetails" in [tags]{
+        elasticsearch {
+            hosts => [ "localhost:9200" ]
+            index => "qad_monitor_areadetails-%{+YYYYMMdd}"
+        }
+      }
+      else if "log_type_tableReadDetails" in [tags]{
+        elasticsearch {
+            hosts => [ "localhost:9200" ]
+            index => "qad_monitor_tablereaddetails-%{+YYYYMMdd}"
+        }
+      }
+      else if "log_type_appservers" in [tags]{
+        elasticsearch {
+            hosts => [ "localhost:9200" ]
+            index => "qad_monitor_appservers-%{+YYYYMMdd}"
+        }
+      }
+      else if "log_type_top" in [tags]{
+        elasticsearch {
+            hosts => [ "localhost:9200" ]
+            index => "qad_monitor_top-%{+YYYYMMdd}"
+        }
+      }
+      else if "log_type_cpu" in [tags]{
+        elasticsearch {
+            hosts => [ "localhost:9200" ]
+            index => "qad_monitor_cpu-%{+YYYYMMdd}"
+        }
+      }
+      else if "log_type_mem" in [tags]{
+        elasticsearch {
+            hosts => [ "localhost:9200" ]
+            index => "qad_monitor_mem-%{+YYYYMMdd}"
+        }
+      }
+      else if "log_type_processnames" in [tags]{
+        elasticsearch {
+            hosts => [ "localhost:9200" ]
+            index => "qad_monitor_processnames-%{+YYYYMMdd}"
+        }
+      }
+      else if "log_type_iostat-x" in [tags]{
+        elasticsearch {
+            hosts => [ "localhost:9200" ]
+            index => "qad_monitor_iostat-x-%{+YYYYMMdd}"
+        }
+      }
+      else if "log_type_iostat-p" in [tags]{
+        elasticsearch {
+            hosts => [ "localhost:9200" ]
+            index => "qad_monitor_iostat-p-%{+YYYYMMdd}"
+        }
+      }
+      else if "log_type_vmstat" in [tags]{
+        elasticsearch {
+            hosts => [ "localhost:9200" ]
+            index => "qad_monitor_vmstat-%{+YYYYMMdd}"
+        }
+      }
+      else if "log_type_users" in [tags]{
+        elasticsearch {
+            hosts => [ "localhost:9200" ]
+            index => "qad_monitor_users-%{+YYYYMMdd}"
+        }
+      }
+    }
+    
+
+#check the index count in ES
+indexes="dbactivity activitypw areadetails tablereaddetails appservers top cpu mem processnames iostat-x iostat-p vmstat users"
+for i in $indexes; do echo -en "$i ==>\t"; curl -XGET 172.28.13.120:9200/qad_monitor_${i}-*/_count; echo; done
+    dbactivity ==>  {"count":246005,"_shards":{"total":1,"successful":1,"skipped":0,"failed":0}}
+    activitypw ==>  {"count":246005,"_shards":{"total":1,"successful":1,"skipped":0,"failed":0}}
+    areadetails ==> {"count":2102013,"_shards":{"total":1,"successful":1,"skipped":0,"failed":0}}
+    tablereaddetails ==>    {"count":19469629,"_shards":{"total":1,"successful":1,"skipped":0,"failed":0}}
+    appservers ==>  {"count":393976,"_shards":{"total":1,"successful":1,"skipped":0,"failed":0}}
+    top ==> {"count":1331374,"_shards":{"total":1,"successful":1,"skipped":0,"failed":0}}
+    cpu ==> {"count":3010019,"_shards":{"total":1,"successful":1,"skipped":0,"failed":0}}
+    mem ==> {"count":3010019,"_shards":{"total":1,"successful":1,"skipped":0,"failed":0}}
+    processnames ==>        {"count":9263708,"_shards":{"total":1,"successful":1,"skipped":0,"failed":0}}
+    iostat-x ==>    {"count":1550517,"_shards":{"total":1,"successful":1,"skipped":0,"failed":0}}
+    iostat-p ==>    {"count":1921587,"_shards":{"total":1,"successful":1,"skipped":0,"failed":0}}
+    vmstat ==>      {"count":49383,"_shards":{"total":1,"successful":1,"skipped":0,"failed":0}}
+    users ==>       {"count":9897,"_shards":{"total":1,"successful":1,"skipped":0,"failed":0}}

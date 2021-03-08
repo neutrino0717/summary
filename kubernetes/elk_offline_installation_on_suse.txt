@@ -1,0 +1,83 @@
+https://www.elastic.co/downloads
+export HTTP_PROXY="http://10.196.58.10:10792"
+export HTTPS_PROXY="http://10.196.58.10:10792"
+wget https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-7.8.0-x86_64.rpm
+wget https://artifacts.elastic.co/downloads/kibana/kibana-7.8.0-x86_64.rpm
+wget https://artifacts.elastic.co/downloads/beats/filebeat/filebeat-7.8.0-x86_64.rpm
+wget https://artifacts.elastic.co/downloads/logstash/logstash-7.8.0.rpm
+
+sudo rpm -ihv elasticsearch-7.8.0-x86_64.rpm
+sudo rpm -ihv kibana-7.8.0-x86_64.rpm
+sudo rpm -ivh filebeat-7.8.0-x86_64.rpm
+#sudo rpm -ivh logstash-7.8.0.rpm   --> need to install oracle java beforehand, see below for detail
+sudo systemctl daemon-reload
+sudo systemctl enable elasticsearch.service
+sudo systemctl enable kibana.service
+sudo systemctl enable filebeat.service
+
+####elasticsearch
+sudo systemctl start elasticsearch.service
+sudo vim /etc/elasticsearch/elasticsearch.yml
+	path.data: /var/lib/elasticsearch
+	path.logs: /var/log/elasticsearch
+	network.host: 0.0.0.0
+	discovery.seed_hosts: []
+	cluster.initial_master_nodes: []
+curl http://10.197.131.58:9200/
+curl http://10.198.131.165:9200/
+ls -al /usr/share/elasticsearch/jdk
+
+####kibana
+sudo vim /etc/kibana/kibana.yml
+server.host: "10.198.131.165"
+elasticsearch.hosts: ["http://localhost:9200"]
+sudo systemctl restart kibana.service
+http://10.197.131.58:5601
+http://10.198.131.165:5601/
+
+####filebeat
+sudo systemctl restart filebeat.service
+
+sudo rpm -ivh logstash-7.8.0.rpm
+	warning: logstash-7.8.0.rpm: Header V4 RSA/SHA512 Signature, key ID d88e42b4: NOKEY
+	Preparing...                          ################################# [100%]
+	Updating / installing...
+	   1:logstash-1:7.8.0-1               ################################# [100%]
+	could not find java; set JAVA_HOME or ensure java is in PATH
+	chmod: cannot access '/etc/default/logstash': No such file or directory
+	warning: %post(logstash-1:7.8.0-1.noarch) scriptlet failed, exit status 1
+
+sudo rpm -evh logstash-7.8.0.rpm
+
+####note: install the java for logstash
+https://www.edureka.co/community/33704/installed-elastic-search-kibana-logstash-machine-facing-error
+shold not use openjdk, which is in /usr/share/elasticsearch/jdk
+https://www.oracle.com/java/technologies/javase/javase8-archive-downloads.html
+https://download.oracle.com/otn/java/jdk/8u151-b12/e758a0de34e24606bca991d704f6dcbf/jdk-8u151-linux-x64.tar.gz?AuthParam=1595218969_65a8d253087793a62d7de76aee295cbf
+sudo mkdir /usr/lib/jvm
+cd /usr/lib/jvm
+sudo tar zxvf ~/jdk-8u151-linux-x64.tar.gz
+
+sudo vi /etc/environment
+PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/usr/lib/jvm/jdk1.8.0_151/bin:/usr/lib/jvm/jdk1.8.0_151/db/bin:/usr/lib/jvm/jdk1.8.0_151/jre/bin"
+J2SDKDIR="/usr/lib/jvm/jdk1.8.0_151"
+J2REDIR="/usr/lib/jvm/jdk1.8.0_151/jre"
+JAVA_HOME="/usr/lib/jvm/jdk1.8.0_151"
+DERBY_HOME="/usr/lib/jvm/jdk1.8.0_151/db"
+
+sudo update-alternatives --install "/usr/bin/java" "java" "/usr/lib/jvm/jdk1.8.0_151/bin/java" 0 
+sudo update-alternatives --install "/usr/bin/javac" "javac" "/usr/lib/jvm/jdk1.8.0_151/bin/javac" 0 
+sudo update-alternatives --set java /usr/lib/jvm/jdk1.8.0_151/bin/java 
+sudo update-alternatives --set javac /usr/lib/jvm/jdk1.8.0_151/bin/javac
+
+sudo rpm -ivh logstash-7.8.0.rpm
+	warning: logstash-7.8.0.rpm: Header V4 RSA/SHA512 Signature, key ID d88e42b4: NOKEY
+	Preparing...                          ################################# [100%]
+	Updating / installing...
+	   1:logstash-1:7.8.0-1               ################################# [100%]
+	Using provided startup.options file: /etc/logstash/startup.options
+	/usr/share/logstash/vendor/bundle/jruby/2.5.0/gems/pleaserun-0.0.31/lib/pleaserun/platform/base.rb:112: warning: constant ::Fixnum is deprecated
+	Successfully created system startup script for Logstash
+	
+sudo systemctl enable logstash.service
+sudo systemctl restart logstash.service

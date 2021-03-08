@@ -1,0 +1,20 @@
+When you create a Service, it creates a corresponding DNS entry
+<service-name>.<namespace-name>.svc.cluster.local
+
+
+
+#services
+keywords: app2service, default, svc
+$ host app2service
+app2service has address 10.0.0.2
+$ host app2service.default
+app2service.default has address 10.0.0.2           #default is namespace
+$ host app2service.default.svc.cluster.local       #fqdn name
+app2service.default.svc.cluster.local has address 10.0.0.2
+
+$ kubectl run -i --tty busybox --image=busybox --restart=Never -- sh
+# cat /etc/resolv.conf
+search default.svc.cluster.local svc.cluster.local cluster.local lan
+nameserver 10.0.0.10         #---> service kube-dns in kube-system
+options ndots:5
+
