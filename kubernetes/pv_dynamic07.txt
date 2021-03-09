@@ -1,4 +1,5 @@
-pod -> pvc --> sc --> provisioner(pod) --> nfs
+1. deployment -> pod -> pvc --> sc --> provisioner(pod) --> nfs
+2. StatefulSet(volumeClaimTemplates) -> sc
 
 apiVersion: v1
 kind: Pod
@@ -69,6 +70,110 @@ sudo exportfs -v                                                                
 #tests                                                                                                       |
 sudo mount -t nfs 172.42.42.100:/srv/nfs/kubedata /mnt  <----------------------------------------------------|
 sudo umount /mnt
+
+----------------------------------------------------------------------------------------------------------------------------------
+https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/
+2. StatefulSet(volumeClaimTemplates) -> sc
+
+							 apiVersion: apps/v1
+apiVersion: v1               kind: StatefulSet
+kind: Service                metadata:
+metadata:                      name: web
+  name: nginx                spec:
+  labels:                      selector:
+    app: nginx                   matchLabels:
+spec:                              app: nginx # has to match .spec.template.metadata.labels
+  ports:                       serviceName: "nginx"
+  - port: 80                   replicas: 3 # by default is 1
+    name: web                  template:
+  clusterIP: None                metadata:
+  selector:                        labels:
+    app: nginx       ---->           app: nginx # has to match .spec.selector.matchLabels
+	                             spec:
+	                               terminationGracePeriodSeconds: 10
+                                   containers:
+                                   - name: nginx
+                                     image: k8s.gcr.io/nginx-slim:0.8
+                                     ports:
+                                     - containerPort: 80
+                                       name: web
+                                     volumeMounts:               
+                                     - name: www                 <---------|
+                                       mountPath: /usr/share/nginx/html    |
+                               volumeClaimTemplates:                       |
+                               - metadata:                                 |
+                                   name: www            -------------------|
+                                 spec:
+                                   accessModes: [ "ReadWriteOnce" ]
+                                   storageClassName: "my-storage-class"
+                                   resources:
+                                     requests:
+                                       storage: 1Gi
+
+-----------------------------------------------------------------------------------------------------------------------------------
+2. StatefulSet(volumeClaimTemplates) -> sc
+
+keywords: 
+provisioner
+nfs_client
+elasticsearch_master
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: elasticsearch-master
+  labels:
+    heritage: "Helm"
+    release: "myes"
+    chart: "elasticsearch"
+    app: "elasticsearch-master"
+  annotations:
+    esMajorVersion: "7"
+spec:
+  serviceName: elasticsearch-master-headless
+  selector:                                                                             apiVersion: v1                                                 
+    matchLabels:                                                                        items:                                                         
+      app: "elasticsearch-master"                                                       - allowVolumeExpansion: true                                   
+  replicas: 3                                                                             apiVersion: storage.k8s.io/v1                                
+  podManagementPolicy: Parallel                                                           kind: StorageClass                                           
+  updateStrategy:                                                                         metadata:                                                    
+    type: RollingUpdate                                                                     annotations:                                               
+  volumeClaimTemplates:                                                                       storageclass.kubernetes.io/is-default-class: "true"      
+  - metadata:                                                                                 storageclass.kubesphere.io/supported_access_modes: \     
+      name: elasticsearch_master                                                        	  '["ReadWriteOnce","ReadOnlyMany","ReadWriteMany"]'       
+    spec:                                                                                   creationTimestamp: "2020-06-29T03:03:49Z"                  
+      accessModes:                                                                          labels:                                                    
+      - ReadWriteOnce                                                                         app: nfs-client-provisioner                              
+      resources:                                                                              chart: nfs-client-provisioner-1.1.2                      
+        requests:                                                                             heritage: Tiller                                         
+          storage: 30Gi                                                                       release: nfs-client                                      
+      storageClassName: nfs_client             ------------>                                name: nfs_client                                           
+  template:                                                                                 resourceVersion: "3208"                                    
+    metadata:                                                                               selfLink: /apis/storage.k8s.io/v1/storageclasses/nfs-client
+      name: "elasticsearch-master"                                                          uid: e94aac50-d037-4fba-b8eb-8a086eba78a3                  
+      labels:                                                                             parameters:                                                  
+        heritage: "Helm"                                                                    archiveOnDelete: "false"                                   
+        release: "myes"                                                                   provisioner: cluster.local/nfs-client-nfs-client-provisioner 
+        chart: "elasticsearch"                                                            reclaimPolicy: Delete                                        
+        app: "elasticsearch-master"                                                       volumeBindingMode: Immediate                                 
+      annotations:                                                                      kind: List                                                     
+                                                                                        metadata:                                                      
+    spec:                                                                                 resourceVersion: ""                                          
+      containers:                                                                         selfLink: ""                                                 
+      - name: "elasticsearch"
+        securityContext:
+          capabilities:
+            drop:
+            - ALL
+          runAsNonRoot: true
+          runAsUser: 1000
+        image: "docker.elastic.co/elasticsearch/elasticsearch:7.5.2"
+        imagePullPolicy: "IfNotPresent"
+        volumeMounts:
+          - name: "elasticsearch_master"
+            mountPath: /usr/share/elasticsearch/data
+
+
 
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
