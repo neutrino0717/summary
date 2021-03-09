@@ -1,4 +1,6 @@
 pygmentize -l bash <<"EOF"
-journalctl -u kafka
-journalctl -xe
+journalctl -u kafka      #--unit
+journalctl -xe           #at the end removing the need to scroll
+journalctl -u service-name.service -b   #--boot
+
 EOF

@@ -1,7 +1,20 @@
 pygmentize -g <<"EOF"
+    -u: when copying, update 
+
+    --delete: rsync will delete the files in the destination folder that are not present in the source folder.
+
+    --exclude: certain files or folders will be ignored when copying.
+
+    --progress: shows the percentage of the copying process and the remaining time.
+
+    --existing: only the files already existing in the destination folder will be copied.
+
 man rsync |grep -P '^\s+\-((a|z|v)|\-stats|\-progress)'
+#        -r                          to copy the folders and their contents
 #        -v, --verbose               increase verbosity
 #        -a, --archive               archive mode; equals -rlptgoD (no -H,-A,-X)
+#        -a                          it shows the original information of the file, such as timestamp, permissions, owner etc.
+#        -h                          rather than 14.167.396 bytes, 14.17 Mb will be seen
 #        -z, --compress              compress file data during the transfer
 #            --stats                 give some file-transfer stats
 #            --progress              show progress during transfer
@@ -12,4 +25,5 @@ rysnc -av --progress srcdir dstdir --exc
 #--ignore-existing: If you want to always keep the version in ~/automme.bak, add the option 
 #--remove-source-files: Delete Source File After Transfer
 rsync  -a automme/ automme.bak/ --remove-source-files
+rsync -ruv /cygdrive/d/mybase/code/*.nyf /cygdrive/c/data/enmao/mybase/code
 EOF

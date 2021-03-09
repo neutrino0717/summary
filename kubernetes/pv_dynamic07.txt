@@ -1,3 +1,78 @@
+pod -> pvc --> sc --> provisioner(pod) --> nfs
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: busybox
+spec:
+  volumes:                              apiVersion: v1                        
+  - name: hostvolume                    kind: PersistentVolumeClaim           
+    persistentVolumeClaim:               metadata:                              apiVersion: storage.k8s.io/v1
+      claimName: pvc1       --------->     name: pvc1                           kind: StorageClass
+  containers:                            spec:                                  metadata:
+  - image: busybox                         storageClassName: nfsstorage  ---->    name: nfsstorage
+    name: busybox                          accessModes:                         provisioner: example.com/nfs ----|  #provisioner is a pod
+    command: ["/bin/sh"]                     - ReadWriteMany                    parameters:                      |
+    args: ["-c", "sleep 600"]              resources:                             archiveOnDelete: “false”       |
+    volumeMounts:                            requests:                                                           |
+    - name: hostvolume                        storage: 500Mi                                                     |
+      mountPath: /mydata                                                                                         |
+																												 |
+																												 |
+kind: Deployment                                                                                                 |
+apiVersion: apps/v1                                                                                              |
+metadata:                                                                                                        |
+  name: nfs-client-provisioner                                                                                   |
+spec:                                                                                                            |
+  selector:                                                                                                      |
+    matchLabels:                                                                                                 |
+      app: nfs-client-provisioner                                                                                |
+  replicas: 1                                                                                                    |
+  strategy:                                                                                                      |
+    type: Recreate                                                                                               |
+  template:                                                                                                      |
+    metadata:                                                                                                    |
+      labels:                                                                                                    |
+        app: nfs-client-provisioner                                                                              |
+    spec:                                                                                                        |
+      serviceAccountName: nfs-client-provisioner                                                                 |
+      containers:                                                                                                |
+        - name: nfs-client-provisioner                                                                           |
+          image: quay.io/external_storage/nfs-client-provisioner:latest                                          |
+          volumeMounts:                                                                                          |
+            - name: nfs-client-root                                                                              |
+              mountPath: /persistentvolumes                                                                      |
+          env:                                                                                                   |
+            - name: PROVISIONER_NAME                                                                             |
+              value: example.com/nfs  <--------------------------------------------------------------------------|
+            - name: NFS_SERVER
+              value: 172.42.42.100    -----------------------------------------------------------------------|
+            - name: NFS_PATH                                                                                 |
+              value: /srv/nfs/kubedata ----------------------------------------------------------------|     |
+      volumes:                                                                                         |     |
+        - name: nfs-client-root                                                                        |     |
+          nfs:                                                                                         |     |
+            server: 172.42.42.100                                                                      |     |
+            path: /srv/nfs/kubedata                                                                    |     |
+																									   |     |
+																									   |     |
+																									   |     |
+sudo mkdir /srv/nfs/kubedata -p                                                                        |     |
+sudo chown nfsnobody: /srv/nfs/kubedata/                                                               |     |
+sudo yum install -y nfs-utils                                                                          |     |d
+sudo systemctl enable nfs-server                                                                       |     |
+sudo systemctl start nfs-server                                                                        |     |
+sudo vi /etc/exports                                                                                   |     |
+  /srv/nfs/kubedata    *(rw,sync,no_subtree_check,no_root_squash,no_all_squash,insecure) <-------------|     |
+sudo exportfs -rav                                                                                           |
+sudo exportfs -v                                                                                             |
+#tests                                                                                                       |
+sudo mount -t nfs 172.42.42.100:/srv/nfs/kubedata /mnt  <----------------------------------------------------|
+sudo umount /mnt
+
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 keywords: data, usr_share_elasticsearch_data， nfs-client, 30Gi
 
 sh-4.2# df -h
@@ -122,3 +197,21 @@ metadata:
 
 
 =======================================================================================================================
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
